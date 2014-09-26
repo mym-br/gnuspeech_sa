@@ -1,0 +1,17 @@
+
+- Replace these static global or local variables:
+
+letter_to_sound/letter_to_sound.cpp: static char pronunciation[MAX_PRONUNCIATION_LENGTH+1];
+letter_to_sound/word_to_patphone.cpp: static char spell_string[SPELL_STRING_LEN];
+letter_to_sound/syllabify.cpp: static char ret[2048];  // to fix memory leak
+text_parser/number_parser.cpp:static char *word;
+text_parser/number_parser.cpp:static char output[OUTPUT_MAX];        /*  STORAGE FOR OUTPUT  */
+text_parser/number_parser.cpp:static char triad[3];
+text_parser/number_parser.cpp:static char ordinal_buffer[3];
+text_parser/number_parser.cpp:static int ordinal_triad;
+text_parser/number_parser.cpp:static char hour[4], minute[4], second[4];
+text_parser/number_parser.cpp:static int military, seconds;
+main_dict/MainDictionary.cpp: static char buffer[MAXLEN];
+main_dict/MainDictionary.cpp: static char word_type_buffer[32];
+
+- Check the long "-".

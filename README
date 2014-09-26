@@ -1,0 +1,22 @@
+
+Gnuspeech-X (eXperimental)
+==========================
+
+Gnuspeech-X is an articulatory speech synthesizer that uses code and
+data from Gnuspeech (http://www.gnu.org/software/gnuspeech/),
+ported to C++/C. It is a command-line program. The graphical
+applications have not been ported.
+
+This project is based on code from Gnuspeech SVN, rev. 672,
+downloaded in 2014-08-02. The source code was obtained from the
+directories:
+
+nextstep/trunk/ObjectiveC/Monet.realtime
+nextstep/trunk/src/SpeechObject/postMonet/server.monet
+
+Requirements:
+
+- A C++ compiler with C++11 support (tested with gcc 4.8.2).
+- libsndfile (tested with 1.0.25).
+
+This software is currently not part of Gnuspeech.
