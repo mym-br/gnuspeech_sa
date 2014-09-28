@@ -14,9 +14,4 @@ directories:
 nextstep/trunk/ObjectiveC/Monet.realtime
 nextstep/trunk/src/SpeechObject/postMonet/server.monet
 
-Requirements:
-
-- A C++ compiler with C++11 support (tested with gcc 4.8.2).
-- libsndfile (tested with 1.0.25).
-
 This software is currently not part of Gnuspeech.
