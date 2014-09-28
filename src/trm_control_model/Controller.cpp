@@ -68,7 +68,7 @@ Controller::initUtterance(const char* trmParamFile)
 	synthConfig_.pitchOffset = 0.0;
 	synthConfig_.vtlOffset = 0.0;
 	synthConfig_.breathiness = 0.5;
-	synthConfig_.samplingRate = 22050.0;
+	synthConfig_.samplingRate = 44100.0;
 
 	if ((synthConfig_.samplingRate != 22050.0f) && (synthConfig_.samplingRate != 44100.0f)) {
 		synthConfig_.samplingRate = 22050.0f;
