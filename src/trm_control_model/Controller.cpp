@@ -285,7 +285,7 @@ Controller::setIntonation(int intonation)
 void
 Controller::synthesizePhoneticStringChunk(const char* phoneticStringChunk, const char* trmParamFile)
 {
-	stringParser_.parseString(eventList_, phoneticStringChunk);
+	stringParser_.parseString(phoneticStringChunk);
 
 	eventList_.generateEventList();
 

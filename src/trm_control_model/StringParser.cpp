@@ -264,7 +264,7 @@ StringParser::rewrite(const Phone& nextPhone, int wordMarker, RewriterData& data
 }
 
 int
-StringParser::parseString(EventList& eventList, const char* string)
+StringParser::parseString(const char* string)
 {
 	const Phone* tempPhone;
 	const Phone* tempPhone1;

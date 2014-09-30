@@ -32,7 +32,7 @@ public:
 	StringParser(const char* configDirPath, const Model& model, EventList& eventList);
 	~StringParser();
 
-	int parseString(EventList& eventList, const char* string);
+	int parseString(const char* string);
 private:
 	StringParser(const StringParser&);
 	StringParser& operator=(const StringParser&);
