@@ -65,7 +65,7 @@ Controller::initUtterance(const char* trmParamFile)
 	synthConfig_.volume = 60.0;
 	synthConfig_.speed = 1.0;
 	synthConfig_.balance = 0.0;
-	synthConfig_.pitchOffset = 0.0;
+	synthConfig_.pitchOffset = -4.0;
 	synthConfig_.vtlOffset = 0.0;
 	synthConfig_.breathiness = 0.5;
 	synthConfig_.samplingRate = 44100.0;

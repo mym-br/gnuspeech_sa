@@ -54,8 +54,7 @@
 
 /*  PITCH VARIABLES  */
 #define PITCH_BASE                220.0
-//#define PITCH_OFFSET              3           /*  MIDDLE C = 0  */
-#define PITCH_OFFSET              1
+#define PITCH_OFFSET              3           /*  MIDDLE C = 0  */
 //#define LOG_FACTOR                3.32193
 
 /*  RANGE OF ALL VOLUME CONTROLS  */
