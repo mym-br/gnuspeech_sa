@@ -172,10 +172,14 @@ inline
 bool
 Phone::isMemberOfCategory(const Category& category) const
 {
-	for (const auto& c : categoryList_) {
-		if (c->code == category.code) {
-			return true;
+	if (category.code != 0) {
+		for (const auto& c : categoryList_) {
+			if (c->code == category.code) {
+				return true;
+			}
 		}
+	} else if (name_ == category.name) {
+		return true;
 	}
 	return false;
 }
