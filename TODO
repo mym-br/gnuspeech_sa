@@ -15,3 +15,5 @@ main_dict/MainDictionary.cpp: static char buffer[MAXLEN];
 main_dict/MainDictionary.cpp: static char word_type_buffer[32];
 
 - Check the long "-".
+
+- Put the code into namespaces.
