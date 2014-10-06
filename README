@@ -3,7 +3,7 @@ Gnuspeech-X (eXperimental)
 ==========================
 
 Gnuspeech-X is a port to C++/C of the TTS_Server in the original Gnuspeech
-(http://www.gnu.org/software/gnuspeech/) source code that run on NeXTSTEP.
+(http://www.gnu.org/software/gnuspeech/) source code written for NeXTSTEP.
 Only the text parsing / synthesis code has been ported, and currently it is
 a command-line program.
 
