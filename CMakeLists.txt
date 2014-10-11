@@ -8,9 +8,6 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 
 include_directories(
     src
-    src/letter_to_sound
-    src/main_dict
-    src/text_parser
     src/trm
     src/trm_control_model
     src/xml
@@ -22,37 +19,38 @@ add_library(gnuspeechx SHARED
     src/Dictionary.cpp src/Dictionary.h
     src/Exception.h
     src/Log.h
-    src/number_pronunciations.h
     src/Text.h
 
-    src/letter_to_sound/apply_stress.cpp src/letter_to_sound/apply_stress.h
-    src/letter_to_sound/check_word_list.cpp src/letter_to_sound/check_word_list.h
-    src/letter_to_sound/clusters.h
-    src/letter_to_sound/ends_with.cpp src/letter_to_sound/ends_with.h
-    src/letter_to_sound/final_s.cpp src/letter_to_sound/final_s.h
-    src/letter_to_sound/ie_to_y.cpp src/letter_to_sound/ie_to_y.h
-    src/letter_to_sound/insert_mark.cpp src/letter_to_sound/insert_mark.h
-    src/letter_to_sound/isp_trans.cpp src/letter_to_sound/isp_trans.h
-    src/letter_to_sound/letter_to_sound.cpp src/letter_to_sound/letter_to_sound.h
-    src/letter_to_sound/long_medial_vowels.cpp src/letter_to_sound/long_medial_vowels.h
-    src/letter_to_sound/mark_final_e.cpp src/letter_to_sound/mark_final_e.h
-    src/letter_to_sound/medial_s.cpp src/letter_to_sound/medial_s.h
-    src/letter_to_sound/medial_silent_e.cpp src/letter_to_sound/medial_silent_e.h
-    src/letter_to_sound/member.cpp src/letter_to_sound/member.h
-    src/letter_to_sound/stresstables.h
-    src/letter_to_sound/suffix.cpp src/letter_to_sound/suffix.h
-    src/letter_to_sound/syllabify.cpp src/letter_to_sound/syllabify.h
-    src/letter_to_sound/tail.h
-    src/letter_to_sound/vowel_before.cpp src/letter_to_sound/vowel_before.h
-    src/letter_to_sound/word_to_patphone.cpp src/letter_to_sound/word_to_patphone.h
+    src/en/letter_to_sound/apply_stress.cpp src/en/letter_to_sound/apply_stress.h
+    src/en/letter_to_sound/check_word_list.cpp src/en/letter_to_sound/check_word_list.h
+    src/en/letter_to_sound/clusters.h
+    src/en/letter_to_sound/ends_with.cpp src/en/letter_to_sound/ends_with.h
+    src/en/letter_to_sound/final_s.cpp src/en/letter_to_sound/final_s.h
+    src/en/letter_to_sound/ie_to_y.cpp src/en/letter_to_sound/ie_to_y.h
+    src/en/letter_to_sound/insert_mark.cpp src/en/letter_to_sound/insert_mark.h
+    src/en/letter_to_sound/isp_trans.cpp src/en/letter_to_sound/isp_trans.h
+    src/en/letter_to_sound/letter_to_sound.cpp src/en/letter_to_sound/letter_to_sound.h
+    src/en/letter_to_sound/long_medial_vowels.cpp src/en/letter_to_sound/long_medial_vowels.h
+    src/en/letter_to_sound/mark_final_e.cpp src/en/letter_to_sound/mark_final_e.h
+    src/en/letter_to_sound/medial_s.cpp src/en/letter_to_sound/medial_s.h
+    src/en/letter_to_sound/medial_silent_e.cpp src/en/letter_to_sound/medial_silent_e.h
+    src/en/letter_to_sound/member.cpp src/en/letter_to_sound/member.h
+    src/en/letter_to_sound/stresstables.h
+    src/en/letter_to_sound/suffix.cpp src/en/letter_to_sound/suffix.h
+    src/en/letter_to_sound/syllabify.cpp src/en/letter_to_sound/syllabify.h
+    src/en/letter_to_sound/tail.h
+    src/en/letter_to_sound/vowel_before.cpp src/en/letter_to_sound/vowel_before.h
+    src/en/letter_to_sound/word_to_patphone.cpp src/en/letter_to_sound/word_to_patphone.h
 
-    src/main_dict/MainDictionary.cpp src/main_dict/MainDictionary.h
-    src/main_dict/suffix_list.h
+    src/en/main_dict/MainDictionary.cpp src/en/main_dict/MainDictionary.h
+    src/en/main_dict/suffix_list.h
 
-    src/text_parser/abbreviations.h
-    src/text_parser/number_parser.cpp src/text_parser/number_parser.h
-    src/text_parser/special_acronyms.h
-    src/text_parser/TextParser.cpp src/text_parser/TextParser.h
+    src/en/number_pronunciations.h
+
+    src/en/text_parser/abbreviations.h
+    src/en/text_parser/number_parser.cpp src/en/text_parser/number_parser.h
+    src/en/text_parser/special_acronyms.h
+    src/en/text_parser/TextParser.cpp src/en/text_parser/TextParser.h
 
     src/trm_control_model/Category.cpp src/trm_control_model/Category.h
     src/trm_control_model/DriftGenerator.cpp src/trm_control_model/DriftGenerator.h
