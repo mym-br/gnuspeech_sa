@@ -25,6 +25,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 NoiseSource::NoiseSource() : seed_(INITIAL_SEED)
@@ -44,3 +45,4 @@ NoiseSource::getSample()
 }
 
 } /* namespace TRM */
+} /* namespace GS */

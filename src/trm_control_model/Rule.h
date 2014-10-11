@@ -34,6 +34,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 class Model;
@@ -172,5 +173,6 @@ private:
 typedef std::vector<Rule_ptr> RuleList;
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_RULE_H_ */

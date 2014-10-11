@@ -24,6 +24,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 /*******************************************************************************
@@ -34,4 +35,6 @@ Phone::Phone(const std::string& name)
 {
 	parameters_.fill(0.0);
 }
+
 } /* namespace TRMControlModel */
+} /* namespace GS */

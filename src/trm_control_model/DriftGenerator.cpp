@@ -25,6 +25,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 DriftGenerator::DriftGenerator()
@@ -102,3 +103,4 @@ DriftGenerator::drift()
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

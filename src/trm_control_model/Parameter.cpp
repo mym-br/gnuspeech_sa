@@ -28,6 +28,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 namespace Parameter {
 
@@ -72,3 +73,4 @@ setInfo(Info::Array& parameterInfoArray, const CodeMap& parameterCodeMap, const 
 
 } /* namespace Parameter */
 } /* namespace TRMControlModel */
+} /* namespace GS */

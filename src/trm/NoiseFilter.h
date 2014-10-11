@@ -21,6 +21,9 @@
 #ifndef TRM_NOISE_FILTER_H_
 #define TRM_NOISE_FILTER_H_
 
+
+
+namespace GS {
 namespace TRM {
 
 // One-zero lowpass filter.
@@ -38,5 +41,6 @@ private:
 };
 
 } /* namespace TRM */
+} /* namespace GS */
 
 #endif /* TRM_NOISE_FILTER_H_ */

@@ -27,6 +27,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 StringParser::StringParser(const char* configDirPath, const Model& model, EventList& eventList)
@@ -501,3 +502,4 @@ StringParser::calcVowelTransition(const Phone& nextPhone, RewriterData& data)
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

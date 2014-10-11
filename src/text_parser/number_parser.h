@@ -21,20 +21,15 @@
 #ifndef NUMBER_PARSER_H_
 #define NUMBER_PARSER_H_
 
-/*  HEADER FILE FOR number_parser.c  */
-
-
 /*  FLAGS FOR ARGUMENT mode WHEN CALLING number_parser()  */
 #define NP_NORMAL          0
 #define NP_OVERRIDE_YEARS  1
 #define NP_FORCE_SPELL     2
 
 
-/*  DECLARATONS TO MAKE THESE FUNCTIONS USABLE BY CALLING ROUTINES  */
-const char* number_parser(const char* word_ptr, int mode);
-const char* degenerate_string(const char* word);
 
-
+namespace GS {
+namespace EnTextParser {
 
 /********************************************************************
 number_parser() RETURNS A POINTER TO A NULL TERMINATED CHARACTER
@@ -72,5 +67,11 @@ TYPICAL USAGE:
   printf("%s\n",ptr);
 
 ********************************************************************/
+const char* number_parser(const char* word_ptr, int mode);
+
+const char* degenerate_string(const char* word);
+
+} /* namespace EnTextParser */
+} /* namespace GS */
 
 #endif /* NUMBER_PARSER_H_ */

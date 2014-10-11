@@ -124,15 +124,15 @@ main(int argc, char* argv[])
 	}
 
 	try {
-		std::unique_ptr<TRMControlModel::Model> trmControlModel(new TRMControlModel::Model());
+		std::unique_ptr<GS::TRMControlModel::Model> trmControlModel(new GS::TRMControlModel::Model());
 		trmControlModel->load(configDirPath, TRM_CONTROL_MODEL_CONFIG_FILE);
 		if (verbose) {
 			trmControlModel->printInfo();
 		}
 
-		std::unique_ptr<TextParser> textParser(new TextParser(configDirPath));
+		std::unique_ptr<GS::EnTextParser::TextParser> textParser(new GS::EnTextParser::TextParser(configDirPath));
 
-		std::unique_ptr<TRMControlModel::Controller> trmController(new TRMControlModel::Controller(configDirPath, *trmControlModel));
+		std::unique_ptr<GS::TRMControlModel::Controller> trmController(new GS::TRMControlModel::Controller(configDirPath, *trmControlModel));
 
 		std::string phoneticString = textParser->parseText(inputText.c_str());
 		if (verbose) {

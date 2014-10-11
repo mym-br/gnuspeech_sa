@@ -26,6 +26,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 class StringParser {
@@ -57,5 +58,6 @@ private:
 };
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_STRING_PARSER_H_ */

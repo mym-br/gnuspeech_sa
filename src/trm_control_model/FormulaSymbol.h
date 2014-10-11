@@ -29,6 +29,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 struct FormulaSymbol {
@@ -67,5 +68,6 @@ struct FormulaSymbol {
 typedef std::array<float, FormulaSymbol::NUM_SYMBOLS> FormulaSymbolList; // [symbol code] -> value
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_FORMULA_SYMBOL_H_ */

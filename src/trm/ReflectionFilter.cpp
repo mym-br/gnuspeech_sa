@@ -24,6 +24,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 ReflectionFilter::ReflectionFilter(double apertureCoeff)
@@ -46,3 +47,4 @@ ReflectionFilter::filter(double input)
 }
 
 } /* namespace TRM */
+} /* namespace GS */

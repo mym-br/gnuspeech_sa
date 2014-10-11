@@ -24,6 +24,8 @@
 
 
 
+namespace GS {
+
 Dictionary::Dictionary()
 {
 }
@@ -93,3 +95,5 @@ Dictionary::version() const
 
 	return version_.c_str();
 }
+
+} /* namespace GS */

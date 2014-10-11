@@ -24,6 +24,8 @@
 
 
 
+namespace GS {
+
 /*******************************************************************************
  * This class is not XML-compliant.
  *
@@ -68,5 +70,7 @@ private:
 	void closeParentTag();
 	void fillAttributeMap();
 };
+
+} /* namespace GS */
 
 #endif /*SIMPLE_XML_PARSER_H_*/

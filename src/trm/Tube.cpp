@@ -78,6 +78,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 bool verbose = false;
@@ -1046,3 +1047,4 @@ Tube::frequency(double pitch)
 }
 
 } /* namespace TRM */
+} /* namespace GS */

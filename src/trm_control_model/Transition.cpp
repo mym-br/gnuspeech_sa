@@ -26,6 +26,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 double
@@ -81,3 +82,4 @@ Transition::getPointData(const Transition::Point& point, const Model& model,
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

@@ -38,6 +38,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 WavetableGlottalSource::WavetableGlottalSource(
@@ -207,3 +208,4 @@ WavetableGlottalSource::mod0(double value)
 }
 
 } /* namespace TRM */
+} /* namespace GS */

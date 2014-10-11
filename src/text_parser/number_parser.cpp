@@ -137,19 +137,12 @@
 *
 ******************************************************************************/
 
-
-
-/*  INCLUDE FILES  ***********************************************************/
-
 #include <stdlib.h>
 #include <string.h>
 
 #include "number_parser.h"
 #include "number_pronunciations.h"
 /*  #incude "number_pronunciations_english.h"  (use this for plain english)  */
-
-
-
 
 /*  SYMBOLIC CONSTANTS  ******************************************************/
 
@@ -177,29 +170,29 @@
 #define ELEVEN_DIGIT_CODE      3
 #define AREA_CODE              4
 
-static int error_check(int mode);
-static void initial_parse();
-static void process_digit(char digit, char* output, int ordinal, int ordinal_plural, int special_flag);
-static int process_triad(char* triad, char* output, int pause, int ordinal, int right_zero_pad, int ordinal_plural, int special_flag);
-static char* process_word(int mode);
 
 
+namespace {
 
-/*  EXTERNAL VARIABLES  (LOCAL TO THIS FILE)  *******************************/
+int error_check(int mode);
+void initial_parse();
+void process_digit(char digit, char* output, int ordinal, int ordinal_plural, int special_flag);
+int process_triad(char* triad, char* output, int pause, int ordinal, int right_zero_pad, int ordinal_plural, int special_flag);
+char* process_word(int mode);
 
 /*  INPUT AND OUTPUT VARIABLES  */
-static char *word;
-static char output[OUTPUT_MAX];        /*  STORAGE FOR OUTPUT  */
+char *word;
+char output[OUTPUT_MAX];        /*  STORAGE FOR OUTPUT  */
 
 /*  PARSING STATISTIC VARIABLES  */
-static int
+int
   word_length, degenerate, integer_digits, fractional_digits, commas,
   decimal, dollar, percent, negative, positive, ordinal, clock, slash,
   left_paren, right_paren, blank, dollar_plural, dollar_nonzero, cents_plural,
   cents_nonzero, telephone, left_zero_pad, right_zero_pad, ordinal_plural,
   frac_left_zero_pad, frac_right_zero_pad, frac_ordinal_triad;
 
-static int
+int
   commas_pos[COMMAS_MAX], decimal_pos, dollar_pos, percent_pos,
   negative_pos[NEGATIVE_MAX], positive_pos,
   integer_digits_pos[INTEGER_DIGITS_MAX],
@@ -207,8 +200,8 @@ static int
   clock_pos[CLOCK_MAX], slash_pos, left_paren_pos, right_paren_pos, blank_pos;
 
 /*  VARIABLES PERTAINING TO TRIADS AND TRIAD NAMES  */
-static char triad[3];
-static const char* triad_name[3][TRIADS_MAX] = {
+char triad[3];
+const char* triad_name[3][TRIADS_MAX] = {
   {NULL_STRING, THOUSAND, MILLION, BILLION, TRILLION, QUADRILLION, QUINTILLION,
    SEXTILLION, SEPTILLION, OCTILLION, NONILLION, DECILLION, UNDECILLION,
    DUODECILLION, TREDECILLION, QUATTUORDECILLION, QUINDECILLION, SEXDECILLION,
@@ -226,67 +219,12 @@ static const char* triad_name[3][TRIADS_MAX] = {
 };
 
 /*  ORDINAL VARIABLES  */
-static char     ordinal_buffer[3];
-static int      ordinal_triad;
+char     ordinal_buffer[3];
+int      ordinal_triad;
 
 /*  CLOCK VARIABLES  */
-static char     hour[4], minute[4], second[4];
-static int      military, seconds;
-
-
-
-/******************************************************************************
-*
-*	function:	number_parser
-*
-*	purpose:	Returns a pointer to a NULL terminated character string
-*                       which contains the pronunciation for the string pointed
-*                       at by the argument word_ptr.
-*			
-*       arguments:      word_ptr:  a pointer to the NULL terminated number
-*                         string which is to be parsed.
-*                       mode:  determines how the number string is to be
-*                         parsed.  Should be set to NP_NORMAL,
-*                         NP_OVERRIDE_YEARS, or NP_FORCE_SPELL.
-*
-*	internal
-*	functions:	initial_parse, error_check, degenerate_string,
-*                       process_word
-*
-*	library
-*	functions:	none
-*
-******************************************************************************/
-
-const char*
-number_parser(const char* word_ptr, int mode)
-{
-    int status;
-    //char *process_word();
-    //void initial_parse();
-    //int error_check();
-
-    /*  MAKE POINTER TO WORD TO BE PARSED GLOBAL TO THIS FILE  */
-    word = (char *)word_ptr;
-
-    /*  DO INITIAL PARSE OF WORD  */
-    initial_parse();
-
-    /*  DO ERROR CHECKING OF INPUT  */
-    status = error_check(mode);
-
-    /*  IF NO NUMBERS, RETURN NULL;  IF CONTAINS ERRORS,
-         DO CHAR-BY-CHAR SPELLING;  ELSE, PROCESS NORMALLY  */
-    if (status == NO_NUMERALS)
-	return (NULL);
-    else if (status == DEGENERATE)
-	return (degenerate_string(word));
-    else if (status == OK)
-	return (process_word(mode));
-
-    /*  IF HERE, RETURN NULL  */
-    return(NULL);
-}
+char     hour[4], minute[4], second[4];
+int      military, seconds;
 
 
 
@@ -306,8 +244,8 @@ number_parser(const char* word_ptr, int mode)
 *	functions:	<string.h>     strlen
 *
 ******************************************************************************/
-
-void initial_parse()
+void
+initial_parse()
 {
     register int i;
 
@@ -460,8 +398,6 @@ void initial_parse()
     frac_ordinal_triad = (int)(frac_right_zero_pad / 3.0);
 }
 
-
-
 /******************************************************************************
 *
 *	function:	error_check
@@ -480,8 +416,8 @@ void initial_parse()
 *                       <stdlib.h>     atoi
 *
 ******************************************************************************/
-
-int error_check(int mode)
+int
+error_check(int mode)
 {
     register int i;
     //int atoi();
@@ -712,8 +648,6 @@ int error_check(int mode)
     return (OK);
 }
 
-
-
 /******************************************************************************
 *
 *	function:	process_word
@@ -731,7 +665,6 @@ int error_check(int mode)
 *	functions:	<string.h>     strcat
 *
 ******************************************************************************/
-
 char*
 process_word(int mode)
 {
@@ -1019,142 +952,6 @@ process_word(int mode)
     return (output);
 }
 
-
-
-/******************************************************************************
-*
-*	function:	degenerate_string
-*
-*	purpose:	Returns a pointer to a NULL terminated string which
-*                       contains a character-by-character pronunciation for
-*                       the NULL terminated character string pointed at by
-*                       the argument word.
-*			
-*       arguments:      word
-*
-*	internal
-*	functions:	none
-*
-*	library
-*	functions:	<string.h>     strlen, strcat
-*
-******************************************************************************/
-
-const char*
-degenerate_string(const char* word)
-{
-    register int word_length, i;
-
-    /*  APPEND NULL BYTE TO OUTPUT;  DETERMINE WORD LENGTH  */
-    output[0] = '\0';
-    word_length = strlen(word);
-
-    /*  APPEND PROPER PRONUNCIATION FOR EACH CHARACTER  */
-    for (i = 0; i < word_length; i++) {
-	switch (*(word+i)) {
-	case ' ': strcat(output, BLANK);	       break;
-	case '!': strcat(output, EXCLAMATION_POINT);   break;
-	case '"': strcat(output, DOUBLE_QUOTE);        break;
-	case '#': strcat(output, NUMBER_SIGN);         break;
-	case '$': strcat(output, DOLLAR_SIGN);	       break;
-	case '%': strcat(output, PERCENT_SIGN);	       break;
-	case '&': strcat(output, AMPERSAND);	       break;
-	case '\'':strcat(output, SINGLE_QUOTE);        break;
-	case '(': strcat(output, OPEN_PARENTHESIS);    break;
-	case ')': strcat(output, CLOSE_PARENTHESIS);   break;
-	case '*': strcat(output, ASTERISK);	       break;
-	case '+': strcat(output, PLUS_SIGN);	       break;
-	case ',': strcat(output, COMMA);	       break;
-	case '-': strcat(output, HYPHEN);	       break;
-	case '.': strcat(output, PERIOD);	       break;
-	case '/': strcat(output, SLASH);	       break;
-	case '0': strcat(output, ZERO);	               break;
-	case '1': strcat(output, ONE);       	       break;
-	case '2': strcat(output, TWO);  	       break;
-	case '3': strcat(output, THREE);	       break;
-	case '4': strcat(output, FOUR);	               break;
-	case '5': strcat(output, FIVE);                break;
-	case '6': strcat(output, SIX);	               break;
-	case '7': strcat(output, SEVEN);	       break;
-	case '8': strcat(output, EIGHT);	       break;
-	case '9': strcat(output, NINE);	               break;
-	case ':': strcat(output, COLON);	       break;
-	case ';': strcat(output, SEMICOLON);	       break;
-	case '<': strcat(output, OPEN_ANGLE_BRACKET);  break;
-	case '=': strcat(output, EQUAL_SIGN);	       break;
-	case '>': strcat(output, CLOSE_ANGLE_BRACKET); break;
-	case '?': strcat(output, QUESTION_MARK);       break;
-	case '@': strcat(output, AT_SIGN);	       break;
-	case 'A':
-	case 'a': strcat(output, A);	               break;
-	case 'B':
-	case 'b': strcat(output, B);	               break;
-	case 'C':
-	case 'c': strcat(output, C);	               break;
-	case 'D':
-	case 'd': strcat(output, D);	               break;
-	case 'E':
-	case 'e': strcat(output, E);	               break;
-	case 'F':
-	case 'f': strcat(output, F);	               break;
-	case 'G':
-	case 'g': strcat(output, G);	               break;
-	case 'H':
-	case 'h': strcat(output, H);	               break;
-	case 'I':
-	case 'i': strcat(output, I);	               break;
-	case 'J':
-	case 'j': strcat(output, J);	               break;
-	case 'K':
-	case 'k': strcat(output, K);	               break;
-	case 'L':
-	case 'l': strcat(output, L);	               break;
-	case 'M':
-	case 'm': strcat(output, M);	               break;
-	case 'N':
-	case 'n': strcat(output, N);	               break;
-	case 'O':
-	case 'o': strcat(output, O);	               break;
-	case 'P':
-	case 'p': strcat(output, P);	               break;
-	case 'Q':
-	case 'q': strcat(output, Q);	               break;
-	case 'R':
-	case 'r': strcat(output, R);	               break;
-	case 'S':
-	case 's': strcat(output, S);	               break;
-	case 'T':
-	case 't': strcat(output, T);	               break;
-	case 'U':
-	case 'u': strcat(output, U);	               break;
-	case 'V':
-	case 'v': strcat(output, V);	               break;
-	case 'W':
-	case 'w': strcat(output, W);	               break;
-	case 'X':
-	case 'x': strcat(output, X);	               break;
-	case 'Y':
-	case 'y': strcat(output, Y);	               break;
-	case 'Z':
-	case 'z': strcat(output, Z);	               break;
-	case '[': strcat(output, OPEN_SQUARE_BRACKET); break;
-	case '\\':strcat(output, BACKSLASH);	       break;
-	case ']': strcat(output, CLOSE_SQUARE_BRACKET);break;
-	case '^': strcat(output, CARET);	       break;
-	case '_': strcat(output, UNDERSCORE);	       break;
-	case '`': strcat(output, GRAVE_ACCENT);	       break;
-	case '{': strcat(output, OPEN_BRACE);          break;
-	case '|': strcat(output, VERTICAL_BAR);	       break;
-	case '}': strcat(output, CLOSE_BRACE);         break;
-	case '~': strcat(output, TILDE);	       break;
-	default:  strcat(output, UNKNOWN);	       break;
-	}
-    }
-    return (output);
-}
-
-
-
 /******************************************************************************
 *
 *	function:	process_triad
@@ -1180,7 +977,6 @@ degenerate_string(const char* word)
 *	functions:      <string.h>     strcat	
 *
 ******************************************************************************/
-
 int
 process_triad(char* triad, char* output, int pause, int ordinal, int right_zero_pad,
 	      int ordinal_plural, int special_flag)
@@ -1298,8 +1094,6 @@ process_triad(char* triad, char* output, int pause, int ordinal, int right_zero_
     return (NONZERO);
 }
 
-
-
 /******************************************************************************
 *
 *	function:	process_digit
@@ -1322,7 +1116,6 @@ process_triad(char* triad, char* output, int pause, int ordinal, int right_zero_
 *	functions:	<string.h>     strcat
 *
 ******************************************************************************/
-
 void
 process_digit(char digit, char* output, int ordinal, int ordinal_plural, int special_flag)
 {
@@ -1386,3 +1179,196 @@ process_digit(char digit, char* output, int ordinal, int ordinal_plural, int spe
 	}
     }
 }
+
+} /* namespace */
+
+//==============================================================================
+
+namespace GS {
+namespace EnTextParser {
+
+/******************************************************************************
+*
+*	function:	number_parser
+*
+*	purpose:	Returns a pointer to a NULL terminated character string
+*                       which contains the pronunciation for the string pointed
+*                       at by the argument word_ptr.
+*
+*       arguments:      word_ptr:  a pointer to the NULL terminated number
+*                         string which is to be parsed.
+*                       mode:  determines how the number string is to be
+*                         parsed.  Should be set to NP_NORMAL,
+*                         NP_OVERRIDE_YEARS, or NP_FORCE_SPELL.
+*
+*	internal
+*	functions:	initial_parse, error_check, degenerate_string,
+*                       process_word
+*
+*	library
+*	functions:	none
+*
+******************************************************************************/
+const char*
+number_parser(const char* word_ptr, int mode)
+{
+    int status;
+    //char *process_word();
+    //void initial_parse();
+    //int error_check();
+
+    /*  MAKE POINTER TO WORD TO BE PARSED GLOBAL TO THIS FILE  */
+    word = (char *)word_ptr;
+
+    /*  DO INITIAL PARSE OF WORD  */
+    initial_parse();
+
+    /*  DO ERROR CHECKING OF INPUT  */
+    status = error_check(mode);
+
+    /*  IF NO NUMBERS, RETURN NULL;  IF CONTAINS ERRORS,
+	 DO CHAR-BY-CHAR SPELLING;  ELSE, PROCESS NORMALLY  */
+    if (status == NO_NUMERALS)
+	return (NULL);
+    else if (status == DEGENERATE)
+	return (degenerate_string(word));
+    else if (status == OK)
+	return (process_word(mode));
+
+    /*  IF HERE, RETURN NULL  */
+    return(NULL);
+}
+
+/******************************************************************************
+*
+*	function:	degenerate_string
+*
+*	purpose:	Returns a pointer to a NULL terminated string which
+*                       contains a character-by-character pronunciation for
+*                       the NULL terminated character string pointed at by
+*                       the argument word.
+*
+*       arguments:      word
+*
+*	internal
+*	functions:	none
+*
+*	library
+*	functions:	<string.h>     strlen, strcat
+*
+******************************************************************************/
+const char*
+degenerate_string(const char* word)
+{
+    register int word_length, i;
+
+    /*  APPEND NULL BYTE TO OUTPUT;  DETERMINE WORD LENGTH  */
+    output[0] = '\0';
+    word_length = strlen(word);
+
+    /*  APPEND PROPER PRONUNCIATION FOR EACH CHARACTER  */
+    for (i = 0; i < word_length; i++) {
+	switch (*(word+i)) {
+	case ' ': strcat(output, BLANK);	       break;
+	case '!': strcat(output, EXCLAMATION_POINT);   break;
+	case '"': strcat(output, DOUBLE_QUOTE);        break;
+	case '#': strcat(output, NUMBER_SIGN);         break;
+	case '$': strcat(output, DOLLAR_SIGN);	       break;
+	case '%': strcat(output, PERCENT_SIGN);	       break;
+	case '&': strcat(output, AMPERSAND);	       break;
+	case '\'':strcat(output, SINGLE_QUOTE);        break;
+	case '(': strcat(output, OPEN_PARENTHESIS);    break;
+	case ')': strcat(output, CLOSE_PARENTHESIS);   break;
+	case '*': strcat(output, ASTERISK);	       break;
+	case '+': strcat(output, PLUS_SIGN);	       break;
+	case ',': strcat(output, COMMA);	       break;
+	case '-': strcat(output, HYPHEN);	       break;
+	case '.': strcat(output, PERIOD);	       break;
+	case '/': strcat(output, SLASH);	       break;
+	case '0': strcat(output, ZERO);	               break;
+	case '1': strcat(output, ONE);       	       break;
+	case '2': strcat(output, TWO);  	       break;
+	case '3': strcat(output, THREE);	       break;
+	case '4': strcat(output, FOUR);	               break;
+	case '5': strcat(output, FIVE);                break;
+	case '6': strcat(output, SIX);	               break;
+	case '7': strcat(output, SEVEN);	       break;
+	case '8': strcat(output, EIGHT);	       break;
+	case '9': strcat(output, NINE);	               break;
+	case ':': strcat(output, COLON);	       break;
+	case ';': strcat(output, SEMICOLON);	       break;
+	case '<': strcat(output, OPEN_ANGLE_BRACKET);  break;
+	case '=': strcat(output, EQUAL_SIGN);	       break;
+	case '>': strcat(output, CLOSE_ANGLE_BRACKET); break;
+	case '?': strcat(output, QUESTION_MARK);       break;
+	case '@': strcat(output, AT_SIGN);	       break;
+	case 'A':
+	case 'a': strcat(output, A);	               break;
+	case 'B':
+	case 'b': strcat(output, B);	               break;
+	case 'C':
+	case 'c': strcat(output, C);	               break;
+	case 'D':
+	case 'd': strcat(output, D);	               break;
+	case 'E':
+	case 'e': strcat(output, E);	               break;
+	case 'F':
+	case 'f': strcat(output, F);	               break;
+	case 'G':
+	case 'g': strcat(output, G);	               break;
+	case 'H':
+	case 'h': strcat(output, H);	               break;
+	case 'I':
+	case 'i': strcat(output, I);	               break;
+	case 'J':
+	case 'j': strcat(output, J);	               break;
+	case 'K':
+	case 'k': strcat(output, K);	               break;
+	case 'L':
+	case 'l': strcat(output, L);	               break;
+	case 'M':
+	case 'm': strcat(output, M);	               break;
+	case 'N':
+	case 'n': strcat(output, N);	               break;
+	case 'O':
+	case 'o': strcat(output, O);	               break;
+	case 'P':
+	case 'p': strcat(output, P);	               break;
+	case 'Q':
+	case 'q': strcat(output, Q);	               break;
+	case 'R':
+	case 'r': strcat(output, R);	               break;
+	case 'S':
+	case 's': strcat(output, S);	               break;
+	case 'T':
+	case 't': strcat(output, T);	               break;
+	case 'U':
+	case 'u': strcat(output, U);	               break;
+	case 'V':
+	case 'v': strcat(output, V);	               break;
+	case 'W':
+	case 'w': strcat(output, W);	               break;
+	case 'X':
+	case 'x': strcat(output, X);	               break;
+	case 'Y':
+	case 'y': strcat(output, Y);	               break;
+	case 'Z':
+	case 'z': strcat(output, Z);	               break;
+	case '[': strcat(output, OPEN_SQUARE_BRACKET); break;
+	case '\\':strcat(output, BACKSLASH);	       break;
+	case ']': strcat(output, CLOSE_SQUARE_BRACKET);break;
+	case '^': strcat(output, CARET);	       break;
+	case '_': strcat(output, UNDERSCORE);	       break;
+	case '`': strcat(output, GRAVE_ACCENT);	       break;
+	case '{': strcat(output, OPEN_BRACE);          break;
+	case '|': strcat(output, VERTICAL_BAR);	       break;
+	case '}': strcat(output, CLOSE_BRACE);         break;
+	case '~': strcat(output, TILDE);	       break;
+	default:  strcat(output, UNKNOWN);	       break;
+	}
+    }
+    return (output);
+}
+
+} /* namespace EnTextParser */
+} /* namespace GS */

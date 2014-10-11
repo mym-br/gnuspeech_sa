@@ -41,6 +41,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 class ConfigFile;
@@ -279,5 +280,6 @@ Model::findCategory(const std::string& name) const
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_MODEL_H_ */

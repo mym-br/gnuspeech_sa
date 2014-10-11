@@ -33,7 +33,7 @@
 
 namespace {
 
-using namespace TRMControlModel;
+using namespace GS::TRMControlModel;
 
 const char rightParenChar = ')';
 const char leftParenChar  = '(';
@@ -72,7 +72,7 @@ public:
 				, pos_(0)
 				, symbolType_(SYMBOL_TYPE_INVALID) {
 		if (s.empty()) {
-			THROW_EXCEPTION(TRMControlModelException, "Boolean expression parser error: Empty string.");
+			THROW_EXCEPTION(GS::TRMControlModelException, "Boolean expression parser error: Empty string.");
 		}
 		nextSymbol();
 	}
@@ -97,7 +97,7 @@ private:
 void
 Parser::throwException(const char* errorDescription) const
 {
-	THROW_EXCEPTION(TRMControlModelException, "Boolean expression parser error: "
+	THROW_EXCEPTION(GS::TRMControlModelException, "Boolean expression parser error: "
 					<< errorDescription << " at position " << pos_ << " of string [" << s_ << "].");
 }
 
@@ -105,7 +105,7 @@ template<typename T>
 void
 Parser::throwException(const char* errorDescription, const T& complement) const
 {
-	THROW_EXCEPTION(TRMControlModelException, "Boolean expression parser error: "
+	THROW_EXCEPTION(GS::TRMControlModelException, "Boolean expression parser error: "
 					<< errorDescription << complement << " at position " << pos_ << " of string [" << s_ << "].");
 }
 
@@ -259,6 +259,7 @@ Parser::getBooleanNode()
 
 //==============================================================================
 
+namespace GS {
 namespace TRMControlModel {
 
 /*******************************************************************************
@@ -546,3 +547,4 @@ Rule::evaluateExpressionSymbols(const double* tempos, const PhoneSequence& phone
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

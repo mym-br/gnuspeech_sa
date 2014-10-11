@@ -24,6 +24,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 BandpassFilter::BandpassFilter()
@@ -73,3 +74,4 @@ BandpassFilter::filter(double input)
 }
 
 } /* namespace TRM */
+} /* namespace GS */

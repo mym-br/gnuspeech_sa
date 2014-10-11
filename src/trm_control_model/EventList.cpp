@@ -35,6 +35,9 @@
 
 #define INVALID_EVENT_VALUE std::numeric_limits<double>::infinity()
 
+
+
+namespace GS {
 namespace TRMControlModel {
 
 Event::Event() : time(0), flag(0)
@@ -1086,3 +1089,4 @@ EventList::printDataStructures()
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

@@ -28,6 +28,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 FIRFilter::FIRFilter(double beta, double gamma, double cutoff)
@@ -315,3 +316,4 @@ FIRFilter::rationalApproximation(double number, int* order, int* numerator, int*
 }
 
 } /* namespace TRM */
+} /* namespace GS */

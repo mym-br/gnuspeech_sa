@@ -38,7 +38,7 @@ main(int argc, char* argv[])
 		inputFile = argv[1];
 		outputFile = argv[2];
 	} else if ((argc == 4) && (strcmp("-v", argv[1]) == 0)) {
-		TRM::verbose = true;
+		GS::TRM::verbose = true;
 		inputFile = argv[2];
 		outputFile = argv[3];
 	} else {
@@ -46,10 +46,10 @@ main(int argc, char* argv[])
 		return -1;
 	}
 
-	TRM::Tube trm;
+	GS::TRM::Tube trm;
 	trm.synthesizeToFile(inputFile, outputFile);
 
-	if (TRM::verbose) printf("\nWrote scaled samples to file: %s\n", outputFile);
+	if (GS::TRM::verbose) printf("\nWrote scaled samples to file: %s\n", outputFile);
 
 	return 0;
 }

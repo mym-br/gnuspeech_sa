@@ -53,6 +53,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 SampleRateConverter::SampleRateConverter(int sampleRate, float outputRate, std::vector<double>& outputData)
@@ -435,3 +436,4 @@ SampleRateConverter::flushBuffer()
 }
 
 } /* namespace TRM */
+} /* namespace GS */

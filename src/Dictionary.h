@@ -21,7 +21,7 @@
 #include <string>
 #include <unordered_map>
 
-
+namespace GS {
 
 class Dictionary {
 public:
@@ -38,5 +38,7 @@ private:
 	std::unordered_map<std::string, std::string> map_;
 	std::string version_;
 };
+
+} /* namespace GS */
 
 #endif /* DICTIONARY_H_ */

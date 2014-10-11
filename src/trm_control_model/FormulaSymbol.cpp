@@ -26,6 +26,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 /*******************************************************************************
@@ -59,3 +60,4 @@ FormulaSymbol::FormulaSymbol() : codeMap() {
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

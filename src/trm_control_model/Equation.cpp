@@ -29,7 +29,7 @@
 
 namespace {
 
-using namespace TRMControlModel;
+using namespace GS::TRMControlModel;
 
 const char ADD_CHAR         = '+';
 const char SUB_CHAR         = '-';
@@ -48,7 +48,7 @@ public:
 				, pos_(0)
 				, symbolType_(SYMBOL_TYPE_INVALID) {
 		if (s.empty()) {
-			THROW_EXCEPTION(TRMControlModelException, "Formula expression parser error: Empty string.");
+			THROW_EXCEPTION(GS::TRMControlModelException, "Formula expression parser error: Empty string.");
 		}
 		nextSymbol();
 	}
@@ -95,7 +95,7 @@ private:
 void
 FormulaNodeParser::throwException(const char* errorDescription) const
 {
-	THROW_EXCEPTION(TRMControlModelException, "Formula expression parser error: " << errorDescription
+	THROW_EXCEPTION(GS::TRMControlModelException, "Formula expression parser error: " << errorDescription
 					<< " at position " << pos_ << " of string [" << s_ << "].");
 }
 
@@ -103,7 +103,7 @@ template<typename T>
 void
 FormulaNodeParser::throwException(const char* errorDescription, const T& complement) const
 {
-	THROW_EXCEPTION(TRMControlModelException, "Formula expression parser error: " << errorDescription << complement
+	THROW_EXCEPTION(GS::TRMControlModelException, "Formula expression parser error: " << errorDescription << complement
 					<< " at position " << pos_ << " of string [" << s_ << "].");
 }
 
@@ -185,7 +185,7 @@ FormulaNodeParser::parseFactor()
 		FormulaSymbol::CodeMap::const_iterator iter = formulaSymbolMap_.find(symbolTmp);
 		if (iter == formulaSymbolMap_.end()) {
 			// It's not a symbol.
-			return FormulaNode_ptr(new FormulaConst(Text::parseString<float>(symbolTmp)));
+			return FormulaNode_ptr(new FormulaConst(GS::Text::parseString<float>(symbolTmp)));
 		} else {
 			return FormulaNode_ptr(new FormulaSymbolValue(iter->second));
 		}
@@ -262,6 +262,7 @@ FormulaNodeParser::parseExpression()
 
 //==============================================================================
 
+namespace GS {
 namespace TRMControlModel {
 
 float
@@ -411,3 +412,4 @@ Equation::evalFormula(const FormulaSymbolList& symbolList) const
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

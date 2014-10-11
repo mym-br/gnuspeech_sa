@@ -20,6 +20,9 @@
 
 #include "RadiationFilter.h"
 
+
+
+namespace GS {
 namespace TRM {
 
 RadiationFilter::RadiationFilter(double apertureCoeff)
@@ -44,3 +47,4 @@ RadiationFilter::filter(double input)
 }
 
 } /* namespace TRM */
+} /* namespace GS */

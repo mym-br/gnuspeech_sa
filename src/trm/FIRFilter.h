@@ -25,6 +25,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 /******************************************************************************
@@ -57,5 +58,6 @@ private:
 };
 
 } /* namespace TRM */
+} /* namespace GS */
 
 #endif /* TRM_FIR_FILTER_H_ */

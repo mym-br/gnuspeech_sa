@@ -21,6 +21,9 @@
 #ifndef TRM_BANDPASS_FILTER_H_
 #define TRM_BANDPASS_FILTER_H_
 
+
+
+namespace GS {
 namespace TRM {
 
 class BandpassFilter {
@@ -44,5 +47,6 @@ private:
 };
 
 } /* namespace TRM */
+} /* namespace GS */
 
 #endif /* TRM_BANDPASS_FILTER_H_ */

@@ -29,6 +29,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 struct SynthConfig {
@@ -92,10 +93,9 @@ private:
 
 	float minBlack_;//TODO: remove?
 	float minWhite_;//TODO: remove?
-
-
 };
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_CONTROLLER_H_ */

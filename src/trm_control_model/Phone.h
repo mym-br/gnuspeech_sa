@@ -35,6 +35,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 //class Model;
@@ -186,5 +187,6 @@ Phone::isMemberOfCategory(const Category& category) const
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_PHONE_H_ */

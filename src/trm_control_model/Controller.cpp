@@ -41,6 +41,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 Controller::Controller(const char* configDirPath, Model& model)
@@ -298,3 +299,4 @@ Controller::synthesizePhoneticStringChunk(const char* phoneticStringChunk, const
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

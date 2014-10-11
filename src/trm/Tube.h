@@ -35,6 +35,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 extern bool verbose;
@@ -241,5 +242,6 @@ private:
 };
 
 } /* namespace TRM */
+} /* namespace GS */
 
 #endif /* TRM_TUBE_H_ */

@@ -33,6 +33,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 class Model;
@@ -149,5 +150,6 @@ private:
 };
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_CONFIG_FILE_H_ */

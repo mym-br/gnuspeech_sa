@@ -31,6 +31,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 namespace Parameter {
 
@@ -108,5 +109,6 @@ setValue(const CodeMap& parameterCodeMap, T& t, const std::string& name, const s
 
 } /* namespace Parameter */
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_PARAMETER_H_ */

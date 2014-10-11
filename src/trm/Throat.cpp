@@ -20,6 +20,9 @@
 
 #include "Throat.h"
 
+
+
+namespace GS {
 namespace TRM {
 
 Throat::Throat(double sampleRate, double throatCutoff, double throatGain)
@@ -57,3 +60,4 @@ Throat::process(double input)
 }
 
 } /* namespace TRM */
+} /* namespace GS */

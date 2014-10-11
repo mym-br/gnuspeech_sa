@@ -23,6 +23,10 @@
 
 #include "Dictionary.h"
 
+
+
+namespace GS {
+
 class MainDictionary {
 public:
 	MainDictionary();
@@ -43,5 +47,7 @@ private:
 
 	Dictionary dict_;
 };
+
+} /* namespace GS */
 
 #endif /* MAIN_DICTIONARY_H_ */

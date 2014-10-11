@@ -21,6 +21,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 int
@@ -34,3 +35,4 @@ Category::getCode(const CategoryMap& categoryMap, const std::string& name)
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

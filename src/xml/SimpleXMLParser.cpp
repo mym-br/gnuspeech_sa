@@ -39,6 +39,8 @@ const std::string EMPTY_STRING;
 
 //==============================================================================
 
+namespace GS {
+
 /*******************************************************************************
  * Constructor.
  */
@@ -492,3 +494,5 @@ SimpleXMLParser::getText()
 	text_ = source_.substr(basePos, pos_ - basePos);
 	return text_;
 }
+
+} /* namespace GS */

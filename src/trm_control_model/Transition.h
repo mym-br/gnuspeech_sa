@@ -33,6 +33,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 class Model;
@@ -170,5 +171,6 @@ typedef std::unique_ptr<Transition> Transition_ptr;
 typedef std::unordered_map<std::string, Transition_ptr> TransitionMap; // type of container that manages the Transition instances
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_TRANSITION_H_ */

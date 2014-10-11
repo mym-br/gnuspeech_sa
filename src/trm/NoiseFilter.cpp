@@ -20,6 +20,9 @@
 
 #include "NoiseFilter.h"
 
+
+
+namespace GS {
 namespace TRM {
 
 NoiseFilter::NoiseFilter() : noiseX_(0.0)
@@ -39,3 +42,4 @@ NoiseFilter::filter(double input)
 }
 
 } /* namespace TRM */
+} /* namespace GS */

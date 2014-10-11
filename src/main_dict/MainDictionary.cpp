@@ -68,7 +68,9 @@ word_has_suffix(const char* word, const char* suffix)
 
 } /* namespace */
 
+//==============================================================================
 
+namespace GS {
 
 MainDictionary::MainDictionary()
 {
@@ -162,3 +164,5 @@ MainDictionary::augmentedSearch(const char* orthography)
 	/*  WORD NOT FOUND, EVEN WITH SUFFIX STRIPPED  */
 	return nullptr;
 }
+
+} /* namespace GS */

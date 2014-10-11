@@ -28,6 +28,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 class FormulaNode {
@@ -146,5 +147,6 @@ typedef std::unique_ptr<Equation> Equation_ptr;
 typedef std::unordered_map<std::string, Equation_ptr> EquationMap; // type of container that manages the Equation instances
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_EQUATION_H_ */

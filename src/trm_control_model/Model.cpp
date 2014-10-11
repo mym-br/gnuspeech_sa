@@ -38,6 +38,7 @@ namespace {
 
 //==============================================================================
 
+namespace GS {
 namespace TRMControlModel {
 
 /*******************************************************************************
@@ -279,3 +280,4 @@ Model::printInfo() const
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

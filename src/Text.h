@@ -26,6 +26,7 @@
 
 
 
+namespace GS {
 namespace Text {
 
 template<typename T>
@@ -83,5 +84,6 @@ parseValuesSeparatedByChar(const std::string& inString, char separator, std::vec
 }
 
 } /* namespace Text */
+} /* namespace GS */
 
 #endif /* TEXT_H_ */

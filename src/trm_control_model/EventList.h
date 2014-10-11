@@ -36,6 +36,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 struct PhoneData {
@@ -221,5 +222,6 @@ private:
 };
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_EVENT_LIST_H_ */

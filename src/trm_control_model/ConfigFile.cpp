@@ -34,6 +34,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 void
@@ -552,3 +553,4 @@ ConfigFile::loadModel()
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

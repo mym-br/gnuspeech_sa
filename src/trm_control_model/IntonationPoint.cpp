@@ -24,6 +24,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 double
@@ -40,3 +41,4 @@ IntonationPoint::beatTime() const
 }
 
 } /* namespace TRMControlModel */
+} /* namespace GS */

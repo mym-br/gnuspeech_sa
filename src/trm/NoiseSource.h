@@ -21,6 +21,9 @@
 #ifndef TRM_NOISE_SOURCE_H_
 #define TRM_NOISE_SOURCE_H_
 
+
+
+namespace GS {
 namespace TRM {
 
 class NoiseSource {
@@ -37,5 +40,6 @@ private:
 };
 
 } /* namespace TRM */
+} /* namespace GS */
 
 #endif /* TRM_NOISE_SOURCE_H_ */

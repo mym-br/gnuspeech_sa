@@ -26,6 +26,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 class FIRFilter;
@@ -63,5 +64,6 @@ private:
 };
 
 } /* namespace TRM */
+} /* namespace GS */
 
 #endif /* TRM_WAVETABLE_GLOTTAL_SOURCE_H_ */

@@ -25,6 +25,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 class EventList;
@@ -65,5 +66,6 @@ private:
 typedef std::unique_ptr<IntonationPoint> IntonationPoint_ptr;
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_INTONATION_POINT_H_ */

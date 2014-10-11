@@ -28,6 +28,9 @@
 
 
 
+namespace GS {
+namespace EnTextParser {
+
 class TextParser {
 public:
 	TextParser(const char* configDirPath);
@@ -55,5 +58,8 @@ private:
 
 	std::stringstream auxStream_;
 };
+
+} /* namespace EnTextParser */
+} /* namespace GS */
 
 #endif /* TEXT_PARSER_H_ */

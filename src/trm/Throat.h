@@ -21,6 +21,9 @@
 #ifndef TRM_THROAT_H_
 #define TRM_THROAT_H_
 
+
+
+namespace GS {
 namespace TRM {
 
 class Throat {
@@ -40,5 +43,6 @@ private:
 };
 
 } /* namespace TRM */
+} /* namespace GS */
 
 #endif /* TRM_THROAT_H_ */

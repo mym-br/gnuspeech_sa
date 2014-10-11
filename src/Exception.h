@@ -33,12 +33,16 @@
 // __PRETTY_FUNCTION__ is a gcc extension.
 #define THROW_EXCEPTION(E,M) \
 	do {\
-		ErrorMessage em;\
+		GS::ErrorMessage em;\
 		E exc;\
 		try { em << M << "\n[file: " << __FILE__ << "]\n[function: " << FUNCTION_NAME << "]\n[line: " << __LINE__ << "]"; } catch (...) {}\
 		exc.setMessage(em);\
 		throw exc;\
 	} while (false)
+
+
+
+namespace GS {
 
 /*******************************************************************************
  *
@@ -120,5 +124,7 @@ struct TRMException : public virtual Exception {};
 struct UnavailableResourceException : public virtual Exception {};
 struct WrongBufferSizeException : public virtual Exception {};
 struct XMLException : public virtual Exception {};
+
+} /* namespace GS */
 
 #endif /* EXCEPTION_H_ */

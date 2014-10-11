@@ -23,6 +23,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 class DriftGenerator {
@@ -45,5 +46,6 @@ private:
 };
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_DRIFT_GENERATOR_H_ */

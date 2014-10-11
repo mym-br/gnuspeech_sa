@@ -25,6 +25,7 @@
 
 
 
+namespace GS {
 namespace TRM {
 
 class SampleRateConverter {
@@ -71,5 +72,6 @@ private:
 };
 
 } /* namespace TRM */
+} /* namespace GS */
 
 #endif /* TRM_SAMPLE_RATE_CONVERTER_H_ */

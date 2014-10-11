@@ -21,6 +21,9 @@
 #ifndef TRM_REFLECTION_FILTER_H_
 #define TRM_REFLECTION_FILTER_H_
 
+
+
+namespace GS {
 namespace TRM {
 
 // Is a variable, one-pole lowpass filter, whose cutoff
@@ -41,5 +44,6 @@ private:
 };
 
 } /* namespace TRM */
+} /* namespace GS */
 
 #endif /* TRM_REFLECTION_FILTER_H_ */

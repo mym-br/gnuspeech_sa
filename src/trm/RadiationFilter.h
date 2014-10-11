@@ -21,6 +21,9 @@
 #ifndef TRM_RADIATION_FILTER_H_
 #define TRM_RADIATION_FILTER_H_
 
+
+
+namespace GS {
 namespace TRM {
 
 // Is a variable, one-zero, one-pole, highpass filter,
@@ -44,5 +47,6 @@ private:
 };
 
 } /* namespace TRM */
+} /* namespace GS */
 
 #endif /* TRM_RADIATION_FILTER_H_ */

@@ -25,6 +25,7 @@
 
 
 
+namespace GS {
 namespace TRMControlModel {
 
 struct Category;
@@ -43,5 +44,6 @@ typedef std::unique_ptr<Category> Category_ptr;
 typedef std::vector<Category_ptr> CategoryList;
 
 } /* namespace TRMControlModel */
+} /* namespace GS */
 
 #endif /* TRM_CONTROL_MODEL_CATEGORY_H_ */
