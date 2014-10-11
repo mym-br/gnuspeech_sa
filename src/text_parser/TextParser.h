@@ -28,12 +28,6 @@
 
 
 
-#define TTS_PARSER_SUCCESS       (-1)
-#define TTS_PARSER_FAILURE       0              /*  OR GREATER THAN 0 IF     */
-						/*  POSITION OF ERROR KNOWN  */
-
-
-
 class TextParser {
 public:
 	TextParser(const char* configDirPath);

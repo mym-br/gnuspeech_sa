@@ -158,6 +158,10 @@
 #define TTS_MAIN_DICTIONARY             4
 #define TTS_LETTER_TO_SOUND             5
 
+#define TTS_PARSER_SUCCESS       (-1)
+#define TTS_PARSER_FAILURE       0              /*  OR GREATER THAN 0 IF     */
+						/*  POSITION OF ERROR KNOWN  */
+
 
 
 /*  GLOBAL FUNCTIONS, LOCAL TO THIS FILE  ************************************/
