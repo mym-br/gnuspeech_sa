@@ -15,6 +15,7 @@
  *  You should have received a copy of the GNU General Public License      *
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ***************************************************************************/
+// 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
 #ifndef VOWEL_BEFORE_H_
