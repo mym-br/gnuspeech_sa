@@ -21,7 +21,6 @@
 #ifndef MEMBER_H_
 #define MEMBER_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 int member(char element, const char* set);
 
 #endif /* MEMBER_H_ */

@@ -21,7 +21,6 @@
 #ifndef LETTER_TO_SOUND_H_
 #define LETTER_TO_SOUND_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 char *letter_to_sound(char *word);
 
 #endif /* LETTER_TO_SOUND_H_ */

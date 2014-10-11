@@ -21,7 +21,6 @@
 #ifndef SYLLABIFY_H_
 #define SYLLABIFY_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 int syllabify(char *word);
 
 #endif /* SYLLABIFY_H_ */

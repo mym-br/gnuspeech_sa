@@ -21,7 +21,6 @@
 #ifndef SUFFIX_H_
 #define SUFFIX_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 const char* suffix(const char* in, const char* end, const char* suflist);
 
 #endif /* SUFFIX_H_ */

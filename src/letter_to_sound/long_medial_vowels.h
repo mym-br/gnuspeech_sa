@@ -21,7 +21,6 @@
 #ifndef LONG_MEDIAL_VOWELS_H_
 #define LONG_MEDIAL_VOWELS_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 int long_medial_vowels(char *in, char **eow);
 
 #endif /* LONG_MEDIAL_VOWELS_H_ */

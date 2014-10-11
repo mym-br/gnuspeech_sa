@@ -21,7 +21,6 @@
 #ifndef WORD_TO_PATPHONE_H_
 #define WORD_TO_PATPHONE_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 int word_to_patphone(char *word);
 
 #endif /* WORD_TO_PATPHONE_H_ */

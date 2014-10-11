@@ -21,7 +21,6 @@
 #ifndef ENDS_WITH_H_
 #define ENDS_WITH_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 const char* ends_with(const char* in, const char* end, const char* set);
 
 #endif /* ENDS_WITH_H_ */

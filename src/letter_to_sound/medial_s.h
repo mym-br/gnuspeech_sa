@@ -21,7 +21,6 @@
 #ifndef MEDIAL_S_H_
 #define MEDIAL_S_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 void medial_s(char *in, char **eow);
 
 #endif /* MEDIAL_S_H_ */

@@ -21,7 +21,6 @@
 #ifndef ISP_TRANS_H_
 #define ISP_TRANS_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 void isp_trans(char *string, char *result);
 
 #endif /* ISP_TRANS_H_ */

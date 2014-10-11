@@ -21,7 +21,6 @@
 #ifndef MEDIAL_SILENT_E_H_
 #define MEDIAL_SILENT_E_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 void medial_silent_e(char *in, char **eow);
 
 #endif /* MEDIAL_SILENT_E_H_ */

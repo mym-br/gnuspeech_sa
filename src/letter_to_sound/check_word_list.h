@@ -21,7 +21,6 @@
 #ifndef CHECK_WORD_LIST_H_
 #define CHECK_WORD_LIST_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 int check_word_list(char* string, char** eow);
 
 #endif /* CHECK_WORD_LIST_H_ */

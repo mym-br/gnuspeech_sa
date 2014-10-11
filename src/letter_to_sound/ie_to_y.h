@@ -21,7 +21,6 @@
 #ifndef IE_TO_Y_H_
 #define IE_TO_Y_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 int ie_to_y(char *in, char **end);
 
 #endif /* IE_TO_Y_H_ */

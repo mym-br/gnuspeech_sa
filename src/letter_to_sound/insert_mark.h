@@ -21,7 +21,6 @@
 #ifndef INSERT_MARK_H_
 #define INSERT_MARK_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 void insert_mark(char **end, char *at);
 
 #endif /* INSERT_MARK_H_ */

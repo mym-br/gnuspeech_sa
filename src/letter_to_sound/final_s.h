@@ -21,7 +21,6 @@
 #ifndef FINAL_S_H_
 #define FINAL_S_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 char final_s(char *in, char **eow);
 
 #endif /* FINAL_S_H_ */

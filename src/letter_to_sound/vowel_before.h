@@ -21,7 +21,6 @@
 #ifndef VOWEL_BEFORE_H_
 #define VOWEL_BEFORE_H_
 
-/*  GLOBAL FUNCTIONS *********************************************************/
 const char* vowel_before(const char* start, const char* position);
 
 #endif /* VOWEL_BEFORE_H_ */
