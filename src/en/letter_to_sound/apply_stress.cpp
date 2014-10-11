@@ -18,22 +18,137 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "apply_stress.h"
+#include "en/letter_to_sound/apply_stress.h"
 
 #include <stdio.h>
 #include <string.h>
 
-#include "stresstables.h"
-
-
-/*  GLOBAL FUNCTIONS (LOCAL TO THIS FILE)  ***********************************/
-static int stress_suffix(char *orthography, int *type);
-static int light(char *sb);
-static int prefix(char *orthography);
+#include "en/letter_to_sound/stresstables.h"
 
 
 
+namespace {
+
+int stress_suffix(char *orthography, int *type);
+int light(char *sb);
+int prefix(char *orthography);
+
+
+
+/******************************************************************************
+*
+*	function:	stress_suffix
+*
+*	purpose:
+*
+*
+*       arguments:      orthography, type
+*
+*	internal
+*	functions:	none
+*
+*	library
+*	functions:	strlen, strcmp
+*
+******************************************************************************/
+int
+stress_suffix(char *orthography, int *type)
+{
+    int                 t = 0, a, c;
+    const char* b;
+
+    c = strlen(orthography);
+    while (suffix_list[t].suff) {
+	b = suffix_list[t].suff;
+	a = strlen(b);
+	if ((a <= c) && !strcmp(b, orthography + c - a)) {
+	    *type = suffix_list[t].type;
+	    return(suffix_list[t].sylls);
+	}
+	t++;
+    }
+    return(0);
+}
+
+/******************************************************************************
+*
+*	function:	light
+*
+*	purpose:	Determine if a syllable is light.
+*
+*
+*       arguments:      sb
+*
+*	internal
+*	functions:	isvowel
+*
+*	library
+*	functions:	none
+*
+******************************************************************************/
+int
+light(char *sb)
+{
+    while (!isvowel(*sb))
+	sb++;
+
+    while (isvowel(*sb) || (*sb == '_') || (*sb == '.'))
+	sb++;
+
+    if (!*sb)
+	return(1);
+
+    while ((*sb != '_') && (*sb != '.') && *sb)
+	sb++;
+
+    if (!*sb)
+	return(1);
+
+    while (((*sb == '_') || (*sb == '.')) && *sb)
+	sb++;
+
+    if (!*sb)
+	return(1);
+
+    return isvowel(*sb);
+}
+
+/******************************************************************************
+*
+*	function:	prefix
+*
+*	purpose:
+*
+*
+*       arguments:      orthography
+*
+*	internal
+*	functions:	none
+*
+*	library
+*	functions:	strlen, strncmp
+*
+******************************************************************************/
+int
+prefix(char *orthography)
+{
+    int                 t = 0, l, m;
+    const char* a;
+
+    m = strlen(orthography);
+    while (a = prefices[t++])
+	if (((l = strlen(a)) <= m) && !strncmp(a, orthography, l))
+	    return(1);
+
+    return(0);
+}
+
+} /* namespace */
+
+//==============================================================================
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -56,8 +171,8 @@ static int prefix(char *orthography);
 *	functions:	none
 *
 ******************************************************************************/
-
-int apply_stress(char *buffer, char *orthography)
+int
+apply_stress(char *buffer, char *orthography)
 {
     char               *syll_array[MAX_SYLLS];
     char               *spt, ich, temp = '\0';
@@ -123,116 +238,5 @@ int apply_stress(char *buffer, char *orthography)
     return(0);
 }
 
-
-
-/******************************************************************************
-*
-*	function:	stress_suffix
-*
-*	purpose:	
-*                       
-*			
-*       arguments:      orthography, type
-*                       
-*	internal
-*	functions:	none
-*
-*	library
-*	functions:	strlen, strcmp
-*
-******************************************************************************/
-
-int stress_suffix(char *orthography, int *type)
-{
-    int                 t = 0, a, c;
-    const char* b;
-
-    c = strlen(orthography);
-    while (suffix_list[t].suff) {
-	b = suffix_list[t].suff;
-	a = strlen(b);
-	if ((a <= c) && !strcmp(b, orthography + c - a)) {
-	    *type = suffix_list[t].type;
-	    return(suffix_list[t].sylls);
-	}
-	t++;
-    }
-    return(0);
-}
-
-
-
-/******************************************************************************
-*
-*	function:	light
-*
-*	purpose:	Determine if a syllable is light.
-*                       
-*			
-*       arguments:      sb
-*                       
-*	internal
-*	functions:	isvowel
-*
-*	library
-*	functions:	none
-*
-******************************************************************************/
-
-int light(char *sb)
-{
-    while (!isvowel(*sb))
-	sb++;
-
-    while (isvowel(*sb) || (*sb == '_') || (*sb == '.'))
-	sb++;
-
-    if (!*sb)
-	return(1);
-
-    while ((*sb != '_') && (*sb != '.') && *sb)
-	sb++;
-
-    if (!*sb)
-	return(1);
-
-    while (((*sb == '_') || (*sb == '.')) && *sb)
-	sb++;
-
-    if (!*sb)
-	return(1);
-
-    return isvowel(*sb);
-}
-
-
-
-/******************************************************************************
-*
-*	function:	prefix
-*
-*	purpose:	
-*                       
-*			
-*       arguments:      orthography
-*                       
-*	internal
-*	functions:	none
-*
-*	library
-*	functions:	strlen, strncmp
-*
-******************************************************************************/
-
-int prefix(char *orthography)
-{
-    int                 t = 0, l, m;
-    const char* a;
-
-    m = strlen(orthography);
-    while (a = prefices[t++])
-	if (((l = strlen(a)) <= m) && !strncmp(a, orthography, l))
-	    return(1);
-
-    return(0);
-}
+} /* namespace En */
+} /* namespace GS */

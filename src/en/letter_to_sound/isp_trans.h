@@ -21,6 +21,14 @@
 #ifndef ISP_TRANS_H_
 #define ISP_TRANS_H_
 
+
+
+namespace GS {
+namespace En {
+
 void isp_trans(char *string, char *result);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* ISP_TRANS_H_ */

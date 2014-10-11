@@ -18,14 +18,14 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "syllabify.h"
+#include "en/letter_to_sound/syllabify.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "clusters.h"
+#include "en/letter_to_sound/clusters.h"
+
 
 
 /*  LOCAL DEFINES  ***********************************************************/
@@ -35,20 +35,248 @@
 #define RIGHT      end_syllable
 
 
+
+namespace {
+
 /*  DATA TYPES  **************************************************************/
 typedef char phone_type;
 
-
-/*  GLOBAL FUNCTIONS (LOCAL TO THIS FILE)  ***********************************/
-static int syllable_break(const char* cluster);
-static void create_cv_signature(char *ptr, phone_type *arr);
-static char *add_1_phone(char *t);
-static char *extract_consonant_cluster(char *ptr, phone_type *type);
-static int next_consonant_cluster(phone_type *pt);
-static int check_cluster(const char* p, const char** match_array);
+int syllable_break(const char* cluster);
+void create_cv_signature(char *ptr, phone_type *arr);
+char *add_1_phone(char *t);
+char *extract_consonant_cluster(char *ptr, phone_type *type);
+int next_consonant_cluster(phone_type *pt);
+int check_cluster(const char* p, const char** match_array);
 
 
 
+/******************************************************************************
+*
+*	function:	syllable_break
+*
+*	purpose:	Returns -2 if could not break the cluster.
+*
+*
+*       arguments:      cluster
+*
+*	internal
+*	functions:	check_cluster
+*
+*	library
+*	functions:	strlen, strcpy
+*
+******************************************************************************/
+int
+syllable_break(const char *cluster)
+{
+    const char* left_cluster;
+    const char* right_cluster;
+    char temp[MAX_LEN];
+    int                 offset, length;
+
+
+    /*  GET LENGTH OF CLUSTER  */
+    length = strlen(cluster);
+
+    /*  INITIALLY WE SHALL RETURN THE FIRST 'POSSIBLE' MATCH  */
+    for (offset = -1; (offset <= length); offset++) {
+	if (offset == -1 || offset == length || cluster[offset] == '_' || cluster[offset] == '.') {
+	    strcpy(temp, cluster);
+	    if (offset >= 0)
+		temp[offset] = 0;
+	    left_cluster = (offset < 0 ? temp : offset == length ? temp + length : temp + (offset + 1));
+	    /*  POINTS TO BEGINNING OR NULL  */
+	    right_cluster = (offset >= 0 ? temp : temp + length);
+	    /*  NOW THEY POINT TO EITHER A LEFT/RIGHT HANDED CLUSTER OR A NULL STRING  */
+	    if (check_cluster(left_cluster, LEFT) && check_cluster(right_cluster, RIGHT)) {
+		/*  IF THIS IS A POSSIBLE BREAK */
+		/*  TEMPORARY:  WILL STORE LIST OF POSSIBLES AND PICK A 'BEST' ONE  */
+		return(offset);
+	    }
+	}
+    }
+
+    /*  IF HERE, RETURN ERROR  */
+    return(-2);
+}
+
+/******************************************************************************
+*
+*	function:	create_cv_signature
+*
+*	purpose:
+*
+*
+*       arguments:      ptr, arr
+*
+*	internal
+*	functions:	(isvowel), add_1_phone
+*
+*	library
+*	functions:	none
+*
+******************************************************************************/
+void
+create_cv_signature(char *ptr, phone_type *arr)
+{
+    phone_type         *arr_next;
+
+    arr_next = arr;
+    while (*ptr) {
+	*arr_next++ = isvowel(*ptr) ? 'v' : 'c';
+	ptr = add_1_phone(ptr);
+    }
+    *arr_next = 0;
+}
+
+/******************************************************************************
+*
+*	function:	add_1_phone
+*
+*	purpose:
+*
+*
+*       arguments:      t
+*
+*	internal
+*	functions:	none
+*
+*	library
+*	functions:	none
+*
+******************************************************************************/
+char*
+add_1_phone(char *t)
+{
+    while (*t && *t != '_' && *t != '.')
+	t++;
+
+    while (*t == '_' || *t == '.')
+	t++;
+
+    return(t);
+}
+
+/******************************************************************************
+*
+*	function:	extract_consonant_cluster
+*
+*	purpose:	there is a memory leak which needs fixing!!!!
+*                       (fixed temporarily).
+*
+*       arguments:      ptr, type
+*
+******************************************************************************/
+char*
+extract_consonant_cluster(char *ptr, phone_type *type)
+{
+    char                *newptr;
+    static char         ret[2048];  // to fix memory leak
+    int                 offset;
+
+    newptr = ptr;
+
+    while (*type == 'c') {
+	type++;
+	newptr = add_1_phone(newptr);
+    }
+
+//    printf("extract:  strlen(ptr) = %-d\n",strlen(ptr));
+
+//    ret = (char *)malloc(strlen(ptr) + 1);  // to fix memory leak
+    strcpy(ret, ptr);
+    offset = newptr - ptr - 1;
+
+    if (offset >= 0)
+	ret[offset] = 0;
+    else
+	fprintf(stderr, "offset error\n");  // what's this??
+
+    return(ret);
+}
+
+/******************************************************************************
+*
+*	function:	next_consonant_cluster
+*
+*	purpose:	Takes a pointer to phone_type and returns an integer
+*                       offset from that point to the start of the next
+*                       consonant cluster (or 0 if there are no vowels between
+*                       the pointer and the end of the word, or if this is the
+*                       second-last cluster and the word doesn't end with a
+*                       vowel. Basically, 0 means to stop.)
+*
+*       arguments:      pt
+*
+*	internal
+*	functions:	none
+*
+*	library
+*	functions:	none
+*
+******************************************************************************/
+int
+next_consonant_cluster(phone_type *pt)
+{
+    phone_type         *pt_var, *pt_temp;
+
+    pt_var = pt;
+    while (*pt_var == 'c')
+	pt_var++;
+
+    while (*pt_var == 'v')
+	pt_var++;
+
+   /*  CHECK TO SEE IF WE ARE NOW ON THE FINAL CLUSTER OF THE WORD WHICH IS AT
+       THE END OF THE WORD  */
+    pt_temp = pt_var;
+
+    while (*pt_temp == 'c')
+	pt_temp++;
+
+    return (*pt_var && *pt_temp ? pt_var - pt : 0);
+}
+
+/******************************************************************************
+*
+*	function:	check_cluster
+*
+*	purpose:	Returns 1 if it is a possible match, 0 otherwise.
+*
+*
+*       arguments:      p, match_array
+*
+*	internal
+*	functions:	none
+*
+*	library
+*	functions:	strcmp
+*
+******************************************************************************/
+int
+check_cluster(const char *p, const char** match_array)
+{
+	const char** i;
+
+	/*  EMPTY COUNTS AS A MATCH  */
+	if (!*p)
+		return 1;
+
+	i = match_array;
+	while (*i) {
+		if (!strcmp(*i, p))
+			return 1;
+		i++;
+	}
+	return 0;
+}
+
+} /* namespace */
+
+//==============================================================================
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -70,8 +298,8 @@ static int check_cluster(const char* p, const char** match_array);
 *	functions:	none
 *
 ******************************************************************************/
-
-int syllabify(char *word)
+int
+syllabify(char *word)
 {
     int                 i, n, temp, number_of_syllables = 0;
     phone_type          cv_signature[MAX_LEN], *current_type;
@@ -109,235 +337,5 @@ int syllabify(char *word)
     return(number_of_syllables ? number_of_syllables : 1);
 }
 
-
-
-/******************************************************************************
-*
-*	function:	syllable_break
-*
-*	purpose:	Returns -2 if could not break the cluster.
-*                       
-*			
-*       arguments:      cluster
-*                       
-*	internal
-*	functions:	check_cluster
-*
-*	library
-*	functions:	strlen, strcpy
-*
-******************************************************************************/
-
-int syllable_break(const char *cluster)
-{
-    const char* left_cluster;
-    const char* right_cluster;
-    char temp[MAX_LEN];
-    int                 offset, length;
-
-
-    /*  GET LENGTH OF CLUSTER  */
-    length = strlen(cluster);
-
-    /*  INITIALLY WE SHALL RETURN THE FIRST 'POSSIBLE' MATCH  */
-    for (offset = -1; (offset <= length); offset++) {
-	if (offset == -1 || offset == length || cluster[offset] == '_' || cluster[offset] == '.') {
-	    strcpy(temp, cluster);
-	    if (offset >= 0)
-		temp[offset] = 0;
-	    left_cluster = (offset < 0 ? temp : offset == length ? temp + length : temp + (offset + 1));
-	    /*  POINTS TO BEGINNING OR NULL  */
-	    right_cluster = (offset >= 0 ? temp : temp + length);
-	    /*  NOW THEY POINT TO EITHER A LEFT/RIGHT HANDED CLUSTER OR A NULL STRING  */
-	    if (check_cluster(left_cluster, LEFT) && check_cluster(right_cluster, RIGHT)) {
-	        /*  IF THIS IS A POSSIBLE BREAK */
-	        /*  TEMPORARY:  WILL STORE LIST OF POSSIBLES AND PICK A 'BEST' ONE  */
-	        return(offset);
-	    }
-	}
-    }
-
-    /*  IF HERE, RETURN ERROR  */
-    return(-2);
-}
-
-
-
-/******************************************************************************
-*
-*	function:	create_cv_signature
-*
-*	purpose:	
-*                       
-*			
-*       arguments:      ptr, arr
-*                       
-*	internal
-*	functions:	(isvowel), add_1_phone
-*
-*	library
-*	functions:	none
-*
-******************************************************************************/
-
-void create_cv_signature(char *ptr, phone_type *arr)
-{
-    phone_type         *arr_next;
-
-    arr_next = arr;
-    while (*ptr) {
-	*arr_next++ = isvowel(*ptr) ? 'v' : 'c';
-	ptr = add_1_phone(ptr);
-    }
-    *arr_next = 0;
-}
-
-
-
-/******************************************************************************
-*
-*	function:	add_1_phone
-*
-*	purpose:	
-*                       
-*			
-*       arguments:      t
-*                       
-*	internal
-*	functions:	none
-*
-*	library
-*	functions:	none
-*
-******************************************************************************/
-
-char *add_1_phone(char *t)
-{
-    while (*t && *t != '_' && *t != '.')
-	t++;
-
-    while (*t == '_' || *t == '.')
-	t++;
-
-    return(t);
-}
-
-
-
-/******************************************************************************
-*
-*	function:	extract_consonant_cluster
-*
-*	purpose:	there is a memory leak which needs fixing!!!!
-*                       (fixed temporarily).
-*			
-*       arguments:      ptr, type
-*
-******************************************************************************/
-
-char *extract_consonant_cluster(char *ptr, phone_type *type)
-{
-    char                *newptr;
-    static char         ret[2048];  // to fix memory leak
-    int                 offset;
-
-    newptr = ptr;
-
-    while (*type == 'c') {
-	type++;
-	newptr = add_1_phone(newptr);
-    }
-
-//    printf("extract:  strlen(ptr) = %-d\n",strlen(ptr));
-
-//    ret = (char *)malloc(strlen(ptr) + 1);  // to fix memory leak
-    strcpy(ret, ptr);
-    offset = newptr - ptr - 1;
-
-    if (offset >= 0)
-	ret[offset] = 0;
-    else
-	fprintf(stderr, "offset error\n");  // what's this??
-
-    return(ret);
-}
-
-
-
-/******************************************************************************
-*
-*	function:	next_consonant_cluster
-*
-*	purpose:	Takes a pointer to phone_type and returns an integer
-*                       offset from that point to the start of the next
-*                       consonant cluster (or 0 if there are no vowels between
-*                       the pointer and the end of the word, or if this is the
-*                       second-last cluster and the word doesn't end with a
-*                       vowel. Basically, 0 means to stop.)
-*			
-*       arguments:      pt
-*                       
-*	internal
-*	functions:	none
-*
-*	library
-*	functions:	none
-*
-******************************************************************************/
-
-int next_consonant_cluster(phone_type *pt)
-{
-    phone_type         *pt_var, *pt_temp;
-
-    pt_var = pt;
-    while (*pt_var == 'c')
-	pt_var++;
-
-    while (*pt_var == 'v')
-	pt_var++;
-
-   /*  CHECK TO SEE IF WE ARE NOW ON THE FINAL CLUSTER OF THE WORD WHICH IS AT
-       THE END OF THE WORD  */ 
-    pt_temp = pt_var;
-
-    while (*pt_temp == 'c')
-	pt_temp++;
-
-    return (*pt_var && *pt_temp ? pt_var - pt : 0);
-}
-
-
-
-/******************************************************************************
-*
-*	function:	check_cluster
-*
-*	purpose:	Returns 1 if it is a possible match, 0 otherwise.
-*                       
-*			
-*       arguments:      p, match_array
-*                       
-*	internal
-*	functions:	none
-*
-*	library
-*	functions:	strcmp
-*
-******************************************************************************/
-
-int check_cluster(const char *p, const char** match_array)
-{
-	const char** i;
-
-	/*  EMPTY COUNTS AS A MATCH  */
-	if (!*p)
-		return 1;
-
-	i = match_array;
-	while (*i) {
-		if (!strcmp(*i, p))
-			return 1;
-		i++;
-	}
-	return 0;
-}
+} /* namespace En */
+} /* namespace GS */

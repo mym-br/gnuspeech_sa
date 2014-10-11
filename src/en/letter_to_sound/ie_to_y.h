@@ -21,6 +21,14 @@
 #ifndef IE_TO_Y_H_
 #define IE_TO_Y_H_
 
+
+
+namespace GS {
+namespace En {
+
 int ie_to_y(char *in, char **end);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* IE_TO_Y_H_ */

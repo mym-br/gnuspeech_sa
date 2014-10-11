@@ -18,12 +18,14 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "final_s.h"
+#include "en/letter_to_sound/final_s.h"
 
-#include "member.h"
+#include "en/letter_to_sound/member.h"
 
 
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -42,8 +44,8 @@
 *	functions:	none
 *
 ******************************************************************************/
-
-char final_s(char *in, char **eow)
+char
+final_s(char *in, char **eow)
 {
     register char      *end = *eow;
     char                retval = 0;
@@ -72,3 +74,6 @@ char final_s(char *in, char **eow)
     }
     return(retval);
 }
+
+} /* namespace En */
+} /* namespace GS */

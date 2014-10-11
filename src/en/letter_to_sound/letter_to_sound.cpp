@@ -25,17 +25,16 @@
 *
 ******************************************************************************/
 
-/*  HEADER FILES  ************************************************************/
-#include "letter_to_sound.h"
+#include "en/letter_to_sound/letter_to_sound.h"
 
 #include <string.h>
 #include <stdio.h>
 
-#include "word_to_patphone.h"
-#include "isp_trans.h"
-#include "syllabify.h"
-#include "apply_stress.h"
-#include "tail.h"
+#include "en/letter_to_sound/word_to_patphone.h"
+#include "en/letter_to_sound/isp_trans.h"
+#include "en/letter_to_sound/syllabify.h"
+#include "en/letter_to_sound/apply_stress.h"
+#include "en/letter_to_sound/tail.h"
 
 
 
@@ -48,11 +47,50 @@
 #define WORDEND(word,string)       (!strcmp(MAX(word+strlen(word)-strlen(string),word),string))
 
 
-/*  GLOBAL FUNCTIONS (LOCAL TO THIS FILE)  ***********************************/
-static const char* word_type(const char* word);
+
+namespace {
+
+const char* word_type(const char* word);
 
 
 
+/******************************************************************************
+*
+*	function:	word_type
+*
+*	purpose:	Returns the word type based on the word spelling.
+*
+*       arguments:      word
+*
+*	internal
+*	functions:	WORDEND
+*
+*	library
+*	functions:	(strlen, strcmp)
+*
+******************************************************************************/
+const char*
+word_type(const char* word)
+{
+	const tail_entry* list_ptr;
+
+	/*  IF WORD END MATCHES LIST, RETURN CORRESPONDING TYPE  */
+	for (list_ptr = tail_list; list_ptr->tail; list_ptr++) {
+		if (WORDEND(word, list_ptr->tail)) {
+			return list_ptr->type;
+		}
+	}
+
+	/*  ELSE RETURN UNKNOWN WORD TYPE  */
+	return WORD_TYPE_UNKNOWN;
+}
+
+} /* namespace */
+
+//==============================================================================
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -71,8 +109,8 @@ static const char* word_type(const char* word);
 *	functions:	sprintf, strcat
 *
 ******************************************************************************/
-
-char *letter_to_sound(char *word)
+char*
+letter_to_sound(char *word)
 {
     char                buffer[MAX_WORD_LENGTH+3];
     static char         pronunciation[MAX_PRONUNCIATION_LENGTH+1];
@@ -105,37 +143,5 @@ char *letter_to_sound(char *word)
     return(pronunciation);
 }
 
-
-
-/******************************************************************************
-*
-*	function:	word_type
-*
-*	purpose:	Returns the word type based on the word spelling.
-*			
-*       arguments:      word
-*                       
-*	internal
-*	functions:	WORDEND
-*                       
-*	library
-*	functions:	(strlen, strcmp)
-*
-******************************************************************************/
-
-static
-const char*
-word_type(const char* word)
-{
-	const tail_entry* list_ptr;
-
-	/*  IF WORD END MATCHES LIST, RETURN CORRESPONDING TYPE  */
-	for (list_ptr = tail_list; list_ptr->tail; list_ptr++) {
-		if (WORDEND(word, list_ptr->tail)) {
-			return list_ptr->type;
-		}
-	}
-
-	/*  ELSE RETURN UNKNOWN WORD TYPE  */
-	return WORD_TYPE_UNKNOWN;
-}
+} /* namespace En */
+} /* namespace GS */

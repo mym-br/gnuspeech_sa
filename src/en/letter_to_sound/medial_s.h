@@ -21,6 +21,14 @@
 #ifndef MEDIAL_S_H_
 #define MEDIAL_S_H_
 
+
+
+namespace GS {
+namespace En {
+
 void medial_s(char *in, char **eow);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* MEDIAL_S_H_ */

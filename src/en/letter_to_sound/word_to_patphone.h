@@ -21,6 +21,14 @@
 #ifndef WORD_TO_PATPHONE_H_
 #define WORD_TO_PATPHONE_H_
 
+
+
+namespace GS {
+namespace En {
+
 int word_to_patphone(char *word);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* WORD_TO_PATPHONE_H_ */

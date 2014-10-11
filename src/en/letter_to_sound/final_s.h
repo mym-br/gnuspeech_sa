@@ -21,6 +21,14 @@
 #ifndef FINAL_S_H_
 #define FINAL_S_H_
 
+
+
+namespace GS {
+namespace En {
+
 char final_s(char *in, char **eow);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* FINAL_S_H_ */

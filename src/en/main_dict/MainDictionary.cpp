@@ -23,7 +23,7 @@
 #include <cstring>
 #include <sstream>
 
-#include "suffix_list.h"
+#include "en/main_dict/suffix_list.h"
 
 #define MAIN_DICTIONARY_FILE "/MainDictionary"
 #define MAXLEN      1024
@@ -71,6 +71,7 @@ word_has_suffix(const char* word, const char* suffix)
 //==============================================================================
 
 namespace GS {
+namespace En {
 
 MainDictionary::MainDictionary()
 {
@@ -165,4 +166,5 @@ MainDictionary::augmentedSearch(const char* orthography)
 	return nullptr;
 }
 
+} /* namespace En */
 } /* namespace GS */

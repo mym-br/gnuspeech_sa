@@ -18,23 +18,31 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "mark_final_e.h"
-#include "vowel_before.h"
-#include "ends_with.h"
-#include "member.h"
-#include "insert_mark.h"
-#include "suffix.h"
+#include "en/letter_to_sound/mark_final_e.h"
 
+#include "en/letter_to_sound/vowel_before.h"
+#include "en/letter_to_sound/ends_with.h"
+#include "en/letter_to_sound/member.h"
+#include "en/letter_to_sound/insert_mark.h"
+#include "en/letter_to_sound/suffix.h"
+
+
+
+namespace {
 
 /*  GLOBAL VARIABLES (LOCAL TO THIS FILE)  ***********************************/
-static const char* suffix_list_1 =
-  "elba/ylba/de/ne/re/yre/tse/ye/gni/ssel/yl/tnem/ssen/ro/luf/";
+const char* suffix_list_1 =
+	"elba/ylba/de/ne/re/yre/tse/ye/gni/ssel/yl/tnem/ssen/ro/luf/";
 
-static const char* suffix_list_2 =
-  "ci/laci/";
+const char* suffix_list_2 =
+	"ci/laci/";
 
+} /* namespace */
 
+//==============================================================================
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -52,8 +60,8 @@ static const char* suffix_list_2 =
 *	functions:	none
 *
 ******************************************************************************/
-
-int mark_final_e(char *in, char **eow)
+int
+mark_final_e(char *in, char **eow)
 {
 	char* end = *eow;
 	char* prior_char;
@@ -153,3 +161,6 @@ int mark_final_e(char *in, char **eow)
 
 	return(0);
 }
+
+} /* namespace En */
+} /* namespace GS */

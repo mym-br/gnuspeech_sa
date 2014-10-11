@@ -21,6 +21,14 @@
 #ifndef APPLY_STRESS_H_
 #define APPLY_STRESS_H_
 
+
+
+namespace GS {
+namespace En {
+
 int apply_stress(char *buffer, char *orthography);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* APPLY_STRESS_H_ */

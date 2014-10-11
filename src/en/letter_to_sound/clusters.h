@@ -21,9 +21,13 @@
 #ifndef CLUSTERS_H_
 #define CLUSTERS_H_
 
+
+
+namespace {
+
 /*  LIST OF PHONEME PATTERNS THAT CAN BEGIN A SYLLABLE  */
 
-static const char* begin_syllable[] = {
+const char* begin_syllable[] = {
 "s_p_l",
 "s_p_r",
 "s_p_y",
@@ -83,9 +87,8 @@ static const char* begin_syllable[] = {
 0
 };
 
-
 /*  LIST OF PHONEME PATTERNS THAT CAN END A SYLLABLE  */
-static const char* end_syllable[] = {
+const char* end_syllable[] = {
 "b",
 "d",
 "er",
@@ -169,5 +172,7 @@ static const char* end_syllable[] = {
 "z",
 0
 };
+
+} /* namespace */
 
 #endif /* CLUSTERS_H_ */

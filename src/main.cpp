@@ -26,7 +26,7 @@
 #include "Controller.h"
 #include "Exception.h"
 #include "Model.h"
-#include "TextParser.h"
+#include "en/text_parser/TextParser.h"
 
 #define TRM_CONTROL_MODEL_CONFIG_FILE "/monet.xml"
 
@@ -130,7 +130,7 @@ main(int argc, char* argv[])
 			trmControlModel->printInfo();
 		}
 
-		std::unique_ptr<GS::EnTextParser::TextParser> textParser(new GS::EnTextParser::TextParser(configDirPath));
+		std::unique_ptr<GS::En::TextParser> textParser(new GS::En::TextParser(configDirPath));
 
 		std::unique_ptr<GS::TRMControlModel::Controller> trmController(new GS::TRMControlModel::Controller(configDirPath, *trmControlModel));
 

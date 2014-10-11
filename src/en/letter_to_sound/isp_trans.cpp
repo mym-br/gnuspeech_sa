@@ -18,10 +18,10 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "isp_trans.h"
+#include "en/letter_to_sound/isp_trans.h"
 
 #include <string.h>
+
 
 
 /*  LOCAL DEFINES  ***********************************************************/
@@ -32,6 +32,9 @@
 #define INDEX(x)        (x - MIN_INDEX)
 
 
+
+namespace {
+
 /*  DATA TYPES  **************************************************************/
 typedef struct _pktrie {
 	char  val;
@@ -41,9 +44,8 @@ typedef struct _pktrie {
 /*  STRUCTURE MAY BE MODIFIED IF MAX_ORGIN OR MAX_TERM_VAL CAN BE CONTAINED
     IN LESS THAN AN INT  */
 
-
 /*  GLOBAL VARIABLES (LOCAL TO THIS FILE)  ***********************************/
-static const char* m_string[] = {
+const char* m_string[] = {
             /* [!] = */ "e_k_s.k_l_uh_m_e_i_sh_uh_n_m_ar_r_k",
 	    /* ["] = */ "d_uh_b_uh_l_k_w_uh_uu_t",
 	    /* [#] = */ "X",
@@ -668,8 +670,7 @@ static const char* m_string[] = {
 	    /* [~] = */ "t_i_l_d_uh"
 };
 
-
-static const pktrie trie[TRIE_NODES] = {
+const pktrie trie[TRIE_NODES] = {
 {'!',1,0},{'\"',2,0},{'#',3,92},{'$',46,0},{'%',47,0},{'&',48,0},{'\'',49,33},{'(',51,0},
 {')',52,0},{'*',53,0},{'+',54,0},{',',55,0},{'-',56,0},{'.',57,0},{'/',58,0},{'0',59,0},
 {'1',60,0},{'2',61,0},{'3',62,0},{'4',63,0},{'5',64,0},{'6',65,0},{'7',66,0},{'8',67,0},
@@ -847,7 +848,12 @@ static const pktrie trie[TRIE_NODES] = {
 {0,0,0},{0,0,0},{'o',608,1143},{0,0,0},{0,0,0},{0,0,0},{'s',611,0}
 };
 
+} /* namespace */
 
+//==============================================================================
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -865,8 +871,8 @@ static const pktrie trie[TRIE_NODES] = {
 *	functions:	strcpy
 *
 ******************************************************************************/
-
-void isp_trans(char *string, char *result)
+void
+isp_trans(char *string, char *result)
 {
     int                 i = 0, term = 0, tmp;
     const char* k;
@@ -916,3 +922,6 @@ void isp_trans(char *string, char *result)
 	term = i = 0;
     }
 }
+
+} /* namespace En */
+} /* namespace GS */

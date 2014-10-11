@@ -18,10 +18,12 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "ends_with.h"
+#include "en/letter_to_sound/ends_with.h"
 
 
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -39,7 +41,6 @@
 *	functions:	none
 *
 ******************************************************************************/
-
 const char*
 ends_with(const char* in, const char* end, const char* set)
 {
@@ -59,3 +60,6 @@ ends_with(const char* in, const char* end, const char* set)
 	}
 	return nullptr;
 }
+
+} /* namespace En */
+} /* namespace GS */

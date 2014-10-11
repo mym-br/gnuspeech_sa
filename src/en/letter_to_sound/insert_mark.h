@@ -21,6 +21,14 @@
 #ifndef INSERT_MARK_H_
 #define INSERT_MARK_H_
 
+
+
+namespace GS {
+namespace En {
+
 void insert_mark(char **end, char *at);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* INSERT_MARK_H_ */

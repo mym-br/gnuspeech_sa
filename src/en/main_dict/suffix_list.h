@@ -55,6 +55,8 @@ Modified again by David Hill 95-08-05 to add rules for "beaches" , "stresses", a
 
 ***********************************************************************/
 
+namespace {
+
 /*  DATA TYPES  *******************************************************/
 
 struct SL {
@@ -68,7 +70,7 @@ typedef struct SL suffix_list_t;
 
 /*  SUFFIX LIST  ******************************************************/
 
-static const suffix_list_t suffix_list[] = {
+const suffix_list_t suffix_list[] = {
   {"ses","se",".i_z"},	   //   "horses" = "horse" + "es"
   {"ces","ce",".i_z"},	   //   "spices" = "spice" + "es"
 
@@ -320,8 +322,9 @@ static const suffix_list_t suffix_list[] = {
   {"ie","y",""},	         //   "merrie" = "merry" + "<olde spellinge>"
   {"e","",""},	                 //   "olde" = "old" + "<olde spellinge>"
 
-
- {(char *)0,(char *)0,(char *)0}     //  END MARKER
+  {(char *)0,(char *)0,(char *)0}     //  END MARKER
 };
+
+} /* namespace */
 
 #endif /* SUFFIX_LIST_H_ */

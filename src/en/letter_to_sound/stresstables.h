@@ -33,6 +33,9 @@
 #define NEUTRAL        4
 
 
+
+namespace {
+
 /*  DATA TYPES  **************************************************************/
 struct suff_data {
     const char* suff;
@@ -40,9 +43,8 @@ struct suff_data {
     int         sylls;
 };
 
-
 /*  GLOBAL VARIABLES (LOCAL TO THIS FILE)  ***********************************/
-static const struct suff_data suffix_list[] = {
+const struct suff_data suffix_list[] = {
 /*  AUTOSTRESSED: (2nd entry 0)  */
 					 {"ade", 0, 1},
 					 {"aire", 0, 1},
@@ -127,9 +129,8 @@ static const struct suff_data suffix_list[] = {
 					 {0, 0, 0}	   /*  END MARKER  */
 };
 
-
 /*  STRESS REPELLENT PREFICES  */
-static const char* prefices[] = {
+const char* prefices[] = {
 				  "ex",
 				  "ac",
 				  "af",
@@ -138,5 +139,7 @@ static const char* prefices[] = {
 				  "non",
 				  0
 };
+
+} /* namespace */
 
 #endif /* STRESS_TABLES_H_ */

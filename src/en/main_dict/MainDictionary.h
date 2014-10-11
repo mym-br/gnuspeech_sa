@@ -26,6 +26,7 @@
 
 
 namespace GS {
+namespace En {
 
 class MainDictionary {
 public:
@@ -48,6 +49,7 @@ private:
 	Dictionary dict_;
 };
 
+} /* namespace En */
 } /* namespace GS */
 
 #endif /* MAIN_DICTIONARY_H_ */

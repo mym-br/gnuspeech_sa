@@ -18,10 +18,12 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "ie_to_y.h"
+#include "en/letter_to_sound/ie_to_y.h"
 
 
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -39,8 +41,8 @@
 *	functions:	none
 *
 ******************************************************************************/
-
-int ie_to_y(char *in, char **end)
+int
+ie_to_y(char *in, char **end)
 {
     register char      *t = *end;
 
@@ -52,3 +54,6 @@ int ie_to_y(char *in, char **end)
     }
     return(0);
 }
+
+} /* namespace En */
+} /* namespace GS */

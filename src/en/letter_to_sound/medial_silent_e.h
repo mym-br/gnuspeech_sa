@@ -21,6 +21,14 @@
 #ifndef MEDIAL_SILENT_E_H_
 #define MEDIAL_SILENT_E_H_
 
+
+
+namespace GS {
+namespace En {
+
 void medial_silent_e(char *in, char **eow);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* MEDIAL_SILENT_E_H_ */

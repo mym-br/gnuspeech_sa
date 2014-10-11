@@ -21,6 +21,14 @@
 #ifndef SYLLABIFY_H_
 #define SYLLABIFY_H_
 
+
+
+namespace GS {
+namespace En {
+
 int syllabify(char *word);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* SYLLABIFY_H_ */

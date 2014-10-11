@@ -18,10 +18,12 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "member.h"
+#include "en/letter_to_sound/member.h"
 
 
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -38,7 +40,6 @@
 *	functions:	none
 *
 ******************************************************************************/
-
 int
 member(char element, const char* set)
 {
@@ -50,3 +51,6 @@ member(char element, const char* set)
 
 	return 0;
 }
+
+} /* namespace En */
+} /* namespace GS */

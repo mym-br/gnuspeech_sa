@@ -43,7 +43,7 @@
 *
 ******************************************************************************/
 
-#include "TextParser.h"
+#include "en/text_parser/TextParser.h"
 
 #include <cmath>
 #include <ctype.h>
@@ -53,10 +53,10 @@
 #include <vector>
 
 #include "Exception.h"
-#include "number_parser.h"
-#include "letter_to_sound.h"
-#include "abbreviations.h"
-#include "special_acronyms.h"
+#include "en/text_parser/number_parser.h"
+#include "en/letter_to_sound/letter_to_sound.h"
+#include "en/text_parser/abbreviations.h"
+#include "en/text_parser/special_acronyms.h"
 
 /*  LOCAL DEFINES  ***********************************************************/
 #define UNDEFINED_MODE        (-2)
@@ -1888,7 +1888,7 @@ check_tonic(std::stringstream& stream, long start_pos, long end_pos)
 //==============================================================================
 
 namespace GS {
-namespace EnTextParser {
+namespace En {
 
 TextParser::TextParser(const char* configDirPath)
 	: escape_character_(DEFAULT_ESCAPE_CHARACTER)
@@ -2751,5 +2751,5 @@ TextParser::expand_word(char* word, int is_tonic, std::stringstream& stream)
 	}
 }
 
-} /* namespace EnTextParser */
+} /* namespace En */
 } /* namespace GS */

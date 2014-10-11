@@ -24,12 +24,12 @@
 #include <string>
 #include <sstream>
 
-#include "MainDictionary.h"
+#include "en/main_dict/MainDictionary.h"
 
 
 
 namespace GS {
-namespace EnTextParser {
+namespace En {
 
 class TextParser {
 public:
@@ -59,7 +59,7 @@ private:
 	std::stringstream auxStream_;
 };
 
-} /* namespace EnTextParser */
+} /* namespace En */
 } /* namespace GS */
 
 #endif /* TEXT_PARSER_H_ */

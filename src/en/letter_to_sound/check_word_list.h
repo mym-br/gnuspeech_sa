@@ -21,6 +21,14 @@
 #ifndef CHECK_WORD_LIST_H_
 #define CHECK_WORD_LIST_H_
 
+
+
+namespace GS {
+namespace En {
+
 int check_word_list(char* string, char** eow);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* CHECK_WORD_LIST_H_ */

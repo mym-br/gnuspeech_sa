@@ -29,7 +29,7 @@
 
 
 namespace GS {
-namespace EnTextParser {
+namespace En {
 
 /********************************************************************
 number_parser() RETURNS A POINTER TO A NULL TERMINATED CHARACTER
@@ -71,7 +71,7 @@ const char* number_parser(const char* word_ptr, int mode);
 
 const char* degenerate_string(const char* word);
 
-} /* namespace EnTextParser */
+} /* namespace En */
 } /* namespace GS */
 
 #endif /* NUMBER_PARSER_H_ */

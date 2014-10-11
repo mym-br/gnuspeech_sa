@@ -18,13 +18,15 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "suffix.h"
+#include "en/letter_to_sound/suffix.h"
 
-#include "ends_with.h"
-#include "vowel_before.h"
+#include "en/letter_to_sound/ends_with.h"
+#include "en/letter_to_sound/vowel_before.h"
 
 
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -43,7 +45,6 @@
 *	functions:	none
 *
 ******************************************************************************/
-
 const char*
 suffix(const char* in, const char* end, const char* suflist)
 {
@@ -52,3 +53,6 @@ suffix(const char* in, const char* end, const char* suflist)
 		return temp;
 	return nullptr;
 }
+
+} /* namespace En */
+} /* namespace GS */

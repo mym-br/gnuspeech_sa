@@ -21,6 +21,14 @@
 #ifndef LONG_MEDIAL_VOWELS_H_
 #define LONG_MEDIAL_VOWELS_H_
 
+
+
+namespace GS {
+namespace En {
+
 int long_medial_vowels(char *in, char **eow);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* LONG_MEDIAL_VOWELS_H_ */

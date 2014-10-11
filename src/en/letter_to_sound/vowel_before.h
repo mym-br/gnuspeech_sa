@@ -21,6 +21,14 @@
 #ifndef VOWEL_BEFORE_H_
 #define VOWEL_BEFORE_H_
 
+
+
+namespace GS {
+namespace En {
+
 const char* vowel_before(const char* start, const char* position);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* VOWEL_BEFORE_H_ */

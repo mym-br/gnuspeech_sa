@@ -18,10 +18,10 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "check_word_list.h"
+#include "en/letter_to_sound/check_word_list.h"
 
 #include <stdio.h>
+
 
 
 /*  LOCAL DEFINES  ***********************************************************/
@@ -32,6 +32,9 @@
 #define INDEX(x)       (x - MIN_INDEX)
 
 
+
+namespace {
+
 /*  DATA TYPES  **************************************************************/
 typedef struct _pktrie {
     char                val;
@@ -39,9 +42,8 @@ typedef struct _pktrie {
     short               next_org;
 } pktrie;
 
-
 /*  GLOBAL VARIABLES (LOCAL TO THIS FILE)  ***********************************/
-static const char* m_string[] = {
+const char* m_string[] = {
 			   /* [a] = */ "uh_",
 			   /* [alkali] = */ "aa_l_k_uh_l_ah_i_",
 			   /* [always] = */ "aw_l_w_e_i_z_",
@@ -149,10 +151,9 @@ static const char* m_string[] = {
 			   /* [your] = */ "y_aw_r_"
 };
 
-
 /*  STRUCTURE MAY BE MODIFIED IF MAX_ORGIN OR MAX_TERM_VAL
     CAN BE CONTAINED IN LESS THAN AN INT  */
-static const pktrie trie[TRIE_NODES] = {
+const pktrie trie[TRIE_NODES] = {
 {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {'\'',0,49},
 {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0},
 {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0},
@@ -211,7 +212,12 @@ static const pktrie trie[TRIE_NODES] = {
 {'a',0,266}
 };
 
+} /* namespace */
 
+//==============================================================================
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -229,7 +235,6 @@ static const pktrie trie[TRIE_NODES] = {
 *	functions:	none
 *
 ******************************************************************************/
-
 int
 check_word_list(char* string, char** eow)
 {
@@ -266,3 +271,6 @@ check_word_list(char* string, char** eow)
 	*(*eow) = '#';
 	return 0;
 }
+
+} /* namespace En */
+} /* namespace GS */

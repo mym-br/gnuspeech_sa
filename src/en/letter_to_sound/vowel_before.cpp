@@ -18,11 +18,14 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "vowel_before.h"
+#include "en/letter_to_sound/vowel_before.h"
 
-#include "member.h"
+#include "en/letter_to_sound/member.h"
 
+
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -40,7 +43,6 @@
 *       functions:    none
 *
 ******************************************************************************/
-
 const char*
 vowel_before(const char* start, const char* position)
 {
@@ -52,3 +54,6 @@ vowel_before(const char* start, const char* position)
 	}
 	return nullptr;
 }
+
+} /* namespace En */
+} /* namespace GS */

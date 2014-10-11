@@ -18,10 +18,12 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "insert_mark.h"
+#include "en/letter_to_sound/insert_mark.h"
 
 
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -39,8 +41,8 @@
 *	functions:	none
 *
 ******************************************************************************/
-
-void insert_mark(char **end, char *at)
+void
+insert_mark(char **end, char *at)
 {
     register char      *temp = *end;
 
@@ -58,3 +60,6 @@ void insert_mark(char **end, char *at)
     *at = '|';
     (*end)++;
 }
+
+} /* namespace En */
+} /* namespace GS */

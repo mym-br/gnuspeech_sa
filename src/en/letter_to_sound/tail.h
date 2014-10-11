@@ -21,15 +21,18 @@
 #ifndef TAIL_H_
 #define TAIL_H_
 
+
+
+namespace {
+
 /*  DATA TYPES  **************************************************************/
 typedef struct {
 	const char* tail;
 	const char* type;
 } tail_entry;
 
-
 /*  GLOBAL VARIABLES (LOCAL TO THIS FILE)  ***********************************/
-static const tail_entry tail_list[] = {
+const tail_entry tail_list[] = {
 	{"ly", "d"},
 	{"er", "ca"},
 	{"ish", "c"},
@@ -61,5 +64,7 @@ static const tail_entry tail_list[] = {
 	{"s", "ab"},
 	{nullptr, nullptr}
 };
+
+} /* namespace */
 
 #endif /* TAIL_H_ */

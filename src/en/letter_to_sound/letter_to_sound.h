@@ -21,6 +21,14 @@
 #ifndef LETTER_TO_SOUND_H_
 #define LETTER_TO_SOUND_H_
 
+
+
+namespace GS {
+namespace En {
+
 char *letter_to_sound(char *word);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* LETTER_TO_SOUND_H_ */

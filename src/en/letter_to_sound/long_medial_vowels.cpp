@@ -18,11 +18,14 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "long_medial_vowels.h"
-#include "member.h"
+#include "en/letter_to_sound/long_medial_vowels.h"
+
+#include "en/letter_to_sound/member.h"
 
 
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -40,8 +43,8 @@
 *	functions:	none
 *
 ******************************************************************************/
-
-int long_medial_vowels(char *in, char **eow)
+int
+long_medial_vowels(char *in, char **eow)
 {
     register char      *end = *eow;
     register char      *position;
@@ -105,3 +108,6 @@ int long_medial_vowels(char *in, char **eow)
 
     return(0);
 }
+
+} /* namespace En */
+} /* namespace GS */

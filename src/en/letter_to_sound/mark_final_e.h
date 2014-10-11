@@ -21,6 +21,14 @@
 #ifndef MARK_FINAL_E_H_
 #define MARK_FINAL_E_H_
 
+
+
+namespace GS {
+namespace En {
+
 int mark_final_e(char *in, char **eow);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* MARK_FINAL_E_H_ */

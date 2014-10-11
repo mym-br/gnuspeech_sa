@@ -18,20 +18,19 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "word_to_patphone.h"
+#include "en/letter_to_sound/word_to_patphone.h"
 
 #include <string.h>
 
-#include "vowel_before.h"
-#include "check_word_list.h"
-#include "final_s.h"
-#include "ie_to_y.h"
-#include "mark_final_e.h"
-#include "long_medial_vowels.h"
-#include "medial_silent_e.h"
-#include "medial_s.h"
-#include "number_pronunciations.h"
+#include "en/letter_to_sound/vowel_before.h"
+#include "en/letter_to_sound/check_word_list.h"
+#include "en/letter_to_sound/final_s.h"
+#include "en/letter_to_sound/ie_to_y.h"
+#include "en/letter_to_sound/mark_final_e.h"
+#include "en/letter_to_sound/long_medial_vowels.h"
+#include "en/letter_to_sound/medial_silent_e.h"
+#include "en/letter_to_sound/medial_s.h"
+#include "en/number_pronunciations.h"
 
 
 
@@ -39,14 +38,17 @@
 #define SPELL_STRING_LEN   8192
 
 
-/*  GLOBAL FUNCTIONS (LOCAL TO THIS FILE)  ***********************************/
-static int spell_it(char* word);
-static int all_caps(char* in);
+
+namespace {
+
+int spell_it(char* word);
+int all_caps(char* in);
 
 
-/*  GLOBAL VARIABLES (LOCAL TO THIS FILE)  ***********************************/
-static char spell_string[SPELL_STRING_LEN];
-static const char* letters[] = {
+
+char spell_string[SPELL_STRING_LEN];
+
+const char* letters[] = {
   BLANK, EXCLAMATION_POINT, DOUBLE_QUOTE, NUMBER_SIGN, DOLLAR_SIGN,
   PERCENT_SIGN, AMPERSAND, SINGLE_QUOTE, OPEN_PARENTHESIS, CLOSE_PARENTHESIS,
   ASTERISK, PLUS_SIGN, COMMA, HYPHEN, PERIOD, SLASH,
@@ -61,6 +63,99 @@ static const char* letters[] = {
 };
 
 
+
+/******************************************************************************
+*
+*	function:	spell_it
+*
+*	purpose:
+*
+*
+*       arguments:      word
+*
+*	internal
+*	functions:	none
+*
+*	library
+*	functions:	strcpy
+*
+******************************************************************************/
+int
+spell_it(char* word)
+{
+	char* s = spell_string;
+	const char* t;
+	char* hold = word;
+
+	/*  EAT THE '#'  */
+	word++;
+
+	do {
+		if (*word < ' ') {
+			if (*word == '\t') {
+				t = "'t_aa_b";
+			} else {
+				t = "'u_p_s";	/* (OOPS!) */
+			}
+		} else {
+			t = letters[*word - ' '];
+		}
+		word++;
+		while (*t) {
+			*s++ = *t++;
+		}
+	} while (*word != '#');
+
+	*s = 0;
+
+	strcpy(hold, spell_string);
+	return 2;
+}
+
+/******************************************************************************
+*
+*	function:	all_caps
+*
+*	purpose:
+*
+*
+*       arguments:      in
+*
+*	internal
+*	functions:	none
+*
+*	library
+*	functions:	none
+*
+******************************************************************************/
+int
+all_caps(char *in)
+{
+    int                 all_up = 1;
+    int                 force_up = 0;
+
+    in++;
+    if (*in == '#')
+	force_up = 1;
+
+    while (*in != '#') {
+	if ((*in <= 'z') && (*in >= 'a'))
+	    all_up = 0;
+	else if ((*in <= 'Z') && (*in >= 'A'))
+	    *in |= 0x20;
+	else if (*in != '\'')
+	    force_up = 1;
+	in++;
+    }
+    return (all_up || force_up);
+}
+
+} /* namespace */
+
+//==============================================================================
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -80,8 +175,8 @@ static const char* letters[] = {
 *	functions:	none
 *
 ******************************************************************************/
-
-int word_to_patphone(char *word)
+int
+word_to_patphone(char *word)
 {
     char                *end_of_word;
     register char       replace_s = 0;
@@ -138,94 +233,5 @@ int word_to_patphone(char *word)
     return(0);
 }
 
-
-
-/******************************************************************************
-*
-*	function:	spell_it
-*
-*	purpose:	
-*                       
-*			
-*       arguments:      word
-*                       
-*	internal
-*	functions:	none
-*
-*	library
-*	functions:	strcpy
-*
-******************************************************************************/
-
-static
-int
-spell_it(char* word)
-{
-	char* s = spell_string;
-	const char* t;
-	char* hold = word;
-
-	/*  EAT THE '#'  */
-	word++;
-
-	do {
-		if (*word < ' ') {
-			if (*word == '\t') {
-				t = "'t_aa_b";
-			} else {
-				t = "'u_p_s";	/* (OOPS!) */
-			}
-		} else {
-			t = letters[*word - ' '];
-		}
-		word++;
-		while (*t) {
-			*s++ = *t++;
-		}
-	} while (*word != '#');
-
-	*s = 0;
-
-	strcpy(hold, spell_string);
-	return 2;
-}
-
-
-
-/******************************************************************************
-*
-*	function:	all_caps
-*
-*	purpose:	
-*                       
-*			
-*       arguments:      in
-*                       
-*	internal
-*	functions:	none
-*
-*	library
-*	functions:	none
-*
-******************************************************************************/
-
-static int all_caps(char *in)
-{
-    int                 all_up = 1;
-    int                 force_up = 0;
-
-    in++;
-    if (*in == '#')
-	force_up = 1;
-
-    while (*in != '#') {
-	if ((*in <= 'z') && (*in >= 'a'))
-	    all_up = 0;
-	else if ((*in <= 'Z') && (*in >= 'A'))
-	    *in |= 0x20;
-	else if (*in != '\'')
-	    force_up = 1;
-	in++;
-    }
-    return (all_up || force_up);
-}
+} /* namespace En */
+} /* namespace GS */

@@ -18,11 +18,14 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "medial_s.h"
-#include "member.h"
+#include "en/letter_to_sound/medial_s.h"
+
+#include "en/letter_to_sound/member.h"
 
 
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -40,8 +43,8 @@
 *	functions:	none
 *
 ******************************************************************************/
-
-void medial_s(char *in, char **eow)
+void
+medial_s(char *in, char **eow)
 {
     register char      *end = *eow;
 
@@ -52,3 +55,6 @@ void medial_s(char *in, char **eow)
 	in++;
     }
 }
+
+} /* namespace En */
+} /* namespace GS */

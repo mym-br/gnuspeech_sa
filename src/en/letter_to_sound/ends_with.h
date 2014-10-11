@@ -21,6 +21,14 @@
 #ifndef ENDS_WITH_H_
 #define ENDS_WITH_H_
 
+
+
+namespace GS {
+namespace En {
+
 const char* ends_with(const char* in, const char* end, const char* set);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* ENDS_WITH_H_ */

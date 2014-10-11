@@ -140,8 +140,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "number_parser.h"
-#include "number_pronunciations.h"
+#include "en/text_parser/number_parser.h"
+#include "en/number_pronunciations.h"
 /*  #incude "number_pronunciations_english.h"  (use this for plain english)  */
 
 /*  SYMBOLIC CONSTANTS  ******************************************************/
@@ -1185,7 +1185,7 @@ process_digit(char digit, char* output, int ordinal, int ordinal_plural, int spe
 //==============================================================================
 
 namespace GS {
-namespace EnTextParser {
+namespace En {
 
 /******************************************************************************
 *
@@ -1370,5 +1370,5 @@ degenerate_string(const char* word)
     return (output);
 }
 
-} /* namespace EnTextParser */
+} /* namespace En */
 } /* namespace GS */

@@ -21,6 +21,14 @@
 #ifndef MEMBER_H_
 #define MEMBER_H_
 
+
+
+namespace GS {
+namespace En {
+
 int member(char element, const char* set);
+
+} /* namespace En */
+} /* namespace GS */
 
 #endif /* MEMBER_H_ */

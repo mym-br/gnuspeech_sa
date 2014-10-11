@@ -18,12 +18,15 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-/*  HEADER FILES  ************************************************************/
-#include "medial_silent_e.h"
-#include "member.h"
-#include "insert_mark.h"
+#include "en/letter_to_sound/medial_silent_e.h"
+
+#include "en/letter_to_sound/member.h"
+#include "en/letter_to_sound/insert_mark.h"
 
 
+
+namespace GS {
+namespace En {
 
 /******************************************************************************
 *
@@ -40,8 +43,8 @@
 *	functions:	none
 *
 ******************************************************************************/
-
-void medial_silent_e(char *in, char **eow)
+void
+medial_silent_e(char *in, char **eow)
 {
     char               *end = *eow;
     register char      *position;
@@ -125,3 +128,6 @@ void medial_silent_e(char *in, char **eow)
     }
     *eow = end;
 }
+
+} /* namespace En */
+} /* namespace GS */
