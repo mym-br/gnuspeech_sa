@@ -118,6 +118,7 @@ struct InvalidStateException : public virtual Exception {};
 struct InvalidValueException : public virtual Exception {};
 struct IOException : public virtual Exception {};
 struct MissingValueException : public virtual Exception {};
+struct ParsingException : public virtual Exception {};
 struct TextParserException : public virtual Exception {};
 struct TRMControlModelException : public virtual Exception {};
 struct TRMException : public virtual Exception {};

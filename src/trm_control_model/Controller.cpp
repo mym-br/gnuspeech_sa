@@ -24,20 +24,12 @@
 #include <sstream>
 
 #include "Exception.h"
+#include "Log.h"
 #include "Tube.h"
 
+#define TRM_CONTROL_MODEL_CONFIG_FILE_NAME "/trm_control_model.config"
+#define TRM_CONFIG_FILE_NAME "/trm.config"
 #define VOICES_CONFIG_FILE_NAME "/voices.config"
-
-#define TTS_INTONATION_NONE		0x00
-#define TTS_INTONATION_MICRO		0x01
-#define TTS_INTONATION_MACRO		0x02
-#define TTS_INTONATION_DECLIN		0x04
-#define TTS_INTONATION_CREAK		0x08
-#define TTS_INTONATION_RANDOMIZE	0x10
-#define TTS_INTONATION_ALL		0x1f
-
-#define TTS_INTONATION_DEF		0x1f
-//#define TTS_INTONATION_DEF		TTS_INTONATION_MICRO
 
 
 
@@ -49,6 +41,14 @@ Controller::Controller(const char* configDirPath, Model& model)
 		, eventList_(configDirPath, model_)
 		, stringParser_(configDirPath, model_, eventList_)
 {
+	std::ostringstream trmControlModelConfigFilePath;
+	trmControlModelConfigFilePath << configDirPath << TRM_CONTROL_MODEL_CONFIG_FILE_NAME;
+	trmControlModelConfig_.load(trmControlModelConfigFilePath.str());
+
+	std::ostringstream trmConfigFilePath;
+	trmConfigFilePath << configDirPath << TRM_CONFIG_FILE_NAME;
+	trmConfig_.load(trmConfigFilePath.str());
+
 	initVoices(configDirPath);
 }
 
@@ -59,64 +59,60 @@ Controller::~Controller()
 void
 Controller::initUtterance(const char* trmParamFile)
 {
-	//TODO: get values from file
-	synthConfig_.intonation = TTS_INTONATION_DEF;
-	synthConfig_.random = synthConfig_.intonation & TTS_INTONATION_RANDOMIZE;
-	synthConfig_.voiceType = 0;
-	synthConfig_.channels = 1;
-	synthConfig_.volume = 60.0;
-	synthConfig_.speed = 1.0;
-	synthConfig_.balance = 0.0;
-	synthConfig_.pitchOffset = -4.0;
-	synthConfig_.vtlOffset = 0.0;
-	synthConfig_.breathiness = 0.5;
-	synthConfig_.samplingRate = 44100.0;
-
-	if ((synthConfig_.samplingRate != 22050.0f) && (synthConfig_.samplingRate != 44100.0f)) {
-		synthConfig_.samplingRate = 22050.0f;
+	if (trmControlModelConfig_.voiceType < 0 || trmControlModelConfig_.voiceType >= MAX_VOICES) {
+		THROW_EXCEPTION(InvalidParameterException, "Invalid voice type: " << trmControlModelConfig_.voiceType << '.');
 	}
-	if ((synthConfig_.vtlOffset + voices_[synthConfig_.voiceType].meanLength) < 15.9) {
-		synthConfig_.samplingRate = 44100.0;
+
+	if ((trmConfig_.outputRate != 22050.0) && (trmConfig_.outputRate != 44100.0)) {
+		trmConfig_.outputRate = 44100.0;
+	}
+	if ((trmConfig_.vtlOffset + voices_[trmControlModelConfig_.voiceType].meanLength) < 15.9) {
+		trmConfig_.outputRate = 44100.0;
 	}
 
 #ifdef VERBOSE
-	printf("Tube Length = %f\n", synthConfig_.vtlOffset + voices_[synthConfig_.voiceType].meanLength);
-	printf("Voice: %d L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n", synthConfig_.voiceType,
-		voices_[synthConfig_.voiceType].meanLength, voices_[synthConfig_.voiceType].tp, voices_[synthConfig_.voiceType].tnMin,
-		voices_[synthConfig_.voiceType].tnMax, voices_[synthConfig_.voiceType].glotPitchMean);
-	printf("sampling Rate: %f\n", synthConfig_.samplingRate);
+	printf("Tube Length = %f\n", trmConfig_.vtlOffset + voices_[trmControlModelConfig_.voiceType].meanLength);
+	printf("Voice: %d L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n", trmControlModelConfig_.voiceType,
+		voices_[trmControlModelConfig_.voiceType].meanLength, voices_[trmControlModelConfig_.voiceType].tp, voices_[trmControlModelConfig_.voiceType].tnMin,
+		voices_[trmControlModelConfig_.voiceType].tnMax, voices_[trmControlModelConfig_.voiceType].glotPitchMean);
+	printf("sampling Rate: %f\n", trmConfig_.outputRate);
 #endif
 
-	eventList_.setPitchMean(synthConfig_.pitchOffset + voices_[synthConfig_.voiceType].glotPitchMean);
-	eventList_.setGlobalTempo(1.0 / synthConfig_.speed);
-	setIntonation(synthConfig_.intonation);
-	eventList_.setTgUseRandom(synthConfig_.random);
+	eventList_.setPitchMean(trmControlModelConfig_.pitchOffset + voices_[trmControlModelConfig_.voiceType].glotPitchMean);
+	eventList_.setGlobalTempo(1.0 / trmControlModelConfig_.speed);
+	setIntonation(trmControlModelConfig_.intonation);
+	eventList_.setTgUseRandom(trmControlModelConfig_.intonation & Configuration::INTONATION_RANDOMIZE);
 
-	//TODO: get values from file
 	FILE* fp = fopen(trmParamFile, "w");
 	if (!fp) {
 		THROW_EXCEPTION(TRMControlModelException, "Could not open the file " << trmParamFile << '.');
 	}
-	fprintf(fp,"%f\n%f\n%f\n%d\n%f\n%d\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%d\n%f\n",
-		synthConfig_.samplingRate,
-		250.0,
-		synthConfig_.volume,
-		synthConfig_.channels,
-		synthConfig_.balance,
-		0, 		/* Waveform */
-		voices_[synthConfig_.voiceType].tp    * 100.0,	/* tp */
-		voices_[synthConfig_.voiceType].tnMin * 100.0,	/* tn Min */
-		voices_[synthConfig_.voiceType].tnMax * 100.0,	/* tn Max */
-		synthConfig_.breathiness,
-		synthConfig_.vtlOffset + voices_[synthConfig_.voiceType].meanLength,
-		32.0,	/* Temperature */
-		0.8, 	/* Loss Factor */
-		3.05,	/* Ap scaling */
-		5000.0, 5000.0, 	/* Mouth and nose coef */
-		1.35, 1.96, 1.91, 	/* n1, n2, n3 */
-		1.3, 0.73,		/* n4, n5 */
-		1500.0, 6.0,		/* Throat cutoff and volume */
-		1, 48.0			/* Noise Modulation, mixOffset */
+	fprintf(fp, "%f\n%f\n%f\n%d\n%f\n%d\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%d\n%f\n",
+		trmConfig_.outputRate,
+		trmConfig_.controlRate,
+		trmConfig_.volume,
+		trmConfig_.channels,
+		trmConfig_.balance,
+		trmConfig_.waveform,
+		trmConfig_.tp,
+		trmConfig_.tnMin,
+		trmConfig_.tnMax,
+		trmConfig_.breathiness,
+		trmConfig_.vtlOffset + voices_[trmControlModelConfig_.voiceType].meanLength, // tube length
+		trmConfig_.temperature,
+		trmConfig_.lossFactor,
+		trmConfig_.apScale,
+		trmConfig_.mouthCoef,
+		trmConfig_.noseCoef,
+		trmConfig_.noseRadius[1],
+		trmConfig_.noseRadius[2],
+		trmConfig_.noseRadius[3],
+		trmConfig_.noseRadius[4],
+		trmConfig_.noseRadius[5],
+		trmConfig_.throatCutoff,
+		trmConfig_.throatVol,
+		trmConfig_.modulation,
+		trmConfig_.mixOffset
 	);
 	fclose(fp);
 }
@@ -228,7 +224,7 @@ Controller::initVoices(const char* configDirPath)
 #ifdef VERBOSE
 	printf("===== Voices configuration:\n");
 	printf("MinBlack = %f MinWhite = %f\n", minBlack_, minWhite_);
-	for (int i = 0; i<MAX_VOICES; i++) {
+	for (int i = 0; i < MAX_VOICES; i++) {
 		printf("L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n",
 			voices_[i].meanLength, voices_[i].tp, voices_[i].tnMin,
 			voices_[i].tnMax, voices_[i].glotPitchMean);
@@ -267,13 +263,13 @@ Controller::setIntonation(int intonation)
 		return;
 	}
 
-	if (intonation & TTS_INTONATION_MICRO) {
+	if (intonation & Configuration::INTONATION_MICRO) {
 		eventList_.setMicroIntonation(1);
 	} else {
 		eventList_.setMicroIntonation(0);
 	}
 
-	if (intonation & TTS_INTONATION_MACRO) {
+	if (intonation & Configuration::INTONATION_MACRO) {
 		eventList_.setMacroIntonation(1);
 		eventList_.setSmoothIntonation(1);
 	} else {

@@ -15,70 +15,41 @@
  *  You should have received a copy of the GNU General Public License      *
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ***************************************************************************/
-// 2014-09
+// 2014-10
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef TRM_CONTROL_MODEL_CONTROLLER_H_
-#define TRM_CONTROL_MODEL_CONTROLLER_H_
+#ifndef TRM_CONTROL_MODEL_CONFIGURATION_H_
+#define TRM_CONTROL_MODEL_CONFIGURATION_H_
 
-#include <cstdio>
-
-#include "EventList.h"
-#include "Model.h"
-#include "StringParser.h"
-#include "TRMConfiguration.h"
-#include "TRMControlModelConfiguration.h"
+#include <string>
 
 
 
 namespace GS {
 namespace TRMControlModel {
 
-struct VoiceConfig {
-	float meanLength;
-	float tp;
-	float tnMin;
-	float tnMax;
-	float glotPitchMean;
-};
-
-class Controller {
-public:
-	Controller(const char* configDirPath, Model& model);
-	~Controller();
-
-	void synthesizePhoneticString(const char* phoneticString, const char* trmParamFile, const char* outputFile);
-private:
-	enum {
-		MAX_VOICES = 5
+struct Configuration {
+	enum Intonation {
+		INTONATION_NONE      = 0x00,
+		INTONATION_MICRO     = 0x01,
+		INTONATION_MACRO     = 0x02,
+		INTONATION_DECLIN    = 0x04, // unused
+		INTONATION_CREAK     = 0x08, // unused
+		INTONATION_RANDOMIZE = 0x10
 	};
 
-	Controller(const Controller&);
-	Controller& operator=(const Controller&);
+	Configuration();
 
-	void initUtterance(const char* trmParamFile);
-	int calcChunks(const char* string);
-	int nextChunk(const char* string);
-	void printVowelTransitions();
-	void initVoices(const char* configDirPath);
+	void load(const std::string& configFilePath);
 
-	int validPhone(const char* token);
-	void setIntonation(int intonation);
-	void synthesizePhoneticStringChunk(const char* phoneticStringChunk, const char* trmParamFile);
-
-	Model& model_;
-	VoiceConfig voices_[MAX_VOICES];
-	EventList eventList_;
-	StringParser stringParser_;
-
-	float minBlack_;//TODO: remove?
-	float minWhite_;//TODO: remove?
-
-	Configuration trmControlModelConfig_;
-	TRM::Configuration trmConfig_;
+	int intonation;
+	int random;
+	int voiceType;
+	double speed;
+	double pitchOffset;
 };
 
 } /* namespace TRMControlModel */
 } /* namespace GS */
 
-#endif /* TRM_CONTROL_MODEL_CONTROLLER_H_ */
+#endif /* TRM_CONTROL_MODEL_CONFIGURATION_H_ */

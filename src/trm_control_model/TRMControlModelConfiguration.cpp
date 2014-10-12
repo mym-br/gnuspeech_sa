@@ -15,70 +15,52 @@
  *  You should have received a copy of the GNU General Public License      *
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ***************************************************************************/
-// 2014-09
+// 2014-10
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef TRM_CONTROL_MODEL_CONTROLLER_H_
-#define TRM_CONTROL_MODEL_CONTROLLER_H_
-
-#include <cstdio>
-
-#include "EventList.h"
-#include "Model.h"
-#include "StringParser.h"
-#include "TRMConfiguration.h"
 #include "TRMControlModelConfiguration.h"
+
+#include "KeyValueFileReader.h"
 
 
 
 namespace GS {
 namespace TRMControlModel {
 
-struct VoiceConfig {
-	float meanLength;
-	float tp;
-	float tnMin;
-	float tnMax;
-	float glotPitchMean;
-};
+Configuration::Configuration()
+		: intonation(0)
+		, voiceType(0)
+		, speed(0.0)
+		, pitchOffset(0.0)
+{
+}
 
-class Controller {
-public:
-	Controller(const char* configDirPath, Model& model);
-	~Controller();
+void
+Configuration::load(const std::string& configFilePath)
+{
+	KeyValueFileReader reader(configFilePath);
 
-	void synthesizePhoneticString(const char* phoneticString, const char* trmParamFile, const char* outputFile);
-private:
-	enum {
-		MAX_VOICES = 5
-	};
+	intonation = 0;
+	if (reader.value<int>("micro_intonation") != 0) {
+		intonation += INTONATION_MICRO;
+	}
+	if (reader.value<int>("macro_intonation") != 0) {
+		intonation += INTONATION_MACRO;
+	}
+	if (reader.value<int>("declin_intonation") != 0) {
+		intonation += INTONATION_DECLIN;
+	}
+	if (reader.value<int>("creak_intonation") != 0) {
+		intonation += INTONATION_CREAK;
+	}
+	if (reader.value<int>("random_intonation") != 0) {
+		intonation += INTONATION_RANDOMIZE;
+	}
 
-	Controller(const Controller&);
-	Controller& operator=(const Controller&);
-
-	void initUtterance(const char* trmParamFile);
-	int calcChunks(const char* string);
-	int nextChunk(const char* string);
-	void printVowelTransitions();
-	void initVoices(const char* configDirPath);
-
-	int validPhone(const char* token);
-	void setIntonation(int intonation);
-	void synthesizePhoneticStringChunk(const char* phoneticStringChunk, const char* trmParamFile);
-
-	Model& model_;
-	VoiceConfig voices_[MAX_VOICES];
-	EventList eventList_;
-	StringParser stringParser_;
-
-	float minBlack_;//TODO: remove?
-	float minWhite_;//TODO: remove?
-
-	Configuration trmControlModelConfig_;
-	TRM::Configuration trmConfig_;
-};
+	voiceType = reader.value<int>("voice_type");
+	speed = reader.value<double>("speed");
+	pitchOffset = reader.value<double>("pitch_offset");
+}
 
 } /* namespace TRMControlModel */
 } /* namespace GS */
-
-#endif /* TRM_CONTROL_MODEL_CONTROLLER_H_ */

@@ -3,5 +3,3 @@
 	src/SpeechObject/postMonet/server.monet/headerFiles/number_pronunciations.h
 	src/SpeechObject/postMonet/server.monet/letter_to_sound/number_pronunciations.h
 	(using the second)
-
-- Some functions for text parsing are not thread-safe.

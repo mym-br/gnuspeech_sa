@@ -18,6 +18,7 @@ add_definitions(-DVERBOSE)
 add_library(gnuspeechx SHARED
     src/Dictionary.cpp src/Dictionary.h
     src/Exception.h
+    src/KeyValueFileReader.cpp src/KeyValueFileReader.h
     src/Log.h
     src/Text.h
 
@@ -66,11 +67,14 @@ add_library(gnuspeechx SHARED
     src/trm_control_model/Rule.cpp src/trm_control_model/Rule.h
     src/trm_control_model/StringParser.cpp src/trm_control_model/StringParser.h
     src/trm_control_model/Transition.cpp src/trm_control_model/Transition.h
+    src/trm_control_model/TRMControlModelConfiguration.cpp src/trm_control_model/TRMControlModelConfiguration.h
 
     src/xml/SimpleXMLParser.cpp src/xml/SimpleXMLParser.h
 )
 
 add_library(gnuspeechtrm SHARED
+    src/KeyValueFileReader.cpp src/KeyValueFileReader.h
+
     src/trm/BandpassFilter.cpp src/trm/BandpassFilter.h
     src/trm/FIRFilter.cpp src/trm/FIRFilter.h
     src/trm/NoiseFilter.cpp src/trm/NoiseFilter.h
@@ -79,6 +83,7 @@ add_library(gnuspeechtrm SHARED
     src/trm/ReflectionFilter.cpp src/trm/ReflectionFilter.h
     src/trm/SampleRateConverter.cpp src/trm/SampleRateConverter.h
     src/trm/Throat.cpp src/trm/Throat.h
+    src/trm/TRMConfiguration.cpp src/trm/TRMConfiguration.h
     src/trm/Tube.cpp src/trm/Tube.h
     src/trm/WavetableGlottalSource.cpp src/trm/WavetableGlottalSource.h
 )

@@ -42,6 +42,16 @@ extern bool verbose;
 
 class Tube {
 public:
+	enum { /*  NASAL TRACT SECTIONS  */
+		N1 = 0,
+		N2 = 1,
+		N3 = 2,
+		N4 = 3,
+		N5 = 4,
+		N6 = 5,
+		TOTAL_NASAL_SECTIONS = 6
+	};
+
 	Tube();
 	~Tube();
 
@@ -57,15 +67,6 @@ private:
 		R7 = 6, /*  S9  */
 		R8 = 7, /*  S10  */
 		TOTAL_REGIONS = 8
-	};
-	enum { /*  NASAL TRACT SECTIONS  */
-		N1 = 0,
-		N2 = 1,
-		N3 = 2,
-		N4 = 3,
-		N5 = 4,
-		N6 = 5,
-		TOTAL_NASAL_SECTIONS = 6
 	};
 	enum {
 		VELUM = N1
