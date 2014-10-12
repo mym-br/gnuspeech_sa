@@ -48,7 +48,7 @@ add_library(gnuspeechx SHARED
     src/en/number_pronunciations.h
 
     src/en/text_parser/abbreviations.h
-    src/en/text_parser/number_parser.cpp src/en/text_parser/number_parser.h
+    src/en/text_parser/NumberParser.cpp src/en/text_parser/NumberParser.h
     src/en/text_parser/special_acronyms.h
     src/en/text_parser/TextParser.cpp src/en/text_parser/TextParser.h
 
