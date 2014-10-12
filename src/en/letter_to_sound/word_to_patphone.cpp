@@ -20,6 +20,7 @@
 
 #include "en/letter_to_sound/word_to_patphone.h"
 
+#include <array>
 #include <string.h>
 
 #include "en/letter_to_sound/vowel_before.h"
@@ -45,8 +46,6 @@ int spell_it(char* word);
 int all_caps(char* in);
 
 
-
-char spell_string[SPELL_STRING_LEN];
 
 const char* letters[] = {
   BLANK, EXCLAMATION_POINT, DOUBLE_QUOTE, NUMBER_SIGN, DOLLAR_SIGN,
@@ -83,7 +82,10 @@ const char* letters[] = {
 int
 spell_it(char* word)
 {
-	char* s = spell_string;
+	std::array<char, SPELL_STRING_LEN> spell_string;
+	spell_string.fill(0);
+
+	char* s = &spell_string[0];
 	const char* t;
 	char* hold = word;
 
@@ -108,7 +110,7 @@ spell_it(char* word)
 
 	*s = 0;
 
-	strcpy(hold, spell_string);
+	strcpy(hold, &spell_string[0]);
 	return 2;
 }
 
