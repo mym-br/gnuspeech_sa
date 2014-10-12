@@ -29,9 +29,9 @@
 
 namespace {
 
-int stress_suffix(char *orthography, int *type);
-int light(char *sb);
-int prefix(char *orthography);
+int stress_suffix(const char* orthography, int* type);
+int light(const char* sb);
+int prefix(const char* orthography);
 
 
 
@@ -41,33 +41,24 @@ int prefix(char *orthography);
 *
 *	purpose:
 *
-*
-*       arguments:      orthography, type
-*
-*	internal
-*	functions:	none
-*
-*	library
-*	functions:	strlen, strcmp
-*
 ******************************************************************************/
 int
-stress_suffix(char *orthography, int *type)
+stress_suffix(const char* orthography, int* type)
 {
-    int                 t = 0, a, c;
-    const char* b;
+	int t = 0, a, c;
+	const char* b;
 
-    c = strlen(orthography);
-    while (suffix_list[t].suff) {
-	b = suffix_list[t].suff;
-	a = strlen(b);
-	if ((a <= c) && !strcmp(b, orthography + c - a)) {
-	    *type = suffix_list[t].type;
-	    return(suffix_list[t].sylls);
+	c = strlen(orthography);
+	while (suffix_list[t].suff) {
+		b = suffix_list[t].suff;
+		a = strlen(b);
+		if ((a <= c) && !strcmp(b, orthography + c - a)) {
+			*type = suffix_list[t].type;
+			return suffix_list[t].sylls;
+		}
+		t++;
 	}
-	t++;
-    }
-    return(0);
+	return 0;
 }
 
 /******************************************************************************
@@ -76,41 +67,39 @@ stress_suffix(char *orthography, int *type)
 *
 *	purpose:	Determine if a syllable is light.
 *
-*
-*       arguments:      sb
-*
-*	internal
-*	functions:	isvowel
-*
-*	library
-*	functions:	none
-*
 ******************************************************************************/
 int
-light(char *sb)
+light(const char* sb)
 {
-    while (!isvowel(*sb))
-	sb++;
+	while (!isvowel(*sb)) {
+		sb++;
+	}
 
-    while (isvowel(*sb) || (*sb == '_') || (*sb == '.'))
-	sb++;
+	while (isvowel(*sb) || (*sb == '_') || (*sb == '.')) {
+		sb++;
+	}
 
-    if (!*sb)
-	return(1);
+	if (!*sb) {
+		return 1;
+	}
 
-    while ((*sb != '_') && (*sb != '.') && *sb)
-	sb++;
+	while ((*sb != '_') && (*sb != '.') && *sb) {
+		sb++;
+	}
 
-    if (!*sb)
-	return(1);
+	if (!*sb) {
+		return 1;
+	}
 
-    while (((*sb == '_') || (*sb == '.')) && *sb)
-	sb++;
+	while (((*sb == '_') || (*sb == '.')) && *sb) {
+		sb++;
+	}
 
-    if (!*sb)
-	return(1);
+	if (!*sb) {
+		return 1;
+	}
 
-    return isvowel(*sb);
+	return isvowel(*sb);
 }
 
 /******************************************************************************
@@ -119,28 +108,21 @@ light(char *sb)
 *
 *	purpose:
 *
-*
-*       arguments:      orthography
-*
-*	internal
-*	functions:	none
-*
-*	library
-*	functions:	strlen, strncmp
-*
 ******************************************************************************/
 int
-prefix(char *orthography)
+prefix(const char* orthography)
 {
-    int                 t = 0, l, m;
-    const char* a;
+	int t = 0, l, m;
+	const char* a;
 
-    m = strlen(orthography);
-    while (a = prefices[t++])
-	if (((l = strlen(a)) <= m) && !strncmp(a, orthography, l))
-	    return(1);
+	m = strlen(orthography);
+	while ( (a = prefices[t++]) ) {
+		if (((l = strlen(a)) <= m) && !strncmp(a, orthography, l)) {
+			return 1;
+		}
+	}
 
-    return(0);
+	return 0;
 }
 
 } /* namespace */
@@ -152,7 +134,7 @@ namespace En {
 
 /******************************************************************************
 *
-*	function:	apply_stres
+*	function:	apply_stress
 *
 *	purpose:	Find all syllables and make an array of pointers to
 *                       them.  Mark each as either weak or strong in a separate
@@ -161,81 +143,81 @@ namespace En {
 *                       Decide which syllable gets the stress marker;  insert
 *                       it at the pointer to that syllable.  Returns nonzero
 *                       if an error occurred.
-*			
-*       arguments:      buffer, orthography
-*                       
-*	internal
-*	functions:	stress_suffix, light, prefix
-*
-*	library
-*	functions:	none
 *
 ******************************************************************************/
 int
-apply_stress(char *buffer, char *orthography)
+apply_stress(char* buffer, const char* orthography)
 {
-    char               *syll_array[MAX_SYLLS];
-    char               *spt, ich, temp = '\0';
-    int                 index;
-    int                 type, t, syll = (-1);
-    int                 last_was_break = 1;
+	char* syll_array[MAX_SYLLS];
+	char* spt;
+	char ich, temp = '\0';
+	int index;
+	int type, t, syll = (-1);
+	int last_was_break = 1;
 
-    for (index = 0, spt = buffer; *spt; spt++) {
-	if (last_was_break) {
-	    last_was_break = 0;
-	    syll_array[index++] = spt;
+	for (index = 0, spt = buffer; *spt; spt++) {
+		if (last_was_break) {
+			last_was_break = 0;
+			syll_array[index++] = spt;
+		}
+		if (*spt == '.') {
+			last_was_break = 1;
+		}
 	}
-	if (*spt == '.')
-	    last_was_break = 1;
-    }
 
-    if (index > MAX_SYLLS) {
-	return(1);
-    }
+	if (index > MAX_SYLLS) {
+		return 1;
+	}
 
-    /*  RETURNS SYLLABLE NO. (FROM THE END) THAT IS THE START OF A STRESS-AFFECTING
+	/*  RETURNS SYLLABLE NO. (FROM THE END) THAT IS THE START OF A STRESS-AFFECTING
 	SUFFIX, 0 IF NONE; AND TYPE  */
-    t = stress_suffix(orthography, &type);
-    if (t) {
-	if (type == AUTOSTRESSED)
-	    syll = index - t;
-	else if (type == PRESTRESS1)
-	    syll = index - t - 1;
-	else if (type == PRESTRESS2)
-	    syll = index - t - 2;
-	else if (type == PRESTRESS3) {
-	    syll = index - t - 1;
-	    if (syll >= 0 && light(syll_array[syll]))
-		syll--;
-	} else if (type == NEUTRAL)
-	    index -= t;
-    }
+	t = stress_suffix(orthography, &type);
+	if (t) {
+		if (type == AUTOSTRESSED) {
+			syll = index - t;
+		} else if (type == PRESTRESS1) {
+			syll = index - t - 1;
+		} else if (type == PRESTRESS2) {
+			syll = index - t - 2;
+		} else if (type == PRESTRESS3) {
+			syll = index - t - 1;
+			if (syll >= 0 && light(syll_array[syll])) {
+				syll--;
+			}
+		} else if (type == NEUTRAL) {
+			index -= t;
+		}
+	}
 
-    if ((syll < 0) && prefix(orthography) && (index >= 2))
-	syll = 1;
+	if ((syll < 0) && prefix(orthography) && (index >= 2)) {
+		syll = 1;
+	}
 
-    if (syll < 0) {		/* if as yet unsuccessful */
-	syll = index - 2;
-	if (syll < 0)
-	    syll = 0;
-	if (light(syll_array[syll]))
-	    syll--;
-    }
+	if (syll < 0) {		/* if as yet unsuccessful */
+		syll = index - 2;
+		if (syll < 0) {
+			syll = 0;
+		}
+		if (light(syll_array[syll])) {
+			syll--;
+		}
+	}
 
-    if (syll < 0)
-	syll = 0;
+	if (syll < 0) {
+		syll = 0;
+	}
 
-    spt = syll_array[syll];
-/*  strcpy(spt+1,spt); */
-    ich = '\'';
-    while (ich) {
-	temp = *spt;
-	*spt = ich;
-	ich = temp;
-	spt++;
-    }
-    *spt = '\0';
-    return(0);
+	spt = syll_array[syll];
+	/*  strcpy(spt+1,spt); */
+	ich = '\'';
+	while (ich) {
+		temp = *spt;
+		*spt = ich;
+		ich = temp;
+		spt++;
+	}
+	*spt = '\0';
+	return 0;
 }
 
 } /* namespace En */

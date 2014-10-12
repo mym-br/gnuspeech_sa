@@ -23,6 +23,7 @@
 
 #include <string>
 #include <sstream>
+#include <vector>
 
 #include "en/main_dict/MainDictionary.h"
 
@@ -57,6 +58,7 @@ private:
 	short dictionaryOrder_[4];
 
 	std::stringstream auxStream_;
+	std::vector<char> pronunciation_;
 };
 
 } /* namespace En */

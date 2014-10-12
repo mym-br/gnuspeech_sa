@@ -21,12 +21,14 @@
 #ifndef LETTER_TO_SOUND_H_
 #define LETTER_TO_SOUND_H_
 
+#include <vector>
+
 
 
 namespace GS {
 namespace En {
 
-char *letter_to_sound(char *word);
+void letter_to_sound(const char* word, std::vector<char>& pronunciation);
 
 } /* namespace En */
 } /* namespace GS */

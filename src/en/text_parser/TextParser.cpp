@@ -2026,7 +2026,6 @@ TextParser::parseText(const char* text)
 const char*
 TextParser::lookup_word(const char* word, short* dict)
 {
-	const char* pronunciation;
 	int i;
 	printf("lookup_word word: %s\n", word);
 
@@ -2036,11 +2035,14 @@ TextParser::lookup_word(const char* word, short* dict)
 		case TTS_EMPTY:
 			break;
 		case TTS_NUMBER_PARSER:
-			if ((pronunciation = number_parser(word,NP_NORMAL)) != NULL) {
-				*dict = TTS_NUMBER_PARSER;
-				return pronunciation;
+			{
+				const char* pron = number_parser(word, NP_NORMAL);
+				if (pron != nullptr) {
+					*dict = TTS_NUMBER_PARSER;
+					return pron;
+				}
+				break;
 			}
-			break;
 //		case TTS_USER_DICTIONARY:
 //			if ((pronunciation = preditor_get_entry(userDictionary,word)) != NULL) {
 //				*dict = TTS_USER_DICTIONARY;
@@ -2054,11 +2056,14 @@ TextParser::lookup_word(const char* word, short* dict)
 //			}
 			return nullptr;
 		case TTS_MAIN_DICTIONARY:
-			if ((pronunciation = dict_.getEntry(word)) != NULL) {
-				*dict = TTS_MAIN_DICTIONARY;
-				return pronunciation;
+			{
+				const char* entry = dict_.getEntry(word);
+				if (entry != nullptr) {
+					*dict = TTS_MAIN_DICTIONARY;
+					return entry;
+				}
+				break;
 			}
-			break;
 //		case TTS_LETTER_TO_SOUND:
 //			if ((pronunciation = letter_to_sound((char *)word)) != NULL) {
 //				*dict = TTS_LETTER_TO_SOUND;
@@ -2075,9 +2080,10 @@ TextParser::lookup_word(const char* word, short* dict)
 
 	/*  IF HERE, THEN FIND WORD IN LETTER-TO-SOUND RULEBASE  */
 	/*  THIS IS GUARANTEED TO FIND A PRONUNCIATION OF SOME SORT  */
-	if ((pronunciation = letter_to_sound((char *)word)) != NULL) {
+	letter_to_sound(word, pronunciation_);
+	if (!pronunciation_.empty()) {
 		*dict = TTS_LETTER_TO_SOUND;
-		return pronunciation;
+		return &pronunciation_[0];
 	} else {
 		*dict = TTS_LETTER_TO_SOUND;
 		return degenerate_string(word);

@@ -26,7 +26,7 @@
 namespace GS {
 namespace En {
 
-int apply_stress(char *buffer, char *orthography);
+int apply_stress(char* buffer, const char* orthography);
 
 } /* namespace En */
 } /* namespace GS */

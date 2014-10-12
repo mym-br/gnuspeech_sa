@@ -75,8 +75,8 @@ namespace En {
 void
 MainDictionary::clearBuffers()
 {
-	buffer_.fill(0);
-	wordTypeBuffer_.fill(0);
+	buffer_.fill('\0');
+	wordTypeBuffer_.fill('\0');
 }
 
 MainDictionary::MainDictionary()

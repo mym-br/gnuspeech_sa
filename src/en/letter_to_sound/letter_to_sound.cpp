@@ -98,49 +98,44 @@ namespace En {
 *
 *	purpose:	Returns pronunciation of word based on letter-to-sound
 *                       rules.  Returns NULL if any error (rare).
-*			
-*       arguments:      word
-*                       
-*	internal
-*	functions:	word_to_patphone, isp_trans, syllabify, apply_stress,
-*                       word_type
-*
-*	library
-*	functions:	sprintf, strcat
 *
 ******************************************************************************/
-char*
-letter_to_sound(char *word)
+void
+letter_to_sound(const char* word, std::vector<char>& pronunciation)
 {
-    char                buffer[MAX_WORD_LENGTH+3];
-    static char         pronunciation[MAX_PRONUNCIATION_LENGTH+1];
-    int                 number_of_syllables = 0;
+	char buffer[MAX_WORD_LENGTH + 3];
+	int number_of_syllables = 0;
 
+	pronunciation.assign(MAX_PRONUNCIATION_LENGTH + 1, '\0');
 
-    /*  FORMAT WORD  */
-    sprintf(buffer, "#%s#", word);
+	/*  FORMAT WORD  */
+	sprintf(buffer, "#%s#", word);
 
-    /*  CONVERT WORD TO PRONUNCIATION  */
-    if (!word_to_patphone(buffer)) {
-	isp_trans(buffer, pronunciation);
-	/*  ATTEMPT TO MARK SYLL/STRESS  */
-	number_of_syllables = syllabify(pronunciation);
-	if (apply_stress(pronunciation, word))
-	    return NULL;
-    } else
-	strcpy(pronunciation, buffer);
+	/*  CONVERT WORD TO PRONUNCIATION  */
+	if (!word_to_patphone(buffer)) {
+		isp_trans(buffer, &pronunciation[0]);
+		/*  ATTEMPT TO MARK SYLL/STRESS  */
+		number_of_syllables = syllabify(&pronunciation[0]);
+		if (apply_stress(&pronunciation[0], word)) { // error
+			pronunciation.clear();
+			return;
+		}
+	} else {
+		strcpy(&pronunciation[0], buffer);
+	}
 
-    /*  APPEND WORD_TYPE_DELIMITER  */
-    pronunciation[strlen(pronunciation) - 1] = WORD_TYPE_DELIMITER;
+	/*  APPEND WORD_TYPE_DELIMITER  */
+	pronunciation[pronunciation.size() - 1] = WORD_TYPE_DELIMITER;
 
-    /*  GUESS TYPE OF WORD  */
-    if (number_of_syllables != 1)
-	strcat(pronunciation, word_type(word));
-    else
-	strcat(pronunciation, WORD_TYPE_UNKNOWN);
+	/*  GUESS TYPE OF WORD  */
+	if (number_of_syllables != 1) {
+		strcat(&pronunciation[0], word_type(word));
+	} else {
+		strcat(&pronunciation[0], WORD_TYPE_UNKNOWN);
+	}
 
-    /*  RETURN RESULTING PRONUNCIATION  */
-    return(pronunciation);
+	/*  RETURN RESULTING PRONUNCIATION  */
+	return;
 }
 
 } /* namespace En */
