@@ -21,6 +21,8 @@
 #ifndef MAIN_DICTIONARY_H_
 #define MAIN_DICTIONARY_H_
 
+#include <array>
+
 #include "Dictionary.h"
 
 
@@ -41,12 +43,19 @@ public:
 	// The returned string is invalidated if the dictionary is changed.
 	const char* version();
 private:
+	enum {
+		MAXLEN = 1024
+	};
+
 	MainDictionary(const MainDictionary&);
 	MainDictionary& operator=(const MainDictionary&);
 
+	void clearBuffers();
 	const char* augmentedSearch(const char* orthography);
 
 	Dictionary dict_;
+	std::array<char, MAXLEN> buffer_;
+	std::array<char, 32> wordTypeBuffer_;
 };
 
 } /* namespace En */

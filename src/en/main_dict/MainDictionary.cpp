@@ -26,7 +26,6 @@
 #include "en/main_dict/suffix_list.h"
 
 #define MAIN_DICTIONARY_FILE "/MainDictionary"
-#define MAXLEN      1024
 
 
 
@@ -73,8 +72,16 @@ word_has_suffix(const char* word, const char* suffix)
 namespace GS {
 namespace En {
 
+void
+MainDictionary::clearBuffers()
+{
+	buffer_.fill(0);
+	wordTypeBuffer_.fill(0);
+}
+
 MainDictionary::MainDictionary()
 {
+	clearBuffers();
 }
 
 MainDictionary::~MainDictionary()
@@ -121,8 +128,8 @@ MainDictionary::augmentedSearch(const char* orthography)
 	const char* pt;
 	char* word_type_pos;
 	const suffix_list_t* list_ptr;
-	static char buffer[MAXLEN];
-	static char word_type_buffer[32];
+
+	clearBuffers();
 
 	/*  RETURN IMMEDIATELY IF WORD FOUND IN DICTIONARY  */
 	if (word = dict_.getEntry(orthography)) {
@@ -133,31 +140,31 @@ MainDictionary::augmentedSearch(const char* orthography)
 	for (list_ptr = suffix_list; list_ptr->suffix; list_ptr++) {
 		if (pt = word_has_suffix(orthography, list_ptr->suffix)) {
 			/*  TACK ON REPLACEMENT ENDING  */
-			strcpy(buffer, orthography);
-			*(buffer + (pt - orthography)) = '\0';
-			strcat(buffer, list_ptr->replacement);
+			strcpy(&buffer_[0], orthography);
+			*(&buffer_[0] + (pt - orthography)) = '\0';
+			strcat(&buffer_[0], list_ptr->replacement);
 
 			/*  IF WORD FOUND WITH REPLACEMENT ENDING  */
-			if (word = dict_.getEntry(buffer)) {
+			if (word = dict_.getEntry(&buffer_[0])) {
 				/*  PUT THE FOUND PRONUNCIATION IN THE BUFFER  */
-				strcpy(buffer, word);
+				strcpy(&buffer_[0], word);
 
 				/*  FIND THE WORD-TYPE INFO  */
-				for (word_type_pos = buffer; *word_type_pos && (*word_type_pos != '%'); word_type_pos++)
+				for (word_type_pos = &buffer_[0]; *word_type_pos && (*word_type_pos != '%'); word_type_pos++)
 					;
 
 				/*  SAVE IT INTO WORD TYPE BUFFER  */
-				strcpy(word_type_buffer, word_type_pos);
+				strcpy(&wordTypeBuffer_[0], word_type_pos);
 
 				/*  APPEND SUFFIX PRONUNCIATION TO WORD  */
 				*word_type_pos = '\0';
-				strcat(buffer, list_ptr->pronunciation);
+				strcat(&buffer_[0], list_ptr->pronunciation);
 
 				/*  AND PUT BACK THE WORD TYPE  */
-				strcat(buffer, word_type_buffer);
+				strcat(&buffer_[0], &wordTypeBuffer_[0]);
 
 				/*  RETURN WORD WITH SUFFIX AND ORIGINAL WORD TYPE  */
-				return buffer;
+				return &buffer_[0];
 			}
 		}
 	}
