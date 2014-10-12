@@ -26,7 +26,7 @@
 namespace GS {
 namespace En {
 
-int syllabify(char *word);
+int syllabify(char* word);
 
 } /* namespace En */
 } /* namespace GS */

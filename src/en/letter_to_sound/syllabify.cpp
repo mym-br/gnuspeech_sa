@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 
 #include "en/letter_to_sound/clusters.h"
 
@@ -44,7 +45,7 @@ typedef char phone_type;
 int syllable_break(const char* cluster);
 void create_cv_signature(char *ptr, phone_type *arr);
 char *add_1_phone(char *t);
-char *extract_consonant_cluster(char *ptr, phone_type *type);
+void extract_consonant_cluster(char* ptr, phone_type* type, std::vector<char>& cluster);
 int next_consonant_cluster(phone_type *pt);
 int check_cluster(const char* p, const char** match_array);
 
@@ -67,37 +68,37 @@ int check_cluster(const char* p, const char** match_array);
 *
 ******************************************************************************/
 int
-syllable_break(const char *cluster)
+syllable_break(const char* cluster)
 {
-    const char* left_cluster;
-    const char* right_cluster;
-    char temp[MAX_LEN];
-    int                 offset, length;
+	const char* left_cluster;
+	const char* right_cluster;
+	char temp[MAX_LEN];
+	int offset, length;
 
+	/*  GET LENGTH OF CLUSTER  */
+	length = strlen(cluster);
 
-    /*  GET LENGTH OF CLUSTER  */
-    length = strlen(cluster);
-
-    /*  INITIALLY WE SHALL RETURN THE FIRST 'POSSIBLE' MATCH  */
-    for (offset = -1; (offset <= length); offset++) {
-	if (offset == -1 || offset == length || cluster[offset] == '_' || cluster[offset] == '.') {
-	    strcpy(temp, cluster);
-	    if (offset >= 0)
-		temp[offset] = 0;
-	    left_cluster = (offset < 0 ? temp : offset == length ? temp + length : temp + (offset + 1));
-	    /*  POINTS TO BEGINNING OR NULL  */
-	    right_cluster = (offset >= 0 ? temp : temp + length);
-	    /*  NOW THEY POINT TO EITHER A LEFT/RIGHT HANDED CLUSTER OR A NULL STRING  */
-	    if (check_cluster(left_cluster, LEFT) && check_cluster(right_cluster, RIGHT)) {
-		/*  IF THIS IS A POSSIBLE BREAK */
-		/*  TEMPORARY:  WILL STORE LIST OF POSSIBLES AND PICK A 'BEST' ONE  */
-		return(offset);
-	    }
+	/*  INITIALLY WE SHALL RETURN THE FIRST 'POSSIBLE' MATCH  */
+	for (offset = -1; (offset <= length); offset++) {
+		if (offset == -1 || offset == length || cluster[offset] == '_' || cluster[offset] == '.') {
+			strcpy(temp, cluster);
+			if (offset >= 0) {
+				temp[offset] = 0;
+			}
+			left_cluster = (offset < 0 ? temp : offset == length ? temp + length : temp + (offset + 1));
+			/*  POINTS TO BEGINNING OR NULL  */
+			right_cluster = (offset >= 0 ? temp : temp + length);
+			/*  NOW THEY POINT TO EITHER A LEFT/RIGHT HANDED CLUSTER OR A NULL STRING  */
+			if (check_cluster(left_cluster, LEFT) && check_cluster(right_cluster, RIGHT)) {
+				/*  IF THIS IS A POSSIBLE BREAK */
+				/*  TEMPORARY:  WILL STORE LIST OF POSSIBLES AND PICK A 'BEST' ONE  */
+				return offset;
+			}
+		}
 	}
-    }
 
-    /*  IF HERE, RETURN ERROR  */
-    return(-2);
+	/*  IF HERE, RETURN ERROR  */
+	return -2;
 }
 
 /******************************************************************************
@@ -161,38 +162,26 @@ add_1_phone(char *t)
 *
 *	function:	extract_consonant_cluster
 *
-*	purpose:	there is a memory leak which needs fixing!!!!
-*                       (fixed temporarily).
-*
-*       arguments:      ptr, type
-*
 ******************************************************************************/
-char*
-extract_consonant_cluster(char *ptr, phone_type *type)
+void
+extract_consonant_cluster(char* ptr, phone_type* type, std::vector<char>& cluster)
 {
-    char                *newptr;
-    static char         ret[2048];  // to fix memory leak
-    int                 offset;
+	char* newptr = ptr;
 
-    newptr = ptr;
+	while (*type == 'c') {
+		type++;
+		newptr = add_1_phone(newptr);
+	}
 
-    while (*type == 'c') {
-	type++;
-	newptr = add_1_phone(newptr);
-    }
+	cluster.assign(strlen(ptr) + 1, '\0');
+	strcpy(&cluster[0], ptr);
+	int offset = newptr - ptr - 1;
 
-//    printf("extract:  strlen(ptr) = %-d\n",strlen(ptr));
-
-//    ret = (char *)malloc(strlen(ptr) + 1);  // to fix memory leak
-    strcpy(ret, ptr);
-    offset = newptr - ptr - 1;
-
-    if (offset >= 0)
-	ret[offset] = 0;
-    else
-	fprintf(stderr, "offset error\n");  // what's this??
-
-    return(ret);
+	if (offset >= 0) {
+		cluster[offset] = '\0';
+	} else {
+		fprintf(stderr, "offset error\n");  // what's this??
+	}
 }
 
 /******************************************************************************
@@ -299,42 +288,44 @@ namespace En {
 *
 ******************************************************************************/
 int
-syllabify(char *word)
+syllabify(char* word)
 {
-    int                 i, n, temp, number_of_syllables = 0;
-    phone_type          cv_signature[MAX_LEN], *current_type;
-    char                *cluster, *ptr;
+	int        i, n, temp, number_of_syllables = 0;
+	phone_type cv_signature[MAX_LEN], *current_type;
+	char *ptr;
+	std::vector<char> cluster;
 
+	/*  INITIALIZE THIS ARRAY TO 'c' (CONSONANT), 'v' (VOWEL), 0 (END)  */
+	ptr = word;
+	create_cv_signature(ptr, cv_signature);
+	current_type = cv_signature;
 
-    /*  INITIALIZE THIS ARRAY TO 'c' (CONSONANT), 'v' (VOWEL), 0 (END)  */
-    ptr = word;
-    create_cv_signature(ptr, cv_signature);	
-    current_type = cv_signature;
+	/*  WHILE THERE IS ANOTHER CONSONANT CLUSTER (NOT THE LAST)  */
+	while (temp = next_consonant_cluster(current_type)) {
+		number_of_syllables++;
 
-    /*  WHILE THERE IS ANOTHER CONSONANT CLUSTER (NOT THE LAST)  */
-    while (temp = next_consonant_cluster(current_type)) {	
-	number_of_syllables++;
+		/*  UPDATE CURRENT TYPE POINTER  */
+		current_type += temp;
 
-	/*  UPDATE CURRENT TYPE POINTER  */
-	current_type += temp;
+		/*  MOVE PTR TO POINT TO THAT CLUSTER  */
+		for (i = 0; i < temp; i++) {
+			ptr = add_1_phone(ptr);
+		}
 
-	/*  MOVE PTR TO POINT TO THAT CLUSTER  */
-	for (i = 0; i < temp; i++)
-	    ptr = add_1_phone(ptr);
+		/*  EXTRACT THE CLUSTER INTO A SEPARATE STRING  */
+		extract_consonant_cluster(ptr, current_type, cluster);
 
-	/*  EXTRACT THE CLUSTER INTO A SEPARATE STRING  */
-	cluster = extract_consonant_cluster(ptr, current_type);
+		/*  DETERMINE WHERE THE PERIOD GOES (OFFSET FROM PTR, WHICH COULD BE -1)  */
+		n = syllable_break(&cluster[0]);
 
-	/*  DETERMINE WHERE THE PERIOD GOES (OFFSET FROM PTR, WHICH COULD BE -1)  */
-	n = syllable_break(cluster);
+		/*  MARK THE SYLLABLE IF POSSIBLE  */
+		if (n != -2) {
+			*(ptr + n) = '.';
+		}
+	}
 
-	/*  MARK THE SYLLABLE IF POSSIBLE  */
-	if (n != -2)
-	    *(ptr + n) = '.';
-    }
-
-    /*  RETURN NUMBER OF SYLLABLES  */
-    return(number_of_syllables ? number_of_syllables : 1);
+	/*  RETURN NUMBER OF SYLLABLES  */
+	return number_of_syllables ? number_of_syllables : 1;
 }
 
 } /* namespace En */
