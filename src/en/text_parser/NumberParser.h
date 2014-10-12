@@ -21,10 +21,7 @@
 #ifndef NUMBER_PARSER_H_
 #define NUMBER_PARSER_H_
 
-/*  FLAGS FOR ARGUMENT mode WHEN CALLING number_parser()  */
-#define NP_NORMAL          0
-#define NP_OVERRIDE_YEARS  1
-#define NP_FORCE_SPELL     2
+#include <array>
 
 
 
@@ -67,9 +64,100 @@ TYPICAL USAGE:
   printf("%s\n",ptr);
 
 ********************************************************************/
-const char* number_parser(const char* word_ptr, int mode);
 
-const char* degenerate_string(const char* word);
+class NumberParser {
+public:
+	/*  FLAGS FOR ARGUMENT mode WHEN CALLING number_parser()  */
+	enum Mode {
+		NORMAL         = 0,
+		OVERRIDE_YEARS = 1,
+		FORCE_SPELL    = 2
+	};
+	enum {
+		CLOCK_MAX             = 2,    /*  MAX # OF COLONS IN CLOCK TIMES  */
+		NEGATIVE_MAX          = 3,    /*  MAX # OF NEGATIVE SIGNS (-)     */
+		COMMAS_MAX            = 33,   /*  MAX # OF COMMAS                 */
+		INTEGER_DIGITS_MAX    = 100,  /*  MAX # OF INTEGER DIGITS         */
+		OUTPUT_MAX            = 8192  /*  OUTPUT BUFFER SIZE IN CHARS     */
+	};
+	enum {
+		FRACTIONAL_DIGITS_MAX = 100   /*  MAX # OF FRACTIONAL DIGITS      */
+	};
+
+	NumberParser();
+	~NumberParser();
+
+	const char* parseNumber(const char* word, Mode mode);
+	const char* degenerateString(const char* word);
+private:
+	NumberParser(const NumberParser&);
+	NumberParser& operator=(const NumberParser&);
+
+	int errorCheck(Mode mode);
+	void initialParse();
+	char* processWord(Mode mode);
+
+	/*  INPUT AND OUTPUT VARIABLES  */
+	const char* word_;
+	std::array<char, OUTPUT_MAX> output_;        /*  STORAGE FOR OUTPUT  */
+
+	/*  PARSING STATISTIC VARIABLES  */
+	int wordLength_;
+	int degenerate_;
+	int integerDigits_;
+	int fractionalDigits_;
+	int commas_;
+	int decimal_;
+	int dollar_;
+	int percent_;
+	int negative_;
+	int positive_;
+	int ordinal_;
+	int clock_;
+	int slash_;
+	int leftParen_;
+	int rightParen_;
+	int blank_;
+	int dollarPlural_;
+	int dollarNonzero_;
+	int centsPlural_;
+	int centsNonzero_;
+	int telephone_;
+	int leftZeroPad_;
+	int rightZeroPad_;
+	int ordinalPlural_;
+	int fracLeftZeroPad_;
+	int fracRightZeroPad_;
+	int fracOrdinalTriad_;
+
+	std::array<int, COMMAS_MAX> commasPos_;
+	int decimalPos_;
+	int dollarPos_;
+	int percentPos_;
+	std::array<int, NEGATIVE_MAX> negativePos_;
+	int positivePos_;
+	std::array<int, INTEGER_DIGITS_MAX> integerDigitsPos_;
+	std::array<int, FRACTIONAL_DIGITS_MAX> fractionalDigitsPos_;
+	std::array<int, 2> ordinalPos_;
+	std::array<int, CLOCK_MAX> clockPos_;
+	int slashPos_;
+	int leftParenPos_;
+	int rightParenPos_;
+	int blankPos_;
+
+	std::array<char, 3> triad_;
+
+	/*  ORDINAL VARIABLES  */
+	std::array<char, 3> ordinalBuffer_;
+	int ordinalTriad_;
+
+	/*  CLOCK VARIABLES  */
+	std::array<char, 4> hour_;
+	std::array<char, 4> minute_;
+	std::array<char, 4> second_;
+	int military_;
+	int seconds_;
+};
 
 } /* namespace En */
 } /* namespace GS */

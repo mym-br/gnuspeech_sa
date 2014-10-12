@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "en/main_dict/MainDictionary.h"
+#include "en/text_parser/NumberParser.h"
 
 
 
@@ -59,6 +60,7 @@ private:
 
 	std::stringstream auxStream_;
 	std::vector<char> pronunciation_;
+	NumberParser numberParser_;
 };
 
 } /* namespace En */

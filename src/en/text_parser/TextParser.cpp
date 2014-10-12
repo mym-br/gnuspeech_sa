@@ -53,7 +53,6 @@
 #include <vector>
 
 #include "Exception.h"
-#include "en/text_parser/NumberParser.h"
 #include "en/letter_to_sound/letter_to_sound.h"
 #include "en/text_parser/abbreviations.h"
 #include "en/text_parser/special_acronyms.h"
@@ -2036,7 +2035,7 @@ TextParser::lookup_word(const char* word, short* dict)
 			break;
 		case TTS_NUMBER_PARSER:
 			{
-				const char* pron = number_parser(word, NP_NORMAL);
+				const char* pron = numberParser_.parseNumber(word, NumberParser::NORMAL);
 				if (pron != nullptr) {
 					*dict = TTS_NUMBER_PARSER;
 					return pron;
@@ -2086,7 +2085,7 @@ TextParser::lookup_word(const char* word, short* dict)
 		return &pronunciation_[0];
 	} else {
 		*dict = TTS_LETTER_TO_SOUND;
-		return degenerate_string(word);
+		return numberParser_.degenerateString(word);
 	}
 
 	/*  SHOULD NEVER GET HERE, BUT IF YOU DO, RETURN NULL  */
@@ -2662,7 +2661,7 @@ TextParser::expand_word(char* word, int is_tonic, std::stringstream& stream)
 		if (!strcmp(word,"a") && !possessive) {
 			pronunciation = "uh";
 		} else {
-			pronunciation = degenerate_string((const char *)word);
+			pronunciation = numberParser_.degenerateString(word);
 		}
 		dictionary = TTS_LETTER_TO_SOUND;
 	} else if (is_all_upper_case(word)) {
@@ -2670,7 +2669,7 @@ TextParser::expand_word(char* word, int is_tonic, std::stringstream& stream)
 		    EXCEPT SPECIAL ACRONYMS  */
 
 		if (!(pronunciation = is_special_acronym(word))) {
-			pronunciation = degenerate_string((const char *)word);
+			pronunciation = numberParser_.degenerateString(word);
 		}
 
 		dictionary = TTS_LETTER_TO_SOUND;
