@@ -88,12 +88,12 @@ add_library(gnuspeechx STATIC
 add_executable(gnuspeech_x
     src/main.cpp
 )
-target_link_libraries(gnuspeech_x -L. -lgnuspeechx)
+target_link_libraries(gnuspeech_x gnuspeechx)
 
 add_executable(gnuspeech_x_trm
     src/trm/gnuspeech_trm.cpp
 )
-target_link_libraries(gnuspeech_x_trm -L. -lgnuspeechx)
+target_link_libraries(gnuspeech_x_trm gnuspeechx)
 
-add_dependencies(gnuspeech_x gnuspeechx)
-add_dependencies(gnuspeech_x_trm gnuspeechx)
+#add_dependencies(gnuspeech_x gnuspeechx)
+#add_dependencies(gnuspeech_x_trm gnuspeechx)
