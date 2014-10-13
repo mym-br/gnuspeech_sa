@@ -56,7 +56,7 @@
 namespace GS {
 namespace TRM {
 
-SampleRateConverter::SampleRateConverter(int sampleRate, float outputRate, std::vector<double>& outputData)
+SampleRateConverter::SampleRateConverter(int sampleRate, float outputRate, std::vector<float>& outputData)
 		: sampleRateRatio_(0.0)
 		, fillPtr_(0)
 		, emptyPtr_(0)

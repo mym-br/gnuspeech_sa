@@ -1,6 +1,7 @@
 /***************************************************************************
  *  Copyright 1991, 1992, 1993, 1994, 1995, 1996, 2001, 2002               *
  *    David R. Hill, Leonard Manzara, Craig Schock                         *
+ *  Copyright 2004 Steve Nygard                                            *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -15,63 +16,40 @@
  *  You should have received a copy of the GNU General Public License      *
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ***************************************************************************/
-// 2014-09
-// This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
+// 2014-10
+// This code was copied from the GNUstep port of Gnuspeech and modified
+// by Marcelo Y. Matuda.
 
-#ifndef TRM_SAMPLE_RATE_CONVERTER_H_
-#define TRM_SAMPLE_RATE_CONVERTER_H_
+#ifndef WAVE_FILE_WRITER_H_
+#define WAVE_FILE_WRITER_H_
 
-#include <vector>
+#include <cstdio>
 
 
 
 namespace GS {
-namespace TRM {
 
-class SampleRateConverter {
+// Note: Almost no error checking.
+
+class WAVEFileWriter {
 public:
-	SampleRateConverter(int sampleRate, float outputRate, std::vector<float>& outputData);
-	~SampleRateConverter();
+	WAVEFileWriter(const char* filePath, int channels, int numberSamples, float outputRate);
+	~WAVEFileWriter();
 
-	void dataFill(double data);
-	void dataEmpty();
-	void flushBuffer();
-
-	double maximumSampleValue() const { return maximumSampleValue_; }
-	long numberSamples() const { return numberSamples_; }
+	void writeSample(float sample);
+	void writeStereoSamples(float leftSample, float rightSample);
 private:
-	SampleRateConverter(const SampleRateConverter&);
-	SampleRateConverter& operator=(const SampleRateConverter&);
+	WAVEFileWriter(const WAVEFileWriter&);
+	WAVEFileWriter& operator=(const WAVEFileWriter&);
 
-	void initializeConversion(int sampleRate, float outputRate);
-	void initializeBuffer();
-	void initializeFilter();
+	void writeWaveFileHeader(int channels, int numberSamples, float outputRate);
+	void writeUInt32LE(int data);
+	void writeUInt16LE(int data);
 
-	static double Izero(double x);
-	static void srIncrement(int *pointer, int modulus);
-	static void srDecrement(int *pointer, int modulus);
-
-	double sampleRateRatio_;
-	int fillPtr_;
-	int emptyPtr_;
-	int padSize_;
-	int fillSize_;
-	unsigned int timeRegisterIncrement_;
-	unsigned int filterIncrement_;
-	unsigned int phaseIncrement_;
-	unsigned int timeRegister_;
-	int fillCounter_;
-
-	double maximumSampleValue_;
-	long numberSamples_;
-
-	std::vector<double> h_;
-	std::vector<double> deltaH_;
-	std::vector<double> buffer_;
-	std::vector<float>& outputData_;
+	FILE* stream_;
+	float sampleScale_;
 };
 
-} /* namespace TRM */
 } /* namespace GS */
 
-#endif /* TRM_SAMPLE_RATE_CONVERTER_H_ */
+#endif /* WAVE_FILE_WRITER_H_ */

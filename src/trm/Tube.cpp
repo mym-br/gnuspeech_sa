@@ -39,10 +39,9 @@
 #include <cmath>
 #include <utility> /* move */
 
-#include <sndfile.hh>
-
 #include "Exception.h"
 #include "Log.h"
+#include "WAVEFileWriter.h"
 
 
 
@@ -961,47 +960,34 @@ Tube::writeOutputToFile(const char* outputFile)
 	/*  BE SURE TO FLUSH SRC BUFFER  */
 	srConv_->flushBuffer();
 
-	/*  PRINT OUT INFO  */
 	if (Log::debugEnabled) {
 		printf("\nnumber of samples:\t%-ld\n", srConv_->numberSamples());
 		printf("maximum sample value:\t%.6f\n", srConv_->maximumSampleValue());
 	}
 
-	SndfileHandle sfh(outputFile, SFM_WRITE, SF_FORMAT_WAV | SF_FORMAT_FLOAT, channels_, static_cast<int>(outputRate_ + 0.5f));
+	WAVEFileWriter fileWriter(outputFile, channels_, srConv_->numberSamples(), outputRate_);
 
-	/*  SCALE THE SAMPLES, WRITING TO 1 OR 2 CHANNELS OF OUTPUT  */
 	if (channels_ == 1) {
-		/*  WRITE THE SAMPLES TO FILE, SCALING EACH SAMPLE  */
-		sf_count_t cnt;
-		double scale = (OUTPUT_SCALE / srConv_->maximumSampleValue()) * amplitude(volume_);
+		float scale = (OUTPUT_SCALE / srConv_->maximumSampleValue()) * amplitude(volume_);
 		if (Log::debugEnabled) {
 			printf("scale:\t\t\t%.4f\n", scale);
 		}
 		for (int i = 0; i < srConv_->numberSamples(); i++) {
-			double sample = speech_[i] * scale;
-			if ((cnt = sfh.write(&sample, 1)) != 1) {
-				THROW_EXCEPTION(TRMException, "Could not write the output file. Error: " << sfh.strError() << '.');
-			}
+			fileWriter.writeSample(speech_[i] * scale);
 		}
 	} else {
-		/*  CALCULATE LEFT AND RIGHT CHANNEL AMPLITUDES  */
-		double leftScale = -((balance_ / 2.0) - 0.5);
-		double rightScale = ((balance_ / 2.0) + 0.5);
-		double newMax = srConv_->maximumSampleValue() * (balance_ > 0.0 ? rightScale : leftScale);
-		double scale = (OUTPUT_SCALE / newMax) * amplitude(volume_);
+		float leftScale = -((balance_ / 2.0) - 0.5);
+		float rightScale = ((balance_ / 2.0) + 0.5);
+		float newMax = srConv_->maximumSampleValue() * (balance_ > 0.0 ? rightScale : leftScale);
+		float scale = (OUTPUT_SCALE / newMax) * amplitude(volume_);
 		leftScale  *= scale;
 		rightScale *= scale;
 		if (Log::debugEnabled) {
 			printf("left  scale:\t\t%.4f\n", leftScale);
 			printf("right scale:\t\t%.4f\n", rightScale);
 		}
-		sf_count_t cnt;
-		/*  WRITE THE SAMPLES TO FILE, SCALING EACH SAMPLE  */
 		for (int i = 0; i < srConv_->numberSamples(); i++) {
-			double samples[2] = {speech_[i] * leftScale, speech_[i] * rightScale};
-			if ((cnt = sfh.write(samples, 2)) != 2) {
-				THROW_EXCEPTION(TRMException, "Could not write the output file. Error: " << sfh.strError() << '.');
-			}
+			fileWriter.writeStereoSamples(speech_[i] * leftScale, speech_[i] * rightScale);
 		}
 	}
 }

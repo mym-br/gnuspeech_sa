@@ -15,12 +15,13 @@ include_directories(
 
 #add_definitions(-DVERBOSE)
 
-add_library(gnuspeechx SHARED
+add_library(gnuspeechx STATIC
     src/Dictionary.cpp src/Dictionary.h
     src/Exception.h
     src/KeyValueFileReader.cpp src/KeyValueFileReader.h
     src/Log.cpp src/Log.h
     src/Text.h
+    src/WAVEFileWriter.cpp src/WAVEFileWriter.h
 
     src/en/letter_to_sound/apply_stress.cpp src/en/letter_to_sound/apply_stress.h
     src/en/letter_to_sound/check_word_list.cpp src/en/letter_to_sound/check_word_list.h
@@ -53,6 +54,18 @@ add_library(gnuspeechx SHARED
     src/en/text_parser/special_acronyms.h
     src/en/text_parser/TextParser.cpp src/en/text_parser/TextParser.h
 
+    src/trm/BandpassFilter.cpp src/trm/BandpassFilter.h
+    src/trm/FIRFilter.cpp src/trm/FIRFilter.h
+    src/trm/NoiseFilter.cpp src/trm/NoiseFilter.h
+    src/trm/NoiseSource.cpp src/trm/NoiseSource.h
+    src/trm/RadiationFilter.cpp src/trm/RadiationFilter.h
+    src/trm/ReflectionFilter.cpp src/trm/ReflectionFilter.h
+    src/trm/SampleRateConverter.cpp src/trm/SampleRateConverter.h
+    src/trm/Throat.cpp src/trm/Throat.h
+    src/trm/TRMConfiguration.cpp src/trm/TRMConfiguration.h
+    src/trm/Tube.cpp src/trm/Tube.h
+    src/trm/WavetableGlottalSource.cpp src/trm/WavetableGlottalSource.h
+
     src/trm_control_model/Category.cpp src/trm_control_model/Category.h
     src/trm_control_model/DriftGenerator.cpp src/trm_control_model/DriftGenerator.h
     src/trm_control_model/ConfigFile.cpp src/trm_control_model/ConfigFile.h
@@ -72,32 +85,15 @@ add_library(gnuspeechx SHARED
     src/xml/SimpleXMLParser.cpp src/xml/SimpleXMLParser.h
 )
 
-add_library(gnuspeechtrm SHARED
-    src/KeyValueFileReader.cpp src/KeyValueFileReader.h
-    src/Log.cpp src/Log.h
-
-    src/trm/BandpassFilter.cpp src/trm/BandpassFilter.h
-    src/trm/FIRFilter.cpp src/trm/FIRFilter.h
-    src/trm/NoiseFilter.cpp src/trm/NoiseFilter.h
-    src/trm/NoiseSource.cpp src/trm/NoiseSource.h
-    src/trm/RadiationFilter.cpp src/trm/RadiationFilter.h
-    src/trm/ReflectionFilter.cpp src/trm/ReflectionFilter.h
-    src/trm/SampleRateConverter.cpp src/trm/SampleRateConverter.h
-    src/trm/Throat.cpp src/trm/Throat.h
-    src/trm/TRMConfiguration.cpp src/trm/TRMConfiguration.h
-    src/trm/Tube.cpp src/trm/Tube.h
-    src/trm/WavetableGlottalSource.cpp src/trm/WavetableGlottalSource.h
-)
-
 add_executable(gnuspeech_x
     src/main.cpp
 )
-target_link_libraries(gnuspeech_x -L. -lgnuspeechx -lgnuspeechtrm -lsndfile)
+target_link_libraries(gnuspeech_x -L. -lgnuspeechx)
 
-add_executable(gnuspeech_trm
+add_executable(gnuspeech_x_trm
     src/trm/gnuspeech_trm.cpp
 )
-target_link_libraries(gnuspeech_trm -L. -lgnuspeechtrm -lsndfile)
+target_link_libraries(gnuspeech_x_trm -L. -lgnuspeechx)
 
-add_dependencies(gnuspeech_x gnuspeechx gnuspeechtrm)
-add_dependencies(gnuspeech_trm gnuspeechtrm)
+add_dependencies(gnuspeech_x gnuspeechx)
+add_dependencies(gnuspeech_x_trm gnuspeechx)

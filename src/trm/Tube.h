@@ -227,7 +227,7 @@ private:
 
 	std::vector<std::unique_ptr<InputData>> inputData_;
 	CurrentData currentData_;
-	std::vector<double> speech_;
+	std::vector<float> speech_;
 	std::unique_ptr<SampleRateConverter> srConv_;
 	std::unique_ptr<RadiationFilter> mouthRadiationFilter_;
 	std::unique_ptr<ReflectionFilter> mouthReflectionFilter_;
