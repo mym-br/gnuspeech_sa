@@ -28,10 +28,13 @@ namespace GS {
 namespace TRMControlModel {
 
 Configuration::Configuration()
-		: intonation(0)
+		: controlRate(0.0)
 		, voiceType(0)
 		, speed(0.0)
 		, pitchOffset(0.0)
+		, driftDeviation(0.0)
+		, driftLowpassCutoff(0.0)
+		, intonation(0)
 {
 }
 
@@ -39,6 +42,13 @@ void
 Configuration::load(const std::string& configFilePath)
 {
 	KeyValueFileReader reader(configFilePath);
+
+	controlRate        = reader.value<double>("control_rate");
+	voiceType          = reader.value<int>("voice_type");
+	speed              = reader.value<double>("speed");
+	pitchOffset        = reader.value<double>("pitch_offset");
+	driftDeviation     = reader.value<double>("drift_deviation");
+	driftLowpassCutoff = reader.value<double>("drift_lowpass_cutoff");
 
 	intonation = 0;
 	if (reader.value<int>("micro_intonation") != 0) {
@@ -56,10 +66,6 @@ Configuration::load(const std::string& configFilePath)
 	if (reader.value<int>("random_intonation") != 0) {
 		intonation += INTONATION_RANDOMIZE;
 	}
-
-	voiceType = reader.value<int>("voice_type");
-	speed = reader.value<double>("speed");
-	pitchOffset = reader.value<double>("pitch_offset");
 }
 
 } /* namespace TRMControlModel */

@@ -29,7 +29,6 @@ namespace TRM {
 
 Configuration::Configuration()
 		: outputRate(0.0)
-		, controlRate(0.0)
 		, volume(0.0)
 		, channels(0)
 		, balance(0.0)
@@ -60,7 +59,6 @@ Configuration::load(const std::string& configFilePath)
 	KeyValueFileReader reader(configFilePath);
 
 	outputRate    = reader.value<double>("output_rate");
-	controlRate   = reader.value<double>("control_rate");
 	volume        = reader.value<double>("volume");
 	channels      = reader.value<int>("channels");
 	balance       = reader.value<double>("balance");

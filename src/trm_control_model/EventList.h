@@ -160,6 +160,7 @@ public:
 	void applyIntonationSmooth();
 	void generateOutput(const char* trmParamFile);
 
+	void setUpDriftGenerator(float deviation, float sampleRate, float lowpassCutoff);
 private:
 	EventList(const EventList&);
 	EventList& operator=(const EventList&);

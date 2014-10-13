@@ -58,7 +58,6 @@ EventList::EventList(const char* configDirPath, Model& model)
 {
 	setUp();
 
-	driftGenerator_.setUp(0.5, 250.0, 0.5);//TODO: get from file
 	radiusMultiply_ = 1.0;
 
 	list_.reserve(128);
@@ -100,6 +99,12 @@ EventList::setUp()
 	ruleData_.clear();
 	ruleData_.push_back(RuleData());
 	currentRule_ = 0;
+}
+
+void
+EventList::setUpDriftGenerator(float deviation, float sampleRate, float lowpassCutoff)
+{
+	driftGenerator_.setUp(deviation, sampleRate, lowpassCutoff);
 }
 
 void

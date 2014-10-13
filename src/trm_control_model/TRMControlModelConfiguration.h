@@ -42,11 +42,13 @@ struct Configuration {
 
 	void load(const std::string& configFilePath);
 
-	int intonation;
-	int random;
-	int voiceType;
+	double controlRate;                 /*  1.0-1000.0 input tables/second (Hz)  */
+	int    voiceType;
 	double speed;
 	double pitchOffset;
+	double driftDeviation;
+	double driftLowpassCutoff;
+	int    intonation;
 };
 
 } /* namespace TRMControlModel */

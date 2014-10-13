@@ -35,8 +35,7 @@ struct Configuration {
 
 	void load(const std::string& configFilePath);
 
-	double  outputRate;                  /*  output sample rate (22.05, 44.1)  */
-	double  controlRate;                 /*  1.0-1000.0 input tables/second (Hz)  */
+	double outputRate;                   /*  output sample rate (22.05, 44.1)  */
 
 	double volume;                       /*  master volume (0 - 60 dB)  */
 	int    channels;                     /*  # of sound output channels (1, 2)  */

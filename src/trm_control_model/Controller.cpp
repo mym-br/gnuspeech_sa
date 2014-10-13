@@ -82,6 +82,7 @@ Controller::initUtterance(const char* trmParamFile)
 	eventList_.setGlobalTempo(trmControlModelConfig_.speed);
 	setIntonation(trmControlModelConfig_.intonation);
 	eventList_.setTgUseRandom(trmControlModelConfig_.intonation & Configuration::INTONATION_RANDOMIZE);
+	eventList_.setUpDriftGenerator(trmControlModelConfig_.driftDeviation, trmControlModelConfig_.controlRate, trmControlModelConfig_.driftLowpassCutoff);
 
 	FILE* fp = fopen(trmParamFile, "w");
 	if (!fp) {
@@ -89,7 +90,7 @@ Controller::initUtterance(const char* trmParamFile)
 	}
 	fprintf(fp, "%f\n%f\n%f\n%d\n%f\n%d\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%d\n%f\n",
 		trmConfig_.outputRate,
-		trmConfig_.controlRate,
+		trmControlModelConfig_.controlRate,
 		trmConfig_.volume,
 		trmConfig_.channels,
 		trmConfig_.balance,
