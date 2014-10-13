@@ -192,11 +192,7 @@ Controller::initVoices(const char* configDirPath)
 		if ((line[0] == '#') || (line[0] == ' ')) {
 			// Skip.
 		} else {
-			if (!strncmp(line, "MinBlack", 8)) {
-				minBlack_ = atof(&line[8]);
-			} else if (!strncmp(line, "MinWhite", 8)) {
-				minWhite_ = atof(&line[8]);
-			} else if (!strncmp(line, "Male", 4)) {
+			if (!strncmp(line, "Male", 4)) {
 				currentVoice = 0;
 			} else if (!strncmp(line, "Female", 6)) {
 				currentVoice = 1;
@@ -223,7 +219,6 @@ Controller::initVoices(const char* configDirPath)
 
 #ifdef VERBOSE
 	printf("===== Voices configuration:\n");
-	printf("MinBlack = %f MinWhite = %f\n", minBlack_, minWhite_);
 	for (int i = 0; i < MAX_VOICES; i++) {
 		printf("L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n",
 			voices_[i].meanLength, voices_[i].tp, voices_[i].tnMin,

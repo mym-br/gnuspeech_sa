@@ -70,10 +70,6 @@ private:
 	VoiceConfig voices_[MAX_VOICES];
 	EventList eventList_;
 	StringParser stringParser_;
-
-	float minBlack_;//TODO: remove?
-	float minWhite_;//TODO: remove?
-
 	Configuration trmControlModelConfig_;
 	TRM::Configuration trmConfig_;
 };
