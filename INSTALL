@@ -1,8 +1,6 @@
 
 - Install a C++ compiler with C++11 support (tested with gcc 4.8.2).
 
-- Install libsndfile (tested with 1.0.25).
-
 - Build:
 
 mkdir build
