@@ -42,6 +42,9 @@
 #include <sndfile.hh>
 
 #include "Exception.h"
+#include "Log.h"
+
+
 
 #define MIN_RADIUS (0.001)
 
@@ -80,8 +83,6 @@
 
 namespace GS {
 namespace TRM {
-
-bool verbose = false;
 
 Tube::Tube()
 		: outputRate_(0.0)
@@ -135,7 +136,7 @@ Tube::synthesizeToFile(const char* inputFile, const char* outputFile)
 	if (!parseInputFile(inputFile)) {
 		THROW_EXCEPTION(TRMException, "Could not parse the input file: " << inputFile << '.');
 	}
-//	if (verbose) {
+//	if (Log::debugEnabled) {
 //		printInfo(inputFile);
 //	}
 	initializeSynthesizer();
@@ -961,7 +962,7 @@ Tube::writeOutputToFile(const char* outputFile)
 	srConv_->flushBuffer();
 
 	/*  PRINT OUT INFO  */
-	if (verbose) {
+	if (Log::debugEnabled) {
 		printf("\nnumber of samples:\t%-ld\n", srConv_->numberSamples());
 		printf("maximum sample value:\t%.6f\n", srConv_->maximumSampleValue());
 	}
@@ -973,7 +974,7 @@ Tube::writeOutputToFile(const char* outputFile)
 		/*  WRITE THE SAMPLES TO FILE, SCALING EACH SAMPLE  */
 		sf_count_t cnt;
 		double scale = (OUTPUT_SCALE / srConv_->maximumSampleValue()) * amplitude(volume_);
-		if (verbose) {
+		if (Log::debugEnabled) {
 			printf("scale:\t\t\t%.4f\n", scale);
 		}
 		for (int i = 0; i < srConv_->numberSamples(); i++) {
@@ -990,7 +991,7 @@ Tube::writeOutputToFile(const char* outputFile)
 		double scale = (OUTPUT_SCALE / newMax) * amplitude(volume_);
 		leftScale  *= scale;
 		rightScale *= scale;
-		if (verbose) {
+		if (Log::debugEnabled) {
 			printf("left  scale:\t\t%.4f\n", leftScale);
 			printf("right scale:\t\t%.4f\n", rightScale);
 		}

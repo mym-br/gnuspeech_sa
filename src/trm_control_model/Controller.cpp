@@ -70,13 +70,13 @@ Controller::initUtterance(const char* trmParamFile)
 		trmConfig_.outputRate = 44100.0;
 	}
 
-#ifdef VERBOSE
-	printf("Tube Length = %f\n", trmConfig_.vtlOffset + voices_[trmControlModelConfig_.voiceType].meanLength);
-	printf("Voice: %d L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n", trmControlModelConfig_.voiceType,
-		voices_[trmControlModelConfig_.voiceType].meanLength, voices_[trmControlModelConfig_.voiceType].tp, voices_[trmControlModelConfig_.voiceType].tnMin,
-		voices_[trmControlModelConfig_.voiceType].tnMax, voices_[trmControlModelConfig_.voiceType].glotPitchMean);
-	printf("sampling Rate: %f\n", trmConfig_.outputRate);
-#endif
+	if (Log::debugEnabled) {
+		printf("Tube Length = %f\n", trmConfig_.vtlOffset + voices_[trmControlModelConfig_.voiceType].meanLength);
+		printf("Voice: %d L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n", trmControlModelConfig_.voiceType,
+			voices_[trmControlModelConfig_.voiceType].meanLength, voices_[trmControlModelConfig_.voiceType].tp, voices_[trmControlModelConfig_.voiceType].tnMin,
+			voices_[trmControlModelConfig_.voiceType].tnMax, voices_[trmControlModelConfig_.voiceType].glotPitchMean);
+		printf("sampling Rate: %f\n", trmConfig_.outputRate);
+	}
 
 	eventList_.setPitchMean(trmControlModelConfig_.pitchOffset + voices_[trmControlModelConfig_.voiceType].glotPitchMean);
 	eventList_.setGlobalTempo(trmControlModelConfig_.speed);
@@ -127,16 +127,16 @@ Controller::synthesizePhoneticString(const char* phoneticString, const char* trm
 
 	int index = 0;
 	while (chunks > 0) {
-#ifdef VERBOSE
-		printf("Speaking \"%s\"\n", &phoneticString[index]);
-#endif
+		if (Log::debugEnabled) {
+			printf("Speaking \"%s\"\n", &phoneticString[index]);
+		}
+
 		synthesizePhoneticStringChunk(&phoneticString[index], trmParamFile);
 
 		index += nextChunk(&phoneticString[index + 2]) + 2;
 		chunks--;
 	}
 
-	TRM::verbose = true;
 	TRM::Tube trm;
 	trm.synthesizeToFile(trmParamFile, outputFile);
 }
@@ -218,14 +218,14 @@ Controller::initVoices(const char* configDirPath)
 	}
 	fclose(fp);
 
-#ifdef VERBOSE
-	printf("===== Voices configuration:\n");
-	for (int i = 0; i < MAX_VOICES; i++) {
-		printf("L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n",
-			voices_[i].meanLength, voices_[i].tp, voices_[i].tnMin,
-			voices_[i].tnMax, voices_[i].glotPitchMean);
+	if (Log::debugEnabled) {
+		printf("===== Voices configuration:\n");
+		for (int i = 0; i < MAX_VOICES; i++) {
+			printf("L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n",
+				voices_[i].meanLength, voices_[i].tp, voices_[i].tnMin,
+				voices_[i].tnMax, voices_[i].glotPitchMean);
+		}
 	}
-#endif
 }
 
 int

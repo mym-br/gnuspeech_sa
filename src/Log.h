@@ -22,10 +22,17 @@
 
 #define LOG_ERROR(M) std::cerr << M << std::endl
 
-#ifdef VERBOSE
-# define LOG_DEBUG(M) std::cout << M << std::endl
-#else
-# define LOG_DEBUG(M)
-#endif
+#define LOG_DEBUG(M) if (Log::debugEnabled) std::cout << M << std::endl
+//#define LOG_DEBUG(M)
+
+
+
+namespace GS {
+
+struct Log {
+	static bool debugEnabled;
+};
+
+} /* namespace GS */
 
 #endif /* LOG_H_ */

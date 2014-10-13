@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include "Exception.h"
+#include "Log.h"
 
 
 
@@ -47,7 +48,7 @@ Dictionary::load(const char* filePath)
 	if (!std::getline(in, version_)) {
 		THROW_EXCEPTION(IOException, "Could not read the dictionary version.");
 	}
-	std::cout << version_ << std::endl;
+	LOG_DEBUG("Dictionary version: " << version_);
 
 	std::string line;
 	while (std::getline(in, line)) {

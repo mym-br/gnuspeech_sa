@@ -25,6 +25,7 @@
 
 #include "Controller.h"
 #include "Exception.h"
+#include "Log.h"
 #include "Model.h"
 #include "en/text_parser/TextParser.h"
 
@@ -47,7 +48,6 @@ main(int argc, char* argv[])
 		return 1;
 	}
 
-	bool verbose = false;
 	const char* configDirPath = nullptr;
 	const char* inputFile = nullptr;
 	const char* outputFile = nullptr;
@@ -58,7 +58,7 @@ main(int argc, char* argv[])
 	while (i < argc) {
 		if (strcmp(argv[i], "-v") == 0) {
 			++i;
-			verbose = true;
+			GS::Log::debugEnabled = true;
 		} else if (strcmp(argv[i], "-c") == 0) {
 			++i;
 			if (i == argc) {
@@ -119,14 +119,14 @@ main(int argc, char* argv[])
 		std::cerr << "Empty input text." << std::endl;
 		return 1;
 	}
-	if (verbose) {
+	if (GS::Log::debugEnabled) {
 		std::cout << "inputText=[" << inputText << ']' << std::endl;
 	}
 
 	try {
 		std::unique_ptr<GS::TRMControlModel::Model> trmControlModel(new GS::TRMControlModel::Model());
 		trmControlModel->load(configDirPath, TRM_CONTROL_MODEL_CONFIG_FILE);
-		if (verbose) {
+		if (GS::Log::debugEnabled) {
 			trmControlModel->printInfo();
 		}
 
@@ -135,7 +135,7 @@ main(int argc, char* argv[])
 		std::unique_ptr<GS::TRMControlModel::Controller> trmController(new GS::TRMControlModel::Controller(configDirPath, *trmControlModel));
 
 		std::string phoneticString = textParser->parseText(inputText.c_str());
-		if (verbose) {
+		if (GS::Log::debugEnabled) {
 			std::cout << "Phonetic string: [" << phoneticString << ']' << std::endl;
 		}
 

@@ -27,6 +27,10 @@
 #include <sstream>
 #include <vector>
 
+#include "Log.h"
+
+
+
 #define DIPHONE 2
 #define TRIPHONE 3
 #define TETRAPHONE 4
@@ -146,9 +150,10 @@ EventList::initToneGroups(const char* configDirPath)
 		}
 	}
 	fclose(fp);
-#ifdef VERBOSE
-	printToneGroups();
-#endif
+
+	if (Log::debugEnabled) {
+		printToneGroups();
+	}
 }
 
 void
@@ -169,7 +174,6 @@ EventList::printToneGroups()
 			j += 10;
 		}
 	}
-
 }
 
 double
@@ -1040,9 +1044,9 @@ EventList::generateOutput(const char* trmParamFile)
 
 	fclose(fp);
 
-#ifdef VERBOSE
-	printDataStructures();
-#endif
+	if (Log::debugEnabled) {
+		printDataStructures();
+	}
 }
 
 void

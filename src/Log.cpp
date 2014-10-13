@@ -1,6 +1,5 @@
 /***************************************************************************
- *  Copyright 1991, 1992, 1993, 1994, 1995, 1996, 2001, 2002               *
- *    David R. Hill, Leonard Manzara, Craig Schock                         *
+ *  Copyright 2014 Marcelo Y. Matuda                                       *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -15,42 +14,13 @@
  *  You should have received a copy of the GNU General Public License      *
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ***************************************************************************/
-// 2014-09
-// This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
-
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <string>
 
 #include "Log.h"
-#include "Tube.h"
 
 
 
-int
-main(int argc, char* argv[])
-{
-	const char* inputFile = nullptr;
-	const char* outputFile = nullptr;
+namespace GS {
 
-	/*  PARSE THE COMMAND LINE  */
-	if (argc == 3) {
-		inputFile = argv[1];
-		outputFile = argv[2];
-	} else if ((argc == 4) && (strcmp("-v", argv[1]) == 0)) {
-		GS::Log::debugEnabled = true;
-		inputFile = argv[2];
-		outputFile = argv[3];
-	} else {
-		fprintf(stderr, "Usage:  %s [-v] inputFile outputFile\n", argv[0]);
-		return -1;
-	}
+bool Log::debugEnabled = false;
 
-	GS::TRM::Tube trm;
-	trm.synthesizeToFile(inputFile, outputFile);
-
-	if (GS::Log::debugEnabled) printf("\nWrote scaled samples to file: %s\n", outputFile);
-
-	return 0;
-}
+} /* namespace GS */

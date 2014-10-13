@@ -23,6 +23,10 @@
 #include <cstring>
 #include <sstream>
 
+#include "Log.h"
+
+
+
 #define VOWEL_TRANSITIONS_CONFIG_FILE_NAME "/vowelTransitions"
 
 
@@ -127,9 +131,10 @@ StringParser::initVowelTransitions(const char* configDirPath)
 		}
 	}
 	fclose(fp);
-#ifdef VERBOSE
-	printVowelTransitions();
-#endif
+
+	if (Log::debugEnabled) {
+		printVowelTransitions();
+	}
 }
 
 void

@@ -52,10 +52,13 @@
 #include <string.h>
 #include <vector>
 
-#include "Exception.h"
 #include "en/letter_to_sound/letter_to_sound.h"
 #include "en/text_parser/abbreviations.h"
 #include "en/text_parser/special_acronyms.h"
+#include "Exception.h"
+#include "Log.h"
+
+
 
 /*  LOCAL DEFINES  ***********************************************************/
 #define UNDEFINED_MODE        (-2)
@@ -2026,7 +2029,9 @@ const char*
 TextParser::lookup_word(const char* word, short* dict)
 {
 	int i;
-	printf("lookup_word word: %s\n", word);
+	if (Log::debugEnabled) {
+		printf("lookup_word word: %s\n", word);
+	}
 
 	/*  SEARCH DICTIONARIES IN USER ORDER TILL PRONUNCIATION FOUND  */
 	for (i = 0; i < 4; i++) {

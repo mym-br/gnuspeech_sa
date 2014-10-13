@@ -13,13 +13,13 @@ include_directories(
     src/xml
 )
 
-add_definitions(-DVERBOSE)
+#add_definitions(-DVERBOSE)
 
 add_library(gnuspeechx SHARED
     src/Dictionary.cpp src/Dictionary.h
     src/Exception.h
     src/KeyValueFileReader.cpp src/KeyValueFileReader.h
-    src/Log.h
+    src/Log.cpp src/Log.h
     src/Text.h
 
     src/en/letter_to_sound/apply_stress.cpp src/en/letter_to_sound/apply_stress.h
@@ -74,6 +74,7 @@ add_library(gnuspeechx SHARED
 
 add_library(gnuspeechtrm SHARED
     src/KeyValueFileReader.cpp src/KeyValueFileReader.h
+    src/Log.cpp src/Log.h
 
     src/trm/BandpassFilter.cpp src/trm/BandpassFilter.h
     src/trm/FIRFilter.cpp src/trm/FIRFilter.h

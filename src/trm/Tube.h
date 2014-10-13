@@ -38,8 +38,6 @@
 namespace GS {
 namespace TRM {
 
-extern bool verbose;
-
 class Tube {
 public:
 	enum { /*  NASAL TRACT SECTIONS  */
