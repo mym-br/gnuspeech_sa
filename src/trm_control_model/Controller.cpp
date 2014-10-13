@@ -79,7 +79,7 @@ Controller::initUtterance(const char* trmParamFile)
 #endif
 
 	eventList_.setPitchMean(trmControlModelConfig_.pitchOffset + voices_[trmControlModelConfig_.voiceType].glotPitchMean);
-	eventList_.setGlobalTempo(1.0 / trmControlModelConfig_.speed);
+	eventList_.setGlobalTempo(trmControlModelConfig_.speed);
 	setIntonation(trmControlModelConfig_.intonation);
 	eventList_.setTgUseRandom(trmControlModelConfig_.intonation & Configuration::INTONATION_RANDOMIZE);
 
