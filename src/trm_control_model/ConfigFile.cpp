@@ -289,10 +289,10 @@ ConfigFile::parseTransitionsGroup(bool special)
 		p->name_ = parser_.getAttribute(nameAttrName_);
 		p->type_ = Transition::getTypeFromName(parser_.getAttribute(typeAttrName_));
 
-		for (const std::string* child = parser_.getFirstChild();
-					child;
-					child = parser_.getNextSibling()) {
-			if (*child == pointOrSlopesTagName_) {
+		for (const std::string* transitionChild = parser_.getFirstChild();
+					transitionChild;
+					transitionChild = parser_.getNextSibling()) {
+			if (*transitionChild == pointOrSlopesTagName_) {
 				parseTransitionPointOrSlopes(*p);
 			} // else: comment
 		}

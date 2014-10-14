@@ -31,6 +31,8 @@
 
 #define TRM_CONTROL_MODEL_CONFIG_FILE "/monet.xml"
 
+void showUsage();
+
 
 
 void

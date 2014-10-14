@@ -48,6 +48,7 @@ public:
 	};
 
 	struct PointOrSlope {
+		virtual ~PointOrSlope() {}
 		virtual bool isSlopeRatio() const = 0;
 	};
 	typedef std::vector<std::unique_ptr<PointOrSlope>> TransitionPointOrSlopeList;
@@ -68,6 +69,7 @@ public:
 		float freeTime; // milliseconds
 
 		Point() : type(TYPE_INVALID), value(0.0), isPhantom(false), timeExpression(), freeTime(0.0) {}
+		virtual ~Point() {}
 
 		virtual bool isSlopeRatio() const { return false; }
 
@@ -104,6 +106,7 @@ public:
 		TransitionSlopeList slopeList;
 
 		SlopeRatio() {}
+		virtual ~SlopeRatio() {}
 
 		virtual bool isSlopeRatio() const { return true; }
 		double totalSlopeUnits() const;
@@ -122,7 +125,7 @@ public:
 	const std::string& name() const {
 		return name_;
 	}
-	const Type type() const {
+	Type type() const {
 		return type_;
 	}
 	const std::string& groupName() const {

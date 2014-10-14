@@ -403,7 +403,6 @@ RuleBooleanTerminal::eval(const Phone& phone) const
 			return phone.isMemberOfCategory(text_, true);
 		}
 	}
-	return false;
 }
 
 void

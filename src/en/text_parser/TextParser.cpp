@@ -994,11 +994,11 @@ illegal_token(const char* token)
 	}
 
 	/*  IF PHONE A VALID DEGAS PHONE, RETURN 0;  1 OTHERWISE  */
-	if (1 /*validPhone(token)*/) { //TODO:XXX implement
+	if (1 /*validPhone(token)*/) { //TODO: implement
 		return 0;
-	} else {
+	} /*else {
 		return 1;
-	}
+	}*/
 }
 
 /******************************************************************************
@@ -2052,13 +2052,13 @@ TextParser::lookup_word(const char* word, short* dict)
 //				*dict = TTS_USER_DICTIONARY;
 //				return((const char *)pronunciation);
 //			}
-			return nullptr;
+//			return nullptr;
 //		case TTS_APPLICATION_DICTIONARY:
 //			if ((pronunciation = preditor_get_entry(appDictionary,word)) != NULL) {
 //				*dict = TTS_APPLICATION_DICTIONARY;
 //				return((const char *)pronunciation);
 //			}
-			return nullptr;
+//			return nullptr;
 		case TTS_MAIN_DICTIONARY:
 			{
 				const char* entry = dict_.getEntry(word);
@@ -2092,10 +2092,6 @@ TextParser::lookup_word(const char* word, short* dict)
 		*dict = TTS_LETTER_TO_SOUND;
 		return numberParser_.degenerateString(word);
 	}
-
-	/*  SHOULD NEVER GET HERE, BUT IF YOU DO, RETURN NULL  */
-	*dict = -1;
-	return nullptr;
 }
 
 /******************************************************************************

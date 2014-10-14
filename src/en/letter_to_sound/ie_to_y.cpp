@@ -42,7 +42,7 @@ namespace En {
 *
 ******************************************************************************/
 int
-ie_to_y(char *in, char **end)
+ie_to_y(char * /* in */, char **end)
 {
     register char      *t = *end;
 

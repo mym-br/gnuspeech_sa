@@ -42,7 +42,7 @@ namespace En {
 *
 ******************************************************************************/
 const char*
-ends_with(const char* in, const char* end, const char* set)
+ends_with(const char* /* in */, const char* end, const char* set)
 {
 	//TODO: check limits (in)
 

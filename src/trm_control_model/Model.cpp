@@ -129,7 +129,7 @@ Model::prepareRules()
  *
  */
 void
-Model::filterInput(InputFile& inFile)
+Model::filterInput(InputFile& /* inFile */)
 {
 	//inFile.rewritePhonemes(phonemeRewriter_);
 	//inFile.rewritePhones(phoneRewriter_);

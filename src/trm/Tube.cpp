@@ -76,8 +76,8 @@
 #define TOP                       0
 #define BOTTOM                    1
 
-#define OUTPUT_SRATE_LOW          22050.0
-#define OUTPUT_SRATE_HIGH         44100.0
+//#define OUTPUT_SRATE_LOW          22050.0
+//#define OUTPUT_SRATE_HIGH         44100.0
 
 
 

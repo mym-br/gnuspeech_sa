@@ -35,7 +35,7 @@ struct Category {
 	std::string name;
 	int code;
 
-	Category(const std::string& name, int code) : name(name), code(code) {}
+	Category(const std::string& newName, int newCode) : name(newName), code(newCode) {}
 
 	static int getCode(const CategoryMap& categoryMap, const std::string& name);
 };

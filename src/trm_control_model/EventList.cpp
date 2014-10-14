@@ -165,7 +165,7 @@ EventList::printToneGroups()
 
 	for (int i = 0; i < 5; i++) {
 		float* temp = &tgParameters_[i][0];
-		printf("Temp [%d] = %d\n", i, temp);
+		printf("Temp [%d] = %p\n", i, temp);
 		int j = 0;
 		for (int k = 0; k < tgCount_[i]; k++) {
 			printf("%f %f %f %f %f %f %f %f %f %f\n",
@@ -666,7 +666,7 @@ EventList::applyIntonation()
 {
 	int tgRandom;
 	int firstFoot, endFoot;
-	int ruleIndex, phoneIndex;
+	int ruleIndex = 0, phoneIndex;
 	int i, j, k;
 	double startTime, endTime, pretonicDelta, offsetTime = 0.0;
 	double randomSemitone, randomSlope;

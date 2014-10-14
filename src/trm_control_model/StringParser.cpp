@@ -502,8 +502,6 @@ StringParser::calcVowelTransition(const Phone& nextPhone, RewriterData& data)
 	case 1: return model_.findPhone("gs");
 	case 2: return model_.findPhone("r");
 	}
-
-	return nullptr;
 }
 
 } /* namespace TRMControlModel */

@@ -25,8 +25,8 @@
 
 
 /*  LOCAL DEFINES  ***********************************************************/
-#define MAX_TERM_VAL   105
-#define MAX_ORIGIN     376
+//#define MAX_TERM_VAL   105
+//#define MAX_ORIGIN     376
 #define TRIE_NODES     441
 #define MIN_INDEX      '!'
 #define INDEX(x)       (x - MIN_INDEX)

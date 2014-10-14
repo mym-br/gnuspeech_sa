@@ -64,11 +64,12 @@ FIRFilter::FIRFilter(double beta, double gamma, double cutoff)
 	/*  SET POINTER TO FIRST ELEMENT  */
 	ptr_ = 0;
 
-#if DEBUG
+#if 0
 	/*  PRINT OUT  */
 	printf("\n");
-	for (i = 0; i < numberTaps; i++)
+	for (int i = 0; i < numberTaps_; i++) {
 		printf("coef_[%-d] = %11.8f\n", i, coef_[i]);
+	}
 #endif
 }
 

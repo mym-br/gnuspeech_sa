@@ -45,7 +45,7 @@ namespace En {
 *
 ******************************************************************************/
 char
-final_s(char *in, char **eow)
+final_s(char * /* in */, char **eow)
 {
     register char      *end = *eow;
     char                retval = 0;

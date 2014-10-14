@@ -30,7 +30,7 @@
 #define LP_CUTOFF                 (11.0/13.0)        /*  (0.846 OF NYQUIST)  */
 #define FILTER_LENGTH             (ZERO_CROSSINGS * L_RANGE)
 
-#define N_BITS                    16
+//#define N_BITS                    16
 #define L_BITS                    8
 #define L_RANGE                   256                  /*  must be 2^L_BITS  */
 #define M_BITS                    8
