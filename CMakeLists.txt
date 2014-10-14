@@ -13,7 +13,10 @@ include_directories(
     src/xml
 )
 
-#add_definitions(-DVERBOSE)
+if(MSVC)
+    # To have M_PI defined in <cmath>.
+    add_definitions(-D_USE_MATH_DEFINES)
+endif(MSVC)
 
 add_library(gnuspeechx STATIC
     src/Dictionary.cpp src/Dictionary.h

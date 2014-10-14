@@ -33,6 +33,7 @@
 
 #include "Tube.h"
 
+#include <algorithm> /* max, min */
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -135,10 +136,13 @@ Tube::synthesizeToFile(const char* inputFile, const char* outputFile)
 	if (!parseInputFile(inputFile)) {
 		THROW_EXCEPTION(TRMException, "Could not parse the input file: " << inputFile << '.');
 	}
-//	if (Log::debugEnabled) {
-//		printInfo(inputFile);
-//	}
+
 	initializeSynthesizer();
+#if 0
+	if (Log::debugEnabled) {
+		printInfo(inputFile);
+	}
+#endif
 	synthesize();
 	writeOutputToFile(outputFile);
 }

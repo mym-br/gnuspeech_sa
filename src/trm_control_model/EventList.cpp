@@ -692,7 +692,7 @@ EventList::applyIntonation()
 		default:
 		case TONE_GROUP_TYPE_STATEMENT:
 			if (tgUseRandom_) {
-				tgRandom = random() % tgCount_[0];
+				tgRandom = rand() % tgCount_[0];
 			} else {
 				tgRandom = 0;
 			}
@@ -700,7 +700,7 @@ EventList::applyIntonation()
 			break;
 		case TONE_GROUP_TYPE_EXCLAIMATION:
 			if (tgUseRandom_) {
-				tgRandom = random() % tgCount_[0];
+				tgRandom = rand() % tgCount_[0];
 			} else {
 				tgRandom = 0;
 			}
@@ -708,7 +708,7 @@ EventList::applyIntonation()
 			break;
 		case TONE_GROUP_TYPE_QUESTION:
 			if (tgUseRandom_) {
-				tgRandom = random() % tgCount_[1];
+				tgRandom = rand() % tgCount_[1];
 			} else {
 				tgRandom = 0;
 			}
@@ -716,7 +716,7 @@ EventList::applyIntonation()
 			break;
 		case TONE_GROUP_TYPE_CONTINUATION:
 			if (tgUseRandom_) {
-				tgRandom = random() % tgCount_[2];
+				tgRandom = rand() % tgCount_[2];
 			} else {
 				tgRandom = 0;
 			}
@@ -724,7 +724,7 @@ EventList::applyIntonation()
 			break;
 		case TONE_GROUP_TYPE_SEMICOLON:
 			if (tgUseRandom_) {
-				tgRandom = random() % tgCount_[3];
+				tgRandom = rand() % tgCount_[3];
 			} else {
 				tgRandom = 0;
 			}
@@ -761,9 +761,9 @@ EventList::applyIntonation()
 				}
 
 				if (tgUseRandom_) {
-					randomSemitone = ((double) random() / (double) 0x7fffffff) * (double) intonParms_[3] -
+					randomSemitone = ((double) rand() / (double) 0x7fffffff) * (double) intonParms_[3] -
 								intonParms_[3] / 2.0;
-					randomSlope = ((double) random() / (double) 0x7fffffff) * 0.015 + 0.01;
+					randomSlope = ((double) rand() / (double) 0x7fffffff) * 0.015 + 0.01;
 				} else {
 					randomSemitone = 0.0;
 					randomSlope = 0.02;
@@ -790,9 +790,9 @@ EventList::applyIntonation()
 				}
 
 				if (tgUseRandom_) {
-					randomSemitone = ((double) random() / (double) 0x7fffffff) * (double) intonParms_[6] -
+					randomSemitone = ((double) rand() / (double) 0x7fffffff) * (double) intonParms_[6] -
 								intonParms_[6] / 2.0;
-					randomSlope += ((double) random() / (double) 0x7fffffff) * 0.03;
+					randomSlope += ((double) rand() / (double) 0x7fffffff) * 0.03;
 				} else {
 					randomSemitone = 0.0;
 					randomSlope+= 0.03;

@@ -38,7 +38,7 @@ namespace GS {
 WAVEFileWriter::WAVEFileWriter(const char* filePath, int channels, int numberSamples, float outputRate)
 		: sampleScale_(INT16_MAX)
 {
-	stream_ = fopen(filePath, "w");
+	stream_ = fopen(filePath, "wb"); // the b is for non-POSIX systems
 	if (stream_ == NULL) {
 		THROW_EXCEPTION(IOException, "Could not open the file " << filePath << " for writing.");
 	}

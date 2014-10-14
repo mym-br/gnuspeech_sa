@@ -218,7 +218,7 @@ StringParser::rewrite(const Phone& nextPhone, int wordMarker, RewriterData& data
 				}
 				break;
 			case 6:
-				if (index(nextPhone.name().c_str(), '\'')) {
+				if (strchr(nextPhone.name().c_str(), '\'')) {
 					tempPhone = model_.findPhone("l'");
 				} else {
 					tempPhone = model_.findPhone("l");
@@ -251,7 +251,7 @@ StringParser::rewrite(const Phone& nextPhone, int wordMarker, RewriterData& data
 					break;
 				}
 
-				if (index(nextPhone.name().c_str(), '\'')) {
+				if (strchr(nextPhone.name().c_str(), '\'')) {
 					tempPhone = model_.findPhone("ll'");
 				} else {
 					tempPhone = model_.findPhone("ll");

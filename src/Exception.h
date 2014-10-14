@@ -22,15 +22,16 @@
 #include <sstream>
 #include <string>
 
+// __func__ is defined in C99/C++11.
+// __PRETTY_FUNCTION__ is a gcc extension.
 #ifdef __GNUC__
 # define FUNCTION_NAME __PRETTY_FUNCTION__
+#elif defined (_MSC_VER)
+# define FUNCTION_NAME __FUNCTION__
 #else
 # define FUNCTION_NAME __func__
 #endif
 
-
-// __func__ is defined in C99/C++11.
-// __PRETTY_FUNCTION__ is a gcc extension.
 #define THROW_EXCEPTION(E,M) \
 	do {\
 		GS::ErrorMessage em;\
