@@ -2137,15 +2137,6 @@ TextParser::lookup_word(const char* word, short* dict)
 				}
 				break;
 			}
-//		case TTS_LETTER_TO_SOUND:
-//			if ((pronunciation = letter_to_sound((char *)word)) != NULL) {
-//				*dict = TTS_LETTER_TO_SOUND;
-//				return pronunciation;
-//			} else {
-//				*dict = TTS_LETTER_TO_SOUND;
-//				return degenerate_string(word);
-//			}
-//			break;
 		default:
 			break;
 		}
