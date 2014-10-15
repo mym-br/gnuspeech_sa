@@ -1,4 +1,2 @@
 
-- Check the long "-".
-
 - Move StringParser to en/, or load configuration from file.
