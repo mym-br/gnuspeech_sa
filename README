@@ -4,12 +4,22 @@ Gnuspeech-X (eXperimental)
 
 Gnuspeech-X is a port to C++/C of the TTS_Server in the original Gnuspeech
 (http://www.gnu.org/software/gnuspeech/) source code written for NeXTSTEP.
-Only the text parsing / synthesis code has been ported, and currently it is
-a command-line program.
+Currently it is a command-line program that converts text to speech.
 
 This project is based on code from Gnuspeech SVN, rev. 672, downloaded in
 2014-08-02. The source code was obtained from the directories:
+
 nextstep/trunk/ObjectiveC/Monet.realtime
 nextstep/trunk/src/SpeechObject/postMonet/server.monet
 
 This software is part of Gnuspeech.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+COPYING file for more details.
