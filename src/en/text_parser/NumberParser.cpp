@@ -1042,10 +1042,9 @@ NumberParser::processWord(Mode mode)
 		triad_[1] = word_[integerDigitsPos_[0]];
 		triad_[2] = word_[integerDigitsPos_[1]];
 		process_triad(&triad_[0], &output_[0], NO, NO, NO, NO, NO);
-		if ((word_[integerDigitsPos_[2]] == '0') &&
-				(word_[integerDigitsPos_[3]] == '0'))
+		if ((word_[integerDigitsPos_[2]] == '0') && (word_[integerDigitsPos_[3]] == '0')) {
 			strcat(&output_[0], HUNDRED);
-		else if (word_[integerDigitsPos_[2]] == '0') {
+		} else if (word_[integerDigitsPos_[2]] == '0') {
 			strcat(&output_[0], OH);
 			process_digit(word_[integerDigitsPos_[3]], &output_[0], NO, NO, NO);
 		} else {
