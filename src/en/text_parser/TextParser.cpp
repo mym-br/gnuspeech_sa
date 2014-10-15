@@ -168,6 +168,7 @@
 
 namespace {
 
+void print_stream(std::stringstream& stream, long stream_length);
 void strip_punctuation(char* buffer, int length, std::stringstream& stream, long *stream_length);
 int get_state(const char* buffer, long* i, long length, int* mode, int* next_mode,
 		int* current_state, int* next_state, int* raw_mode_flag,
@@ -203,6 +204,63 @@ void insert_chunk_marker(std::stringstream& stream, long insert_point, char tg_t
 void check_tonic(std::stringstream& stream, long start_pos, long end_pos);
 
 
+
+/******************************************************************************
+*
+*       function:       print_stream
+*
+*       purpose:        Prints out the contents of a parser stream, inserting
+*                       visible mode markers.
+*
+******************************************************************************/
+void
+print_stream(std::stringstream& stream, long stream_length)
+{
+	/*  REWIND STREAM TO BEGINNING  */
+	stream.seekg(0);
+
+	/*  PRINT LOOP  */
+	printf("stream_length = %-d\n<begin>",stream_length);
+	for (long i = 0; i < stream_length; i++) {
+		char c = stream.get();
+		switch (c) {
+		case RAW_MODE_BEGIN:
+			printf("<raw mode begin>");
+			break;
+		case RAW_MODE_END:
+			printf("<raw mode end>");
+			break;
+		case LETTER_MODE_BEGIN:
+			printf("<letter mode begin>");
+			break;
+		case LETTER_MODE_END:
+			printf("<letter mode end>");
+			break;
+		case EMPHASIS_MODE_BEGIN:
+			printf("<emphasis mode begin>");
+			break;
+		case EMPHASIS_MODE_END:
+			printf("<emphasis mode end>");
+			break;
+		case TAGGING_MODE_BEGIN:
+			printf("<tagging mode begin>");
+			break;
+		case TAGGING_MODE_END:
+			printf("<tagging mode end>");
+			break;
+		case SILENCE_MODE_BEGIN:
+			printf("<silence mode begin>");
+			break;
+		case SILENCE_MODE_END:
+			printf("<silence mode end>");
+			break;
+		default:
+			printf("%c", c);
+			break;
+		}
+	}
+	printf("<end>\n");
+}
 
 /******************************************************************************
 *
@@ -1958,7 +2016,6 @@ std::string
 TextParser::parseText(const char* text)
 {
 	int error;
-	//int len, maxlen;
 	int input_length, buffer1_length, buffer2_length;
 	long stream1_length, auxStream_length;
 
@@ -1971,9 +2028,17 @@ TextParser::parseText(const char* text)
 	std::vector<char> buffer1(input_length + 1);
 	std::vector<char> buffer2(input_length + 1);
 
+	if (Log::debugEnabled) {
+		printf("text=%s\n", text);
+	}
+
 	/*  CONDITION INPUT:  CONVERT NON-PRINTABLE CHARS TO SPACES
 	    (EXCEPT ESC CHAR), CONNECT WORDS HYPHENATED OVER A NEWLINE  */
 	condition_input(text, &buffer1[0], input_length, &buffer1_length);
+
+	if (Log::debugEnabled) {
+		printf("buffer1=%s\n", &buffer1[0]);
+	}
 
 	/*  RATIONALIZE MODE MARKINGS, CHECKING FOR ERRORS  */
 	if ((error = mark_modes(&buffer1[0], &buffer2[0], buffer1_length, &buffer2_length))
@@ -1981,16 +2046,20 @@ TextParser::parseText(const char* text)
 		THROW_EXCEPTION(TextParserException, "Error in mark_modes();");
 	}
 
+	if (Log::debugEnabled) {
+		printf("buffer2=%s\n", &buffer2[0]);
+	}
+
 	std::stringstream stream1;
 
 	/*  STRIP OUT OR CONVERT UNESSENTIAL PUNCTUATION  */
 	strip_punctuation(&buffer2[0], buffer2_length, stream1, &stream1_length);
 
-#if 0
-	/*  PRINT STREAM 1  */
-	printf("\nSTREAM 1\n");
-	print_stream(stream1, stream1_length);
-#endif
+	if (Log::debugEnabled) {
+		/*  PRINT STREAM 1  */
+		printf("\nSTREAM 1\n");
+		print_stream(stream1, stream1_length);
+	}
 
 	// Clear the auxiliary stream.
 	auxStream_.str("");
@@ -2004,11 +2073,11 @@ TextParser::parseText(const char* text)
 	/*  DO SAFETY CHECK;  MAKE SURE NOT TOO MANY FEET OR PHONES PER CHUNK  */
 	safety_check(auxStream_, &auxStream_length);
 
-#if 0
-	/*  PRINT OUT STREAM 2  */
-	printf("STREAM 2\n");
-	print_stream(auxStream_, auxStream_length);
-#endif
+	if (Log::debugEnabled) {
+		/*  PRINT OUT STREAM 2  */
+		printf("STREAM 2\n");
+		print_stream(auxStream_, auxStream_length);
+	}
 
 	/*  SET OUTPUT POINTER TO MEMORY STREAM BUFFER
 	    THIS STREAM PERSISTS BETWEEN CALLS  */
@@ -2127,7 +2196,10 @@ TextParser::condition_input(const char* input, char* output, int length, int* ou
 			} else { /*  ELSE, OUTPUT HYPHEN  */
 				output[j++] = input[i];
 			}
-		} else if ((!isascii(input[i])) || ((!isprint(input[i])) && (input[i] != escape_character_))) {
+		//} else if ( !isascii(input[i]) || (!isprint(input[i]) && input[i] != escape_character_) ) {
+		//TODO: Complete UTF-8 support.
+		// Temporary solution to allow UTF-8 characters.
+		} else if (isascii(input[i]) && !isprint(input[i]) && input[i] != escape_character_) {
 			/*  CONVERT NONPRINTABLE CHARACTERS TO SPACE  */
 			output[j++] = ' ';
 		} else {
