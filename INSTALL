@@ -1,7 +1,10 @@
 
-- Requirement: a C++ compiler with C++11 support.
+- Requirements:
 
-  The following compilers have been tested:
+  - CMake.
+
+  - A C++ compiler with C++11 support.
+    The following compilers have been tested:
     - GCC 4.8.2 (GNU/Linux x86_64).
     - LLVM/Clang 3.3 (GNU/Linux x86_64).
     - MSVC 2013 Express (Windows 7 x86_64).
