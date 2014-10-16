@@ -33,7 +33,6 @@
 
 #include "Tube.h"
 
-#include <algorithm> /* max, min */
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -46,12 +45,11 @@
 
 
 
-#define MIN_RADIUS (0.001)
-
 /*  COMPILE SO THAT INTERPOLATION NOT DONE FOR SOME CONTROL RATE PARAMETERS  */
 //#define MATCH_DSP                 1
 
-#define SPEECH_VECTOR_RESERVE 1024
+#define INPUT_VECTOR_RESERVE 128
+#define OUTPUT_VECTOR_RESERVE 1024
 
 #define GLOTTAL_SOURCE_PULSE 0
 #define GLOTTAL_SOURCE_SINE 1
@@ -113,6 +111,7 @@ Tube::Tube()
 		, dampingFactor_(0.0)
 		, crossmixFactor_(0.0)
 		, breathinessFactor_(0.0)
+		, outputDataPos_(0)
 {
 	//TODO: create a clearMemory? function
 	memset(noseRadius_, 0, sizeof(double) * TOTAL_NASAL_SECTIONS);
@@ -123,7 +122,20 @@ Tube::Tube()
 	memset(alpha_, 0, sizeof(double) * TOTAL_ALPHA_COEFFICIENTS);
 	memset(fricationTap_, 0, sizeof(double) * TOTAL_FRIC_COEFFICIENTS);
 
-	inputData_.reserve(128);
+	inputData_.reserve(INPUT_VECTOR_RESERVE);
+	outputData_.reserve(OUTPUT_VECTOR_RESERVE);
+
+	oldSingleInputData_.glotPitch = 0.0;
+	oldSingleInputData_.glotVol   = 0.0;
+	oldSingleInputData_.aspVol    = 0.0;
+	oldSingleInputData_.fricVol   = 0.0;
+	oldSingleInputData_.fricPos   = 0.0;
+	oldSingleInputData_.fricCF    = 100.0;
+	oldSingleInputData_.fricBW    = 100.0;
+	for (int i = 0; i < TOTAL_REGIONS; i++) {
+		oldSingleInputData_.radius[i] = GS_TRM_TUBE_MIN_RADIUS;
+	}
+	oldSingleInputData_.velum     = GS_TRM_TUBE_MIN_RADIUS;
 }
 
 Tube::~Tube()
@@ -402,7 +414,7 @@ Tube::parseInputFile(const char* inputFile)
 			fprintf(stderr, "Can't read nose radius %-d.\n", i);
 			return false;
 		} else {
-			noseRadius_[i] = std::max(strtod(line, NULL), MIN_RADIUS);
+			noseRadius_[i] = std::max(strtod(line, NULL), GS_TRM_TUBE_MIN_RADIUS);
 		}
 	}
 
@@ -452,7 +464,7 @@ Tube::parseInputFile(const char* inputFile)
 		data->fricCF    = strtod(ptr, &ptr);
 		data->fricBW    = strtod(ptr, &ptr);
 		for (int i = 0; i < TOTAL_REGIONS; i++) {
-			data->radius[i] = std::max(strtod(ptr, &ptr), MIN_RADIUS);
+			data->radius[i] = std::max(strtod(ptr, &ptr), GS_TRM_TUBE_MIN_RADIUS);
 		}
 		data->velum     = strtod(ptr, &ptr);
 
@@ -545,11 +557,10 @@ Tube::initializeSynthesizer()
 	throat_.reset(new Throat(sampleRate_, throatCutoff_, amplitude(throatVol_)));
 
 	/*  INITIALIZE THE SAMPLE RATE CONVERSION ROUTINES  */
-	srConv_.reset(new SampleRateConverter(sampleRate_, outputRate_, speech_));
+	srConv_.reset(new SampleRateConverter(sampleRate_, outputRate_, outputData_));
 
-	/*  INITIALIZE THE SPEECH VECTOR  */
-	speech_.clear();
-	speech_.reserve(SPEECH_VECTOR_RESERVE);
+	/*  INITIALIZE THE OUTPUT VECTOR  */
+	outputData_.clear();
 
 	bandpassFilter_.reset(new BandpassFilter());
 	noiseFilter_.reset(new NoiseFilter());
@@ -566,65 +577,124 @@ Tube::initializeSynthesizer()
 void
 Tube::synthesize()
 {
-	/*  CONTROL RATE LOOP  */
-	for (int i = 1; i < inputData_.size(); i++) {
-		/*  SET CONTROL RATE PARAMETERS FROM INPUT TABLES  */
-		setControlRateParameters(i);
+	if (inputData_.empty()) {
+		// Interactive. Single input data.
 
-		/*  SAMPLE RATE LOOP  */
-		for (int j = 0; j < controlPeriod_; j++) {
-			/*  CONVERT PARAMETERS HERE  */
-			double f0 = frequency(currentData_.glotPitch);
-			double ax = amplitude(currentData_.glotVol);
-			double ah1 = amplitude(currentData_.aspVol);
-			calculateTubeCoefficients();
-			setFricationTaps();
-			bandpassFilter_->update(sampleRate_, currentData_.fricBW, currentData_.fricCF);
+		setControlRateParameters();
 
-			/*  DO SYNTHESIS HERE  */
-			/*  CREATE LOW-PASS FILTERED NOISE  */
-			double lpNoise = noiseFilter_->filter(noiseSource_->getSample());
+		sampleRateLoop();
+	} else {
+		/*  CONTROL RATE LOOP  */
+		for (int i = 1; i < inputData_.size(); i++) {
+			/*  SET CONTROL RATE PARAMETERS FROM INPUT TABLES  */
+			setControlRateParameters(i);
 
-			/*  UPDATE THE SHAPE OF THE GLOTTAL PULSE, IF NECESSARY  */
-			if (waveform_ == GLOTTAL_SOURCE_PULSE) {
-				glottalSource_->updateWavetable(ax);
-			}
-
-			/*  CREATE GLOTTAL PULSE (OR SINE TONE)  */
-			double pulse = glottalSource_->oscillator(f0);
-
-			/*  CREATE PULSED NOISE  */
-			double pulsedNoise = lpNoise * pulse;
-
-			/*  CREATE NOISY GLOTTAL PULSE  */
-			pulse = ax * ((pulse * (1.0 - breathinessFactor_)) +
-					(pulsedNoise * breathinessFactor_));
-
-			double signal;
-			/*  CROSS-MIX PURE NOISE WITH PULSED NOISE  */
-			if (modulation_) {
-				double crossmix = ax * crossmixFactor_;
-				crossmix = (crossmix < 1.0) ? crossmix : 1.0;
-				signal = (pulsedNoise * crossmix) +
-						(lpNoise * (1.0 - crossmix));
-			} else {
-				signal = lpNoise;
-			}
-
-			/*  PUT SIGNAL THROUGH VOCAL TRACT  */
-			signal = vocalTract(((pulse + (ah1 * signal)) * VT_SCALE),
-						bandpassFilter_->filter(signal));
-
-			/*  PUT PULSE THROUGH THROAT  */
-			signal += throat_->process(pulse * VT_SCALE);
-
-			/*  OUTPUT SAMPLE HERE  */
-			srConv_->dataFill(signal);
-
-			/*  DO SAMPLE RATE INTERPOLATION OF CONTROL PARAMETERS  */
-			sampleRateInterpolation();
+			sampleRateLoop();
 		}
 	}
+}
+
+void
+Tube::sampleRateLoop()
+{
+	for (int j = 0; j < controlPeriod_; j++) {
+		/*  CONVERT PARAMETERS HERE  */
+		double f0 = frequency(currentData_.glotPitch);
+		double ax = amplitude(currentData_.glotVol);
+		double ah1 = amplitude(currentData_.aspVol);
+		calculateTubeCoefficients();
+		setFricationTaps();
+		bandpassFilter_->update(sampleRate_, currentData_.fricBW, currentData_.fricCF);
+
+		/*  DO SYNTHESIS HERE  */
+		/*  CREATE LOW-PASS FILTERED NOISE  */
+		double lpNoise = noiseFilter_->filter(noiseSource_->getSample());
+
+		/*  UPDATE THE SHAPE OF THE GLOTTAL PULSE, IF NECESSARY  */
+		if (waveform_ == GLOTTAL_SOURCE_PULSE) {
+			glottalSource_->updateWavetable(ax);
+		}
+
+		/*  CREATE GLOTTAL PULSE (OR SINE TONE)  */
+		double pulse = glottalSource_->oscillator(f0);
+
+		/*  CREATE PULSED NOISE  */
+		double pulsedNoise = lpNoise * pulse;
+
+		/*  CREATE NOISY GLOTTAL PULSE  */
+		pulse = ax * ((pulse * (1.0 - breathinessFactor_)) +
+				(pulsedNoise * breathinessFactor_));
+
+		double signal;
+		/*  CROSS-MIX PURE NOISE WITH PULSED NOISE  */
+		if (modulation_) {
+			double crossmix = ax * crossmixFactor_;
+			crossmix = (crossmix < 1.0) ? crossmix : 1.0;
+			signal = (pulsedNoise * crossmix) +
+					(lpNoise * (1.0 - crossmix));
+		} else {
+			signal = lpNoise;
+		}
+
+		/*  PUT SIGNAL THROUGH VOCAL TRACT  */
+		signal = vocalTract(((pulse + (ah1 * signal)) * VT_SCALE),
+					bandpassFilter_->filter(signal));
+
+		/*  PUT PULSE THROUGH THROAT  */
+		signal += throat_->process(pulse * VT_SCALE);
+
+		/*  OUTPUT SAMPLE HERE  */
+		srConv_->dataFill(signal);
+
+		/*  DO SAMPLE RATE INTERPOLATION OF CONTROL PARAMETERS  */
+		sampleRateInterpolation();
+	}
+}
+
+void
+Tube::setControlRateParameters()
+{
+	double controlFreq = 1.0 / controlPeriod_;
+
+	/*  GLOTTAL PITCH  */
+	currentData_.glotPitch = oldSingleInputData_.glotPitch;
+	currentData_.glotPitchDelta = (singleInputData_.glotPitch - currentData_.glotPitch) * controlFreq;
+
+	/*  GLOTTAL VOLUME  */
+	currentData_.glotVol = oldSingleInputData_.glotVol;
+	currentData_.glotVolDelta = (singleInputData_.glotVol - currentData_.glotVol) * controlFreq;
+
+	/*  ASPIRATION VOLUME  */
+	currentData_.aspVol = oldSingleInputData_.aspVol;
+	currentData_.aspVolDelta = (singleInputData_.aspVol - currentData_.aspVol) * controlFreq;
+
+	/*  FRICATION VOLUME  */
+	currentData_.fricVol = oldSingleInputData_.fricVol;
+	currentData_.fricVolDelta = (singleInputData_.fricVol - currentData_.fricVol) * controlFreq;
+
+	/*  FRICATION POSITION  */
+	currentData_.fricPos = oldSingleInputData_.fricPos;
+	currentData_.fricPosDelta = (singleInputData_.fricPos - currentData_.fricPos) * controlFreq;
+
+	/*  FRICATION CENTER FREQUENCY  */
+	currentData_.fricCF = oldSingleInputData_.fricCF;
+	currentData_.fricCFDelta = (singleInputData_.fricCF - currentData_.fricCF) * controlFreq;
+
+	/*  FRICATION BANDWIDTH  */
+	currentData_.fricBW = oldSingleInputData_.fricBW;
+	currentData_.fricBWDelta = (singleInputData_.fricBW - currentData_.fricBW) * controlFreq;
+
+	/*  TUBE REGION RADII  */
+	for (int i = 0; i < TOTAL_REGIONS; i++) {
+		currentData_.radius[i] = oldSingleInputData_.radius[i];
+		currentData_.radiusDelta[i] = (singleInputData_.radius[i] - currentData_.radius[i]) * controlFreq;
+	}
+
+	/*  VELUM RADIUS  */
+	currentData_.velum = oldSingleInputData_.velum;
+	currentData_.velumDelta = (singleInputData_.velum - currentData_.velum) * controlFreq;
+
+	oldSingleInputData_ = singleInputData_;
 }
 
 /******************************************************************************
@@ -977,7 +1047,7 @@ Tube::writeOutputToFile(const char* outputFile)
 			printf("scale:\t\t\t%.4f\n", scale);
 		}
 		for (int i = 0; i < srConv_->numberSamples(); i++) {
-			fileWriter.writeSample(speech_[i] * scale);
+			fileWriter.writeSample(outputData_[i] * scale);
 		}
 	} else {
 		float leftScale = -((balance_ / 2.0) - 0.5);
@@ -991,7 +1061,7 @@ Tube::writeOutputToFile(const char* outputFile)
 			printf("right scale:\t\t%.4f\n", rightScale);
 		}
 		for (int i = 0; i < srConv_->numberSamples(); i++) {
-			fileWriter.writeStereoSamples(speech_[i] * leftScale, speech_[i] * rightScale);
+			fileWriter.writeStereoSamples(outputData_[i] * leftScale, outputData_[i] * rightScale);
 		}
 	}
 }

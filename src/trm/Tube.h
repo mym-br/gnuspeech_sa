@@ -21,6 +21,7 @@
 #ifndef TRM_TUBE_H_
 #define TRM_TUBE_H_
 
+#include <algorithm> /* max, min */
 #include <memory>
 #include <vector>
 
@@ -33,6 +34,8 @@
 #include "Throat.h"
 #include "WavetableGlottalSource.h"
 
+#define GS_TRM_TUBE_MIN_RADIUS (0.001)
+
 
 
 namespace GS {
@@ -40,6 +43,17 @@ namespace TRM {
 
 class Tube {
 public:
+	enum { /*  OROPHARYNX REGIONS  */
+		R1 = 0, /*  S1  */
+		R2 = 1, /*  S2  */
+		R3 = 2, /*  S3  */
+		R4 = 3, /*  S4 & S5  */
+		R5 = 4, /*  S6 & S7  */
+		R6 = 5, /*  S8  */
+		R7 = 6, /*  S9  */
+		R8 = 7, /*  S10  */
+		TOTAL_REGIONS = 8
+	};
 	enum { /*  NASAL TRACT SECTIONS  */
 		N1 = 0,
 		N2 = 1,
@@ -54,18 +68,21 @@ public:
 	~Tube();
 
 	void synthesizeToFile(const char* inputFile, const char* outputFile);
+
+	template<typename T> void loadConfiguration(const T& config);
+	void initializeSynthesizer();
+	template<typename T> void loadSingleInputData(const T& data);
+	void synthesize();
+
+	std::vector<float>& outputData() { return outputData_; }
+	std::size_t outputDataPos() const { return outputDataPos_; }
+	void setOutputDataPos(std::size_t pos) { outputDataPos_ = pos; }
+	void resetOutputData() {
+		outputData_.clear();
+		outputDataPos_ = 0;
+	}
+	double maximumOutputSampleValue() const { return srConv_->maximumSampleValue(); }
 private:
-	enum { /*  OROPHARYNX REGIONS  */
-		R1 = 0, /*  S1  */
-		R2 = 1, /*  S2  */
-		R3 = 2, /*  S3  */
-		R4 = 3, /*  S4 & S5  */
-		R5 = 4, /*  S6 & S7  */
-		R6 = 5, /*  S8  */
-		R7 = 6, /*  S9  */
-		R8 = 7, /*  S10  */
-		TOTAL_REGIONS = 8
-	};
 	enum {
 		VELUM = N1
 	};
@@ -159,15 +176,15 @@ private:
 
 	void calculateTubeCoefficients();
 	void initializeNasalCavity();
-	void initializeSynthesizer();
 	void printInfo(const char* inputFile);
 	bool parseInputFile(const char* inputFile);
 	void sampleRateInterpolation();
+	void setControlRateParameters();
 	void setControlRateParameters(int pos);
 	void setFricationTaps();
-	void synthesize();
 	double vocalTract(double input, double frication);
 	void writeOutputToFile(const char* outputFile);
+	void sampleRateLoop();
 
 	static double amplitude(double decibelLevel);
 	static double frequency(double pitch);
@@ -226,8 +243,11 @@ private:
 	double breathinessFactor_;
 
 	std::vector<std::unique_ptr<InputData>> inputData_;
+	InputData oldSingleInputData_;
+	InputData singleInputData_;
 	CurrentData currentData_;
-	std::vector<float> speech_;
+	std::size_t outputDataPos_;
+	std::vector<float> outputData_;
 	std::unique_ptr<SampleRateConverter> srConv_;
 	std::unique_ptr<RadiationFilter> mouthRadiationFilter_;
 	std::unique_ptr<ReflectionFilter> mouthReflectionFilter_;
@@ -239,6 +259,55 @@ private:
 	std::unique_ptr<NoiseFilter> noiseFilter_;
 	std::unique_ptr<NoiseSource> noiseSource_;
 };
+
+
+
+template<typename T>
+void
+Tube::loadConfiguration(const T& config)
+{
+	outputRate_   = config.outputRate;
+	controlRate_  = config.controlRate;
+	volume_       = 0.0;
+	channels_     = 1;
+	balance_      = 0.0;
+	waveform_     = 0;
+	tp_           = config.tp;
+	tnMin_        = config.tn;
+	tnMax_        = config.tn;
+	breathiness_  = config.breathiness;
+	length_       = config.length;
+	temperature_  = config.temperature;
+	lossFactor_   = config.lossFactor;
+	apScale_      = config.apScale;
+	mouthCoef_    = config.mouthCoef;
+	noseCoef_     = config.noseCoef;
+	noseRadius_[0] = 0.0;
+	for (int i = 1; i < TOTAL_NASAL_SECTIONS; i++) {
+		noseRadius_[i] = config.nasalRadius[i];
+	}
+	throatCutoff_ = config.throatCutoff;
+	throatVol_    = config.throatVol;
+	modulation_   = config.modulation;
+	mixOffset_    = config.mixOffset;
+}
+
+template<typename T>
+void
+Tube::loadSingleInputData(const T& data)
+{
+	singleInputData_.glotPitch = data.glotPitch;
+	singleInputData_.glotVol   = data.glotVol;
+	singleInputData_.aspVol    = data.aspVol;
+	singleInputData_.fricVol   = data.fricVol;
+	singleInputData_.fricPos   = data.fricPos;
+	singleInputData_.fricCF    = data.fricCF;
+	singleInputData_.fricBW    = data.fricBW;
+	for (int i = 0; i < TOTAL_REGIONS; i++) {
+		singleInputData_.radius[i] = std::max(static_cast<double>(data.radius[i]), GS_TRM_TUBE_MIN_RADIUS);
+	}
+	singleInputData_.velum     = data.velum;
+}
 
 } /* namespace TRM */
 } /* namespace GS */
