@@ -220,7 +220,7 @@ print_stream(std::stringstream& stream, long stream_length)
 	stream.seekg(0);
 
 	/*  PRINT LOOP  */
-	printf("stream_length = %-d\n<begin>",stream_length);
+	printf("stream_length = %-ld\n<begin>", stream_length);
 	for (long i = 0; i < stream_length; i++) {
 		char c = stream.get();
 		switch (c) {
