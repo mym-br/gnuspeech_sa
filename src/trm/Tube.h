@@ -282,10 +282,14 @@ Tube::loadConfiguration(const T& config)
 	apScale_      = config.apScale;
 	mouthCoef_    = config.mouthCoef;
 	noseCoef_     = config.noseCoef;
+
 	noseRadius_[0] = 0.0;
-	for (int i = 1; i < TOTAL_NASAL_SECTIONS; i++) {
-		noseRadius_[i] = config.nasalRadius[i];
-	}
+	noseRadius_[1] = config.staticParamList[0];
+	noseRadius_[2] = config.staticParamList[1];
+	noseRadius_[3] = config.staticParamList[2];
+	noseRadius_[4] = config.staticParamList[3];
+	noseRadius_[5] = config.staticParamList[4];
+
 	throatCutoff_ = config.throatCutoff;
 	throatVol_    = config.throatVol;
 	modulation_   = config.modulation;
@@ -296,17 +300,22 @@ template<typename T>
 void
 Tube::loadSingleInputData(const T& data)
 {
-	singleInputData_.glotPitch = data.glotPitch;
-	singleInputData_.glotVol   = data.glotVol;
-	singleInputData_.aspVol    = data.aspVol;
-	singleInputData_.fricVol   = data.fricVol;
-	singleInputData_.fricPos   = data.fricPos;
-	singleInputData_.fricCF    = data.fricCF;
-	singleInputData_.fricBW    = data.fricBW;
-	for (int i = 0; i < TOTAL_REGIONS; i++) {
-		singleInputData_.radius[i] = std::max(static_cast<double>(data.radius[i]), GS_TRM_TUBE_MIN_RADIUS);
-	}
-	singleInputData_.velum     = data.velum;
+	singleInputData_.glotPitch = data[0];
+	singleInputData_.glotVol   = data[1];
+	singleInputData_.aspVol    = data[2];
+	singleInputData_.fricVol   = data[3];
+	singleInputData_.fricPos   = data[4];
+	singleInputData_.fricCF    = data[5];
+	singleInputData_.fricBW    = data[6];
+	singleInputData_.radius[0] = std::max(static_cast<double>(data[7]) , GS_TRM_TUBE_MIN_RADIUS);
+	singleInputData_.radius[1] = std::max(static_cast<double>(data[8]) , GS_TRM_TUBE_MIN_RADIUS);
+	singleInputData_.radius[2] = std::max(static_cast<double>(data[9]) , GS_TRM_TUBE_MIN_RADIUS);
+	singleInputData_.radius[3] = std::max(static_cast<double>(data[10]), GS_TRM_TUBE_MIN_RADIUS);
+	singleInputData_.radius[4] = std::max(static_cast<double>(data[11]), GS_TRM_TUBE_MIN_RADIUS);
+	singleInputData_.radius[5] = std::max(static_cast<double>(data[12]), GS_TRM_TUBE_MIN_RADIUS);
+	singleInputData_.radius[6] = std::max(static_cast<double>(data[13]), GS_TRM_TUBE_MIN_RADIUS);
+	singleInputData_.radius[7] = std::max(static_cast<double>(data[14]), GS_TRM_TUBE_MIN_RADIUS);
+	singleInputData_.velum     = data[15];
 }
 
 } /* namespace TRM */
