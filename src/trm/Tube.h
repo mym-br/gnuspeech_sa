@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "BandpassFilter.h"
+#include "MovingAverageFilter.h"
 #include "NoiseFilter.h"
 #include "NoiseSource.h"
 #include "RadiationFilter.h"
@@ -71,8 +72,10 @@ public:
 
 	template<typename T> void loadConfiguration(const T& config);
 	void initializeSynthesizer();
-	template<typename T> void loadSingleInputData(const T& data);
-	void synthesize();
+	void initializeInputFilters(double period);
+	template<typename T> void loadSingleInput(const T& data);
+	void synthesizeForInputSequence();
+	void synthesizeForSingleInput(int numIterations);
 
 	std::vector<float>& outputData() { return outputData_; }
 	std::size_t outputDataPos() const { return outputDataPos_; }
@@ -171,6 +174,42 @@ private:
 		double velumDelta;
 	};
 
+	struct InputFilters {
+		MovingAverageFilter<double> glotPitchFilter;
+		MovingAverageFilter<double> glotVolFilter;
+		MovingAverageFilter<double> aspVolFilter;
+		MovingAverageFilter<double> fricVolFilter;
+		MovingAverageFilter<double> fricPosFilter;
+		MovingAverageFilter<double> fricCFFilter;
+		MovingAverageFilter<double> fricBWFilter;
+		MovingAverageFilter<double> radius0Filter;
+		MovingAverageFilter<double> radius1Filter;
+		MovingAverageFilter<double> radius2Filter;
+		MovingAverageFilter<double> radius3Filter;
+		MovingAverageFilter<double> radius4Filter;
+		MovingAverageFilter<double> radius5Filter;
+		MovingAverageFilter<double> radius6Filter;
+		MovingAverageFilter<double> radius7Filter;
+		MovingAverageFilter<double> velumFilter;
+		InputFilters(double sampleRate, double period)
+			: glotPitchFilter(sampleRate, period)
+			, glotVolFilter(sampleRate, period)
+			, aspVolFilter(sampleRate, period)
+			, fricVolFilter(sampleRate, period)
+			, fricPosFilter(sampleRate, period)
+			, fricCFFilter(sampleRate, period)
+			, fricBWFilter(sampleRate, period)
+			, radius0Filter(sampleRate, period)
+			, radius1Filter(sampleRate, period)
+			, radius2Filter(sampleRate, period)
+			, radius3Filter(sampleRate, period)
+			, radius4Filter(sampleRate, period)
+			, radius5Filter(sampleRate, period)
+			, radius6Filter(sampleRate, period)
+			, radius7Filter(sampleRate, period)
+			, velumFilter(sampleRate, period) {}
+	};
+
 	Tube(const Tube&);
 	Tube& operator=(const Tube&);
 
@@ -179,12 +218,11 @@ private:
 	void printInfo(const char* inputFile);
 	bool parseInputFile(const char* inputFile);
 	void sampleRateInterpolation();
-	void setControlRateParameters();
 	void setControlRateParameters(int pos);
 	void setFricationTaps();
 	double vocalTract(double input, double frication);
 	void writeOutputToFile(const char* outputFile);
-	void sampleRateLoop();
+	void synthesize();
 
 	static double amplitude(double decibelLevel);
 	static double frequency(double pitch);
@@ -243,9 +281,8 @@ private:
 	double breathinessFactor_;
 
 	std::vector<std::unique_ptr<InputData>> inputData_;
-	InputData oldSingleInputData_;
-	InputData singleInputData_;
 	CurrentData currentData_;
+	InputData singleInput_;
 	std::size_t outputDataPos_;
 	std::vector<float> outputData_;
 	std::unique_ptr<SampleRateConverter> srConv_;
@@ -258,6 +295,7 @@ private:
 	std::unique_ptr<BandpassFilter> bandpassFilter_;
 	std::unique_ptr<NoiseFilter> noiseFilter_;
 	std::unique_ptr<NoiseSource> noiseSource_;
+	std::unique_ptr<InputFilters> inputFilters_;
 };
 
 
@@ -298,24 +336,24 @@ Tube::loadConfiguration(const T& config)
 
 template<typename T>
 void
-Tube::loadSingleInputData(const T& data)
+Tube::loadSingleInput(const T& data)
 {
-	singleInputData_.glotPitch = data[0];
-	singleInputData_.glotVol   = data[1];
-	singleInputData_.aspVol    = data[2];
-	singleInputData_.fricVol   = data[3];
-	singleInputData_.fricPos   = data[4];
-	singleInputData_.fricCF    = data[5];
-	singleInputData_.fricBW    = data[6];
-	singleInputData_.radius[0] = std::max(static_cast<double>(data[7]) , GS_TRM_TUBE_MIN_RADIUS);
-	singleInputData_.radius[1] = std::max(static_cast<double>(data[8]) , GS_TRM_TUBE_MIN_RADIUS);
-	singleInputData_.radius[2] = std::max(static_cast<double>(data[9]) , GS_TRM_TUBE_MIN_RADIUS);
-	singleInputData_.radius[3] = std::max(static_cast<double>(data[10]), GS_TRM_TUBE_MIN_RADIUS);
-	singleInputData_.radius[4] = std::max(static_cast<double>(data[11]), GS_TRM_TUBE_MIN_RADIUS);
-	singleInputData_.radius[5] = std::max(static_cast<double>(data[12]), GS_TRM_TUBE_MIN_RADIUS);
-	singleInputData_.radius[6] = std::max(static_cast<double>(data[13]), GS_TRM_TUBE_MIN_RADIUS);
-	singleInputData_.radius[7] = std::max(static_cast<double>(data[14]), GS_TRM_TUBE_MIN_RADIUS);
-	singleInputData_.velum     = data[15];
+	singleInput_.glotPitch = data[0];
+	singleInput_.glotVol   = data[1];
+	singleInput_.aspVol    = data[2];
+	singleInput_.fricVol   = data[3];
+	singleInput_.fricPos   = data[4];
+	singleInput_.fricCF    = data[5];
+	singleInput_.fricBW    = data[6];
+	singleInput_.radius[0] = std::max(static_cast<double>(data[7]) , GS_TRM_TUBE_MIN_RADIUS);
+	singleInput_.radius[1] = std::max(static_cast<double>(data[8]) , GS_TRM_TUBE_MIN_RADIUS);
+	singleInput_.radius[2] = std::max(static_cast<double>(data[9]) , GS_TRM_TUBE_MIN_RADIUS);
+	singleInput_.radius[3] = std::max(static_cast<double>(data[10]), GS_TRM_TUBE_MIN_RADIUS);
+	singleInput_.radius[4] = std::max(static_cast<double>(data[11]), GS_TRM_TUBE_MIN_RADIUS);
+	singleInput_.radius[5] = std::max(static_cast<double>(data[12]), GS_TRM_TUBE_MIN_RADIUS);
+	singleInput_.radius[6] = std::max(static_cast<double>(data[13]), GS_TRM_TUBE_MIN_RADIUS);
+	singleInput_.radius[7] = std::max(static_cast<double>(data[14]), GS_TRM_TUBE_MIN_RADIUS);
+	singleInput_.velum     = data[15];
 }
 
 } /* namespace TRM */

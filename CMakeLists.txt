@@ -59,6 +59,7 @@ add_library(gnuspeechx STATIC
 
     src/trm/BandpassFilter.cpp src/trm/BandpassFilter.h
     src/trm/FIRFilter.cpp src/trm/FIRFilter.h
+    src/trm/MovingAverageFilter.h
     src/trm/NoiseFilter.cpp src/trm/NoiseFilter.h
     src/trm/NoiseSource.cpp src/trm/NoiseSource.h
     src/trm/RadiationFilter.cpp src/trm/RadiationFilter.h
