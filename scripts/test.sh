@@ -9,4 +9,4 @@ then
   exit 1
 fi
 
-./gnuspeech_x -c ../data -p ${param_file} -o ${output_file} "$1" 2>/dev/null && aplay -q ${output_file}
+./gnuspeech_x -c ../gnuspeech_x/data -p ${param_file} -o ${output_file} "$1" 2>/dev/null && aplay -q ${output_file}
