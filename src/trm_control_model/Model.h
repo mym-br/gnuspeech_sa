@@ -33,9 +33,7 @@
 #include "Exception.h"
 #include "FormulaSymbol.h"
 #include "Parameter.h"
-//#include "phoneme_rewriter.h"
 #include "Phone.h"
-//#include "phone_rewriter.h"
 #include "Rule.h"
 #include "Transition.h"
 
@@ -53,7 +51,6 @@ public:
 	~Model();
 
 	void load(const char* configDirPath, const char* configFileName);
-	void filterInput(InputFile& inFile);
 	void printInfo() const;
 	void clearFormulaSymbolList();
 	void setFormulaSymbolValue(FormulaSymbol::Code symbol, float value);
@@ -62,7 +59,6 @@ public:
 	float getParameterMinimum(Parameter::Code parameter) const;
 	float getParameterMaximum(Parameter::Code parameter) const;
 	const Parameter::Info& getParameterInfo(int parameter) const;
-//	void clipParameterValue(float& value, Parameter::Code parameter) const;
 	const Phone* findPhone(const std::string& name) const;
 	const Transition* findTransition(const std::string& name) const;
 	const Transition* findSpecialTransition(const std::string& name) const;
@@ -78,8 +74,6 @@ private:
 	EquationMap equationMap_;
 	TransitionMap transitionMap_;
 	TransitionMap specialTransitionMap_;
-	//PhonemeRewriter phonemeRewriter_;
-	//PhoneRewriter phoneRewriter_;
 	FormulaSymbolList formulaSymbolList_;
 
 	void preparePhones();

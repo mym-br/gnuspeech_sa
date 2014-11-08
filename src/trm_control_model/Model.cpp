@@ -29,15 +29,6 @@
 
 
 
-namespace {
-
-//const char* PHONEME_TRANSLATOR_CONFIG_FILE_NAME = "/phoneme_translation.config";
-//const char* PHONE_REWRITER_CONFIG_FILE_NAME = "/phone_rewriting.config";
-
-} /* namespace */
-
-//==============================================================================
-
 namespace GS {
 namespace TRMControlModel {
 
@@ -45,8 +36,6 @@ namespace TRMControlModel {
  * Constructor.
  */
 Model::Model()
-		//: phonemeRewriter_(configDirPath + PHONEME_TRANSLATOR_CONFIG_FILE_NAME)
-		//, phoneRewriter_(configDirPath + PHONE_REWRITER_CONFIG_FILE_NAME, phoneMap_)
 {
 }
 
@@ -123,18 +112,6 @@ Model::prepareRules()
 		Rule& r = **iter;
 		r.parseBooleanExpression(categoryMap_);
 	}
-}
-
-/*******************************************************************************
- *
- */
-void
-Model::filterInput(InputFile& /* inFile */)
-{
-	//inFile.rewritePhonemes(phonemeRewriter_);
-	//inFile.rewritePhones(phoneRewriter_);
-
-	//TODO: remove? move?
 }
 
 /*******************************************************************************
