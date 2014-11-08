@@ -2467,7 +2467,7 @@ TextParser::final_conversion(std::stringstream& stream1, long stream1_length,
 				std::stringstream& stream2, long* stream2_length)
 {
 	long i, last_word_end = UNDEFINED_POSITION, tg_marker_pos = UNDEFINED_POSITION;
-	int mode = NORMAL_MODE, next_mode, prior_tonic = TTS_FALSE, raw_mode_flag = TTS_FALSE;
+	int mode = NORMAL_MODE, next_mode = 0, prior_tonic = TTS_FALSE, raw_mode_flag = TTS_FALSE;
 	int last_written_state = STATE_BEGIN, current_state, next_state;
 	char word[WORD_LENGTH_MAX+1];
 	//int length, max_length;

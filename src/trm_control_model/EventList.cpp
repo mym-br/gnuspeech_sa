@@ -640,7 +640,7 @@ EventList::generateEventList()
 		if (tempPhoneList.size() < 2) {
 			break;
 		}
-		int ruleIndex;
+		int ruleIndex = 0;
 		const Rule* tempRule = model_.findFirstMatchingRule(tempPhoneList, ruleIndex);
 
 		ruleData_[currentRule_].number = ruleIndex + 1;
