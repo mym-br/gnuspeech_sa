@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef MAIN_DICTIONARY_H_
-#define MAIN_DICTIONARY_H_
+#ifndef EN_MAIN_DICTIONARY_H_
+#define EN_MAIN_DICTIONARY_H_
 
 #include <array>
 
@@ -61,4 +61,4 @@ private:
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* MAIN_DICTIONARY_H_ */
+#endif /* EN_MAIN_DICTIONARY_H_ */

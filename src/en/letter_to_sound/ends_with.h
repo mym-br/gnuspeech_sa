@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef ENDS_WITH_H_
-#define ENDS_WITH_H_
+#ifndef EN_ENDS_WITH_H_
+#define EN_ENDS_WITH_H_
 
 
 
@@ -31,4 +31,4 @@ const char* ends_with(const char* in, const char* end, const char* set);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* ENDS_WITH_H_ */
+#endif /* EN_ENDS_WITH_H_ */

@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef SPECIAL_ACRONYMS_H_
-#define SPECIAL_ACRONYMS_H_
+#ifndef EN_SPECIAL_ACRONYMS_H_
+#define EN_SPECIAL_ACRONYMS_H_
 
 namespace {
 
@@ -33,4 +33,4 @@ const char* special_acronym[][2] = {
 
 } /* namespace */
 
-#endif /* SPECIAL_ACRONYMS_H_ */
+#endif /* EN_SPECIAL_ACRONYMS_H_ */

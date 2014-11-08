@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef MEDIAL_S_H_
-#define MEDIAL_S_H_
+#ifndef EN_MEDIAL_S_H_
+#define EN_MEDIAL_S_H_
 
 
 
@@ -31,4 +31,4 @@ void medial_s(char *in, char **eow);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* MEDIAL_S_H_ */
+#endif /* EN_MEDIAL_S_H_ */

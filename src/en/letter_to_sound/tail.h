@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef TAIL_H_
-#define TAIL_H_
+#ifndef EN_TAIL_H_
+#define EN_TAIL_H_
 
 
 
@@ -67,4 +67,4 @@ const tail_entry tail_list[] = {
 
 } /* namespace */
 
-#endif /* TAIL_H_ */
+#endif /* EN_TAIL_H_ */

@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef CHECK_WORD_LIST_H_
-#define CHECK_WORD_LIST_H_
+#ifndef EN_CHECK_WORD_LIST_H_
+#define EN_CHECK_WORD_LIST_H_
 
 
 
@@ -31,4 +31,4 @@ int check_word_list(char* string, char** eow);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* CHECK_WORD_LIST_H_ */
+#endif /* EN_CHECK_WORD_LIST_H_ */

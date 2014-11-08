@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef VOWEL_BEFORE_H_
-#define VOWEL_BEFORE_H_
+#ifndef EN_VOWEL_BEFORE_H_
+#define EN_VOWEL_BEFORE_H_
 
 
 
@@ -31,4 +31,4 @@ const char* vowel_before(const char* start, const char* position);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* VOWEL_BEFORE_H_ */
+#endif /* EN_VOWEL_BEFORE_H_ */

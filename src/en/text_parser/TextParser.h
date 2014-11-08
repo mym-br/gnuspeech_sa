@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef TEXT_PARSER_H_
-#define TEXT_PARSER_H_
+#ifndef EN_TEXT_PARSER_H_
+#define EN_TEXT_PARSER_H_
 
 #include <string>
 #include <sstream>
@@ -66,4 +66,4 @@ private:
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* TEXT_PARSER_H_ */
+#endif /* EN_TEXT_PARSER_H_ */

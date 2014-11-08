@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef APPLY_STRESS_H_
-#define APPLY_STRESS_H_
+#ifndef EN_APPLY_STRESS_H_
+#define EN_APPLY_STRESS_H_
 
 
 
@@ -31,4 +31,4 @@ int apply_stress(char* buffer, const char* orthography);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* APPLY_STRESS_H_ */
+#endif /* EN_APPLY_STRESS_H_ */

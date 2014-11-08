@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef ABBREVIATIONS_H_
-#define ABBREVIATIONS_H_
+#ifndef EN_ABBREVIATIONS_H_
+#define EN_ABBREVIATIONS_H_
 
 
 
@@ -143,4 +143,4 @@ const char* abbr_with_number[][2] = {
 
 } /* namespace */
 
-#endif /* ABBREVIATIONS_H_ */
+#endif /* EN_ABBREVIATIONS_H_ */

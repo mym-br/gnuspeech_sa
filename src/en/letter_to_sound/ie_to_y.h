@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef IE_TO_Y_H_
-#define IE_TO_Y_H_
+#ifndef EN_IE_TO_Y_H_
+#define EN_IE_TO_Y_H_
 
 
 
@@ -31,4 +31,4 @@ int ie_to_y(char *in, char **end);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* IE_TO_Y_H_ */
+#endif /* EN_IE_TO_Y_H_ */

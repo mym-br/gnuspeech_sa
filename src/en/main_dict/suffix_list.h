@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef SUFFIX_LIST_H_
-#define SUFFIX_LIST_H_
+#ifndef EN_SUFFIX_LIST_H_
+#define EN_SUFFIX_LIST_H_
 
 /***********************************************************************
 
@@ -327,4 +327,4 @@ const suffix_list_t suffix_list[] = {
 
 } /* namespace */
 
-#endif /* SUFFIX_LIST_H_ */
+#endif /* EN_SUFFIX_LIST_H_ */

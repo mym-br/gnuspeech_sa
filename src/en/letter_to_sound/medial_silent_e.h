@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef MEDIAL_SILENT_E_H_
-#define MEDIAL_SILENT_E_H_
+#ifndef EN_MEDIAL_SILENT_E_H_
+#define EN_MEDIAL_SILENT_E_H_
 
 
 
@@ -31,4 +31,4 @@ void medial_silent_e(char *in, char **eow);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* MEDIAL_SILENT_E_H_ */
+#endif /* EN_MEDIAL_SILENT_E_H_ */

@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef CLUSTERS_H_
-#define CLUSTERS_H_
+#ifndef EN_CLUSTERS_H_
+#define EN_CLUSTERS_H_
 
 
 
@@ -175,4 +175,4 @@ const char* end_syllable[] = {
 
 } /* namespace */
 
-#endif /* CLUSTERS_H_ */
+#endif /* EN_CLUSTERS_H_ */

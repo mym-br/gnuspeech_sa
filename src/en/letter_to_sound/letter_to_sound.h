@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef LETTER_TO_SOUND_H_
-#define LETTER_TO_SOUND_H_
+#ifndef EN_LETTER_TO_SOUND_H_
+#define EN_LETTER_TO_SOUND_H_
 
 #include <vector>
 
@@ -33,4 +33,4 @@ void letter_to_sound(const char* word, std::vector<char>& pronunciation);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* LETTER_TO_SOUND_H_ */
+#endif /* EN_LETTER_TO_SOUND_H_ */

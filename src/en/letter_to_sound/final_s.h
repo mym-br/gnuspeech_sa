@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef FINAL_S_H_
-#define FINAL_S_H_
+#ifndef EN_FINAL_S_H_
+#define EN_FINAL_S_H_
 
 
 
@@ -31,4 +31,4 @@ char final_s(char *in, char **eow);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* FINAL_S_H_ */
+#endif /* EN_FINAL_S_H_ */

@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef NUMBER_PRONUNCIATIONS_H_
-#define NUMBER_PRONUNCIATIONS_H_
+#ifndef EN_NUMBER_PRONUNCIATIONS_H_
+#define EN_NUMBER_PRONUNCIATIONS_H_
 
 /*  number_pronunciations.h CONTAINS PRONUNCIATIONS FOR
     number_parser() AND degenerate_string()  */
@@ -272,4 +272,4 @@
 #define TILDE                  "'t_i_l.d_uh "
 #define UNKNOWN                "uh_n.'n_uh_uu_n "
 
-#endif /* NUMBER_PRONUNCIATIONS_H_ */
+#endif /* EN_NUMBER_PRONUNCIATIONS_H_ */

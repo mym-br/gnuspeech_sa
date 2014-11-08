@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef INSERT_MARK_H_
-#define INSERT_MARK_H_
+#ifndef EN_INSERT_MARK_H_
+#define EN_INSERT_MARK_H_
 
 
 
@@ -31,4 +31,4 @@ void insert_mark(char **end, char *at);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* INSERT_MARK_H_ */
+#endif /* EN_INSERT_MARK_H_ */

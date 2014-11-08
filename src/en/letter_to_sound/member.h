@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef MEMBER_H_
-#define MEMBER_H_
+#ifndef EN_MEMBER_H_
+#define EN_MEMBER_H_
 
 
 
@@ -31,4 +31,4 @@ int member(char element, const char* set);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* MEMBER_H_ */
+#endif /* EN_MEMBER_H_ */

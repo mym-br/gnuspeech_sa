@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef MARK_FINAL_E_H_
-#define MARK_FINAL_E_H_
+#ifndef EN_MARK_FINAL_E_H_
+#define EN_MARK_FINAL_E_H_
 
 
 
@@ -31,4 +31,4 @@ int mark_final_e(char *in, char **eow);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* MARK_FINAL_E_H_ */
+#endif /* EN_MARK_FINAL_E_H_ */

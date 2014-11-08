@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef STRESS_TABLES_H_
-#define STRESS_TABLES_H_
+#ifndef EN_STRESS_TABLES_H_
+#define EN_STRESS_TABLES_H_
 
 /*  LOCAL DEFINES  ***********************************************************/
 #define MAX_SYLLS      100
@@ -142,4 +142,4 @@ const char* prefices[] = {
 
 } /* namespace */
 
-#endif /* STRESS_TABLES_H_ */
+#endif /* EN_STRESS_TABLES_H_ */

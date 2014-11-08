@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef ISP_TRANS_H_
-#define ISP_TRANS_H_
+#ifndef EN_ISP_TRANS_H_
+#define EN_ISP_TRANS_H_
 
 
 
@@ -31,4 +31,4 @@ void isp_trans(char *string, char *result);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* ISP_TRANS_H_ */
+#endif /* EN_ISP_TRANS_H_ */

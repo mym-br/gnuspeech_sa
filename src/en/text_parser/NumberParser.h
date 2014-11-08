@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef NUMBER_PARSER_H_
-#define NUMBER_PARSER_H_
+#ifndef EN_NUMBER_PARSER_H_
+#define EN_NUMBER_PARSER_H_
 
 #include <array>
 
@@ -162,4 +162,4 @@ private:
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* NUMBER_PARSER_H_ */
+#endif /* EN_NUMBER_PARSER_H_ */

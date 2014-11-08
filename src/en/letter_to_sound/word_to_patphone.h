@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef WORD_TO_PATPHONE_H_
-#define WORD_TO_PATPHONE_H_
+#ifndef EN_WORD_TO_PATPHONE_H_
+#define EN_WORD_TO_PATPHONE_H_
 
 
 
@@ -31,4 +31,4 @@ int word_to_patphone(char *word);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* WORD_TO_PATPHONE_H_ */
+#endif /* EN_WORD_TO_PATPHONE_H_ */

@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef LONG_MEDIAL_VOWELS_H_
-#define LONG_MEDIAL_VOWELS_H_
+#ifndef EN_LONG_MEDIAL_VOWELS_H_
+#define EN_LONG_MEDIAL_VOWELS_H_
 
 
 
@@ -31,4 +31,4 @@ int long_medial_vowels(char *in, char **eow);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* LONG_MEDIAL_VOWELS_H_ */
+#endif /* EN_LONG_MEDIAL_VOWELS_H_ */

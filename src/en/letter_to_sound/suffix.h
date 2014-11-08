@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef SUFFIX_H_
-#define SUFFIX_H_
+#ifndef EN_SUFFIX_H_
+#define EN_SUFFIX_H_
 
 
 
@@ -31,4 +31,4 @@ const char* suffix(const char* in, const char* end, const char* suflist);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* SUFFIX_H_ */
+#endif /* EN_SUFFIX_H_ */

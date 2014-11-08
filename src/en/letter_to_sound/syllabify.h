@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef SYLLABIFY_H_
-#define SYLLABIFY_H_
+#ifndef EN_SYLLABIFY_H_
+#define EN_SYLLABIFY_H_
 
 
 
@@ -31,4 +31,4 @@ int syllabify(char* word);
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* SYLLABIFY_H_ */
+#endif /* EN_SYLLABIFY_H_ */
