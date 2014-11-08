@@ -24,8 +24,8 @@
 #include <cstdio>
 
 #include "EventList.h"
+#include "Log.h"
 #include "Model.h"
-#include "StringParser.h"
 #include "TRMConfiguration.h"
 #include "TRMControlModelConfiguration.h"
 
@@ -47,7 +47,10 @@ public:
 	Controller(const char* configDirPath, Model& model);
 	~Controller();
 
-	void synthesizePhoneticString(const char* phoneticString, const char* trmParamFile, const char* outputFile);
+	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, const char* outputFile);
+
+	Model& model() { return model_; }
+	EventList& eventList() { return eventList_; }
 private:
 	enum {
 		MAX_VOICES = 5
@@ -64,15 +67,56 @@ private:
 
 	int validPhone(const char* token);
 	void setIntonation(int intonation);
-	void synthesizePhoneticStringChunk(const char* phoneticStringChunk, const char* trmParamFile);
+
+	template<typename T> void synthesizePhoneticStringChunk(T& phoneticStringParser, const char* phoneticStringChunk, const char* trmParamFile);
 
 	Model& model_;
 	VoiceConfig voices_[MAX_VOICES];
 	EventList eventList_;
-	StringParser stringParser_;
 	Configuration trmControlModelConfig_;
 	TRM::Configuration trmConfig_;
 };
+
+
+
+template<typename T>
+void
+Controller::synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, const char* outputFile)
+{
+	int chunks = calcChunks(phoneticString);
+
+	initUtterance(trmParamFile);
+
+	int index = 0;
+	while (chunks > 0) {
+		if (Log::debugEnabled) {
+			printf("Speaking \"%s\"\n", &phoneticString[index]);
+		}
+
+		synthesizePhoneticStringChunk(phoneticStringParser, &phoneticString[index], trmParamFile);
+
+		index += nextChunk(&phoneticString[index + 2]) + 2;
+		chunks--;
+	}
+
+	TRM::Tube trm;
+	trm.synthesizeToFile(trmParamFile, outputFile);
+}
+
+template<typename T>
+void
+Controller::synthesizePhoneticStringChunk(T& phoneticStringParser, const char* phoneticStringChunk, const char* trmParamFile)
+{
+	phoneticStringParser.parseString(phoneticStringChunk);
+
+	eventList_.generateEventList();
+
+	eventList_.applyIntonation();
+	eventList_.applyIntonationSmooth();
+
+	eventList_.generateOutput(trmParamFile);
+	eventList_.setUp();
+}
 
 } /* namespace TRMControlModel */
 } /* namespace GS */

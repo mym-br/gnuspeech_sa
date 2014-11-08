@@ -18,7 +18,7 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#include "StringParser.h"
+#include "en/phonetic_string_parser/PhoneticStringParser.h"
 
 #include <cstring>
 #include <sstream>
@@ -32,13 +32,13 @@
 
 
 namespace GS {
-namespace TRMControlModel {
+namespace En {
 
-StringParser::StringParser(const char* configDirPath, const Model& model, EventList& eventList)
-		: model_(model)
-		, eventList_(eventList)
+PhoneticStringParser::PhoneticStringParser(const char* configDirPath, TRMControlModel::Controller& controller)
+		: model_(controller.model())
+		, eventList_(controller.eventList())
 {
-	const Phone* tempPhone;
+	const TRMControlModel::Phone* tempPhone;
 
 	category_[0] = model_.findCategory("stopped");
 	category_[1] = model_.findCategory("affricate");
@@ -92,12 +92,12 @@ StringParser::StringParser(const char* configDirPath, const Model& model, EventL
 	initVowelTransitions(configDirPath);
 }
 
-StringParser::~StringParser()
+PhoneticStringParser::~PhoneticStringParser()
 {
 }
 
 void
-StringParser::initVowelTransitions(const char* configDirPath)
+PhoneticStringParser::initVowelTransitions(const char* configDirPath)
 {
 	char dummy[24], line[256];
 	int i = 0;
@@ -138,7 +138,7 @@ StringParser::initVowelTransitions(const char* configDirPath)
 }
 
 void
-StringParser::printVowelTransitions()
+PhoneticStringParser::printVowelTransitions()
 {
 	printf("===== Transitions configuration:\n");
 	for (int i = 0; i < 13; i++) {
@@ -151,13 +151,13 @@ StringParser::printVowelTransitions()
 	}
 }
 
-const Phone*
-StringParser::rewrite(const Phone& nextPhone, int wordMarker, RewriterData& data)
+const TRMControlModel::Phone*
+PhoneticStringParser::rewrite(const TRMControlModel::Phone& nextPhone, int wordMarker, RewriterData& data)
 {
-	const Phone* tempPhone;
+	const TRMControlModel::Phone* tempPhone;
 	int transitionMade = 0;
 	const char* temp;
-	const Phone* returnValue = nullptr;
+	const TRMControlModel::Phone* returnValue = nullptr;
 
 	static const int stateTable[19][18] = {
 		{ 1,  9,  0,  7,  0,  0,  0,  0,  5,  5, 13, 13, 15, 15,  0,  0,  0, 17},		/* State 0 */
@@ -271,10 +271,10 @@ StringParser::rewrite(const Phone& nextPhone, int wordMarker, RewriterData& data
 }
 
 int
-StringParser::parseString(const char* string)
+PhoneticStringParser::parseString(const char* string)
 {
-	const Phone* tempPhone;
-	const Phone* tempPhone1;
+	const TRMControlModel::Phone* tempPhone;
+	const TRMControlModel::Phone* tempPhone1;
 	int length;
 	int index = 0, bufferIndex = 0;
 	int chunk = 0;
@@ -454,8 +454,8 @@ StringParser::parseString(const char* string)
 	return 0;
 }
 
-const Phone*
-StringParser::calcVowelTransition(const Phone& nextPhone, RewriterData& data)
+const TRMControlModel::Phone*
+PhoneticStringParser::calcVowelTransition(const TRMControlModel::Phone& nextPhone, RewriterData& data)
 {
 	int vowelHash[13] = { 194, 201, 97, 101, 105, 111, 221, 117, 211, 216, 202, 215, 234 };
 	int lastValue, nextValue, i, action;
@@ -504,5 +504,5 @@ StringParser::calcVowelTransition(const Phone& nextPhone, RewriterData& data)
 	}
 }
 
-} /* namespace TRMControlModel */
+} /* namespace En */
 } /* namespace GS */

@@ -52,6 +52,8 @@ add_library(gnuspeechx STATIC
 
     src/en/number_pronunciations.h
 
+    src/en/phonetic_string_parser/PhoneticStringParser.cpp src/en/phonetic_string_parser/PhoneticStringParser.h
+
     src/en/text_parser/abbreviations.h
     src/en/text_parser/NumberParser.cpp src/en/text_parser/NumberParser.h
     src/en/text_parser/special_acronyms.h
@@ -82,7 +84,6 @@ add_library(gnuspeechx STATIC
     src/trm_control_model/Parameter.cpp src/trm_control_model/Parameter.h
     src/trm_control_model/Phone.cpp src/trm_control_model/Phone.h
     src/trm_control_model/Rule.cpp src/trm_control_model/Rule.h
-    src/trm_control_model/StringParser.cpp src/trm_control_model/StringParser.h
     src/trm_control_model/Transition.cpp src/trm_control_model/Transition.h
     src/trm_control_model/TRMControlModelConfiguration.cpp src/trm_control_model/TRMControlModelConfiguration.h
 

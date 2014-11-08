@@ -18,46 +18,45 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef TRM_CONTROL_MODEL_STRING_PARSER_H_
-#define TRM_CONTROL_MODEL_STRING_PARSER_H_
+#ifndef EN_PHONETIC_STRING_PARSER_H_
+#define EN_PHONETIC_STRING_PARSER_H_
 
-#include "EventList.h"
-#include "Model.h"
+#include "Controller.h"
 
 
 
 namespace GS {
-namespace TRMControlModel {
+namespace En {
 
-class StringParser {
+class PhoneticStringParser {
 public:
-	StringParser(const char* configDirPath, const Model& model, EventList& eventList);
-	~StringParser();
+	PhoneticStringParser(const char* configDirPath, TRMControlModel::Controller& controller);
+	~PhoneticStringParser();
 
 	int parseString(const char* string);
 private:
-	StringParser(const StringParser&);
-	StringParser& operator=(const StringParser&);
+	PhoneticStringParser(const PhoneticStringParser&);
+	PhoneticStringParser& operator=(const PhoneticStringParser&);
 
 	struct RewriterData {
 		int currentState;
-		const Phone* lastPhone;
+		const TRMControlModel::Phone* lastPhone;
 		RewriterData() : currentState(0), lastPhone(nullptr) {}
 	};
 
 	void initVowelTransitions(const char* configDirPath);
 	void printVowelTransitions();
-	const Phone* rewrite(const Phone& nextPhone, int wordMarker, RewriterData& data);
-	const Phone* calcVowelTransition(const Phone& nextPhone, RewriterData& data);
+	const TRMControlModel::Phone* rewrite(const TRMControlModel::Phone& nextPhone, int wordMarker, RewriterData& data);
+	const TRMControlModel::Phone* calcVowelTransition(const TRMControlModel::Phone& nextPhone, RewriterData& data);
 
-	const Model& model_;
-	EventList& eventList_;
-	const Category* category_[18];
-	const Phone* returnPhone_[7];
+	const TRMControlModel::Model& model_;
+	TRMControlModel::EventList& eventList_;
+	const TRMControlModel::Category* category_[18];
+	const TRMControlModel::Phone* returnPhone_[7];
 	int vowelTransitions_[13][13];
 };
 
-} /* namespace TRMControlModel */
+} /* namespace En */
 } /* namespace GS */
 
-#endif /* TRM_CONTROL_MODEL_STRING_PARSER_H_ */
+#endif /* EN_PHONETIC_STRING_PARSER_H_ */

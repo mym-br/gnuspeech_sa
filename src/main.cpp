@@ -27,6 +27,7 @@
 #include "Exception.h"
 #include "Log.h"
 #include "Model.h"
+#include "en/phonetic_string_parser/PhoneticStringParser.h"
 #include "en/text_parser/TextParser.h"
 
 #define TRM_CONTROL_MODEL_CONFIG_FILE "/monet.xml"
@@ -132,16 +133,17 @@ main(int argc, char* argv[])
 			trmControlModel->printInfo();
 		}
 
-		std::unique_ptr<GS::En::TextParser> textParser(new GS::En::TextParser(configDirPath));
-
 		std::unique_ptr<GS::TRMControlModel::Controller> trmController(new GS::TRMControlModel::Controller(configDirPath, *trmControlModel));
+
+		std::unique_ptr<GS::En::TextParser> textParser(new GS::En::TextParser(configDirPath));
+		std::unique_ptr<GS::En::PhoneticStringParser> phoneticStringParser(new GS::En::PhoneticStringParser(configDirPath, *trmController));
 
 		std::string phoneticString = textParser->parseText(inputText.c_str());
 		if (GS::Log::debugEnabled) {
 			std::cout << "Phonetic string: [" << phoneticString << ']' << std::endl;
 		}
 
-		trmController->synthesizePhoneticString(phoneticString.c_str(), trmParamFile, outputFile);
+		trmController->synthesizePhoneticString(*phoneticStringParser, phoneticString.c_str(), trmParamFile, outputFile);
 
 	} catch (std::exception& e) {
 		std::cerr << "Caught an exception: " << e.what() << std::endl;

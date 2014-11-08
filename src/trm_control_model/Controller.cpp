@@ -24,7 +24,6 @@
 #include <sstream>
 
 #include "Exception.h"
-#include "Log.h"
 #include "Tube.h"
 
 #define TRM_CONTROL_MODEL_CONFIG_FILE_NAME "/trm_control_model.config"
@@ -39,7 +38,6 @@ namespace TRMControlModel {
 Controller::Controller(const char* configDirPath, Model& model)
 		: model_(model)
 		, eventList_(configDirPath, model_)
-		, stringParser_(configDirPath, model_, eventList_)
 {
 	std::ostringstream trmControlModelConfigFilePath;
 	trmControlModelConfigFilePath << configDirPath << TRM_CONTROL_MODEL_CONFIG_FILE_NAME;
@@ -116,29 +114,6 @@ Controller::initUtterance(const char* trmParamFile)
 		trmConfig_.mixOffset
 	);
 	fclose(fp);
-}
-
-void
-Controller::synthesizePhoneticString(const char* phoneticString, const char* trmParamFile, const char* outputFile)
-{
-	int chunks = calcChunks(phoneticString);
-
-	initUtterance(trmParamFile);
-
-	int index = 0;
-	while (chunks > 0) {
-		if (Log::debugEnabled) {
-			printf("Speaking \"%s\"\n", &phoneticString[index]);
-		}
-
-		synthesizePhoneticStringChunk(&phoneticString[index], trmParamFile);
-
-		index += nextChunk(&phoneticString[index + 2]) + 2;
-		chunks--;
-	}
-
-	TRM::Tube trm;
-	trm.synthesizeToFile(trmParamFile, outputFile);
 }
 
 // Chunks are separated by /c.
@@ -274,20 +249,6 @@ Controller::setIntonation(int intonation)
 	}
 
 	eventList_.setDrift(1);
-}
-
-void
-Controller::synthesizePhoneticStringChunk(const char* phoneticStringChunk, const char* trmParamFile)
-{
-	stringParser_.parseString(phoneticStringChunk);
-
-	eventList_.generateEventList();
-
-	eventList_.applyIntonation();
-	eventList_.applyIntonationSmooth();
-
-	eventList_.generateOutput(trmParamFile);
-	eventList_.setUp();
 }
 
 } /* namespace TRMControlModel */
