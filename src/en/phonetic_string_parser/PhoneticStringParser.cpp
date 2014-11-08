@@ -305,9 +305,9 @@ PhoneticStringParser::parseString(const char* string)
 				index++;
 				eventList_.setCurrentToneGroupType(TONE_GROUP_TYPE_STATEMENT);
 				break;
-			case '1': /* Tone group 1. Exclaimation */
+			case '1': /* Tone group 1. Exclamation */
 				index++;
-				eventList_.setCurrentToneGroupType(TONE_GROUP_TYPE_EXCLAIMATION);
+				eventList_.setCurrentToneGroupType(TONE_GROUP_TYPE_EXCLAMATION);
 				break;
 			case '2': /* Tone group 2. Question */
 				index++;

@@ -698,7 +698,7 @@ EventList::applyIntonation()
 			}
 			intonParms_ = &tgParameters_[0][tgRandom * 10];
 			break;
-		case TONE_GROUP_TYPE_EXCLAIMATION:
+		case TONE_GROUP_TYPE_EXCLAMATION:
 			if (tgUseRandom_) {
 				tgRandom = rand() % tgCount_[0];
 			} else {
