@@ -22,7 +22,9 @@
 
 #include <cstring>
 #include <sstream>
+#include <vector>
 
+#include "Exception.h"
 #include "Log.h"
 
 
@@ -38,47 +40,22 @@ PhoneticStringParser::PhoneticStringParser(const char* configDirPath, TRMControl
 		: model_(controller.model())
 		, eventList_(controller.eventList())
 {
-	const TRMControlModel::Phone* tempPhone;
-
 	category_[0] = model_.findCategory("stopped");
 	category_[1] = model_.findCategory("affricate");
 	category_[2] = model_.findCategory("hlike");
 	category_[3] = model_.findCategory("vocoid");
+
+	const std::vector<const char*> postureList = {"h", "h'", "hv", "hv'", "ll", "ll'", "s", "s'", "z", "z'"};
+	for (unsigned int i = 0; i < postureList.size(); ++i) {
+		const char* posture = postureList[i];
+		const TRMControlModel::Phone* tempPhone = model_.findPhone(posture);
+		if (!tempPhone) THROW_EXCEPTION(UnavailableResourceException, "Could not find the posture \"" << posture << "\".");
+		category_[i + 4U] = tempPhone->findCategory(posture);
+	}
+
 	category_[14] = model_.findCategory("whistlehack");
 	category_[15] = model_.findCategory("lhack");
-
-	tempPhone = model_.findPhone("h"); //TODO: check nullptr
-	category_[4] = tempPhone->findCategory("h");
-
-	tempPhone = model_.findPhone("h'"); //TODO: check nullptr
-	category_[5] = tempPhone->findCategory("h'");
-
-	tempPhone = model_.findPhone("hv"); //TODO: check nullptr
-	category_[6] = tempPhone->findCategory("hv");
-
-	tempPhone = model_.findPhone("hv'"); //TODO: check nullptr
-	category_[7] = tempPhone->findCategory("hv'");
-
-	tempPhone = model_.findPhone("ll"); //TODO: check nullptr
-	category_[8] = tempPhone->findCategory("ll");
-
-	tempPhone = model_.findPhone("ll'"); //TODO: check nullptr
-	category_[9] = tempPhone->findCategory("ll'");
-
-	tempPhone = model_.findPhone("s"); //TODO: check nullptr
-	category_[10] = tempPhone->findCategory("s");
-
-	tempPhone = model_.findPhone("s'"); //TODO: check nullptr
-	category_[11] = tempPhone->findCategory("s'");
-
-	tempPhone = model_.findPhone("z"); //TODO: check nullptr
-	category_[12] = tempPhone->findCategory("z");
-
-	tempPhone = model_.findPhone("z'"); //TODO: check nullptr
-	category_[13] = tempPhone->findCategory("z'");
-
 	category_[16] = model_.findCategory("whistlehack");
-
 	category_[17] = model_.findCategory("whistlehack");
 
 	returnPhone_[0] = model_.findPhone("qc");
