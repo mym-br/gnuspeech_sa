@@ -1,4 +1,4 @@
-project(gnuspeech_x)
+project(gnuspeech_sa)
 cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
@@ -18,7 +18,7 @@ if(MSVC)
     add_definitions(-D_USE_MATH_DEFINES)
 endif(MSVC)
 
-add_library(gnuspeechx STATIC
+add_library(gnuspeechsa STATIC
     src/Dictionary.cpp src/Dictionary.h
     src/Exception.h
     src/KeyValueFileReader.cpp src/KeyValueFileReader.h
@@ -90,15 +90,15 @@ add_library(gnuspeechx STATIC
     src/xml/SimpleXMLParser.cpp src/xml/SimpleXMLParser.h
 )
 
-add_executable(gnuspeech_x
+add_executable(gnuspeech_sa
     src/main.cpp
 )
-target_link_libraries(gnuspeech_x gnuspeechx)
+target_link_libraries(gnuspeech_sa gnuspeechsa)
 
-add_executable(gnuspeech_x_trm
+add_executable(gnuspeech_sa_trm
     src/trm/gnuspeech_trm.cpp
 )
-target_link_libraries(gnuspeech_x_trm gnuspeechx)
+target_link_libraries(gnuspeech_sa_trm gnuspeechsa)
 
-#add_dependencies(gnuspeech_x gnuspeechx)
-#add_dependencies(gnuspeech_x_trm gnuspeechx)
+#add_dependencies(gnuspeech_sa gnuspeechsa)
+#add_dependencies(gnuspeech_sa_trm gnuspeechsa)

@@ -1,10 +1,10 @@
 
-Gnuspeech-X (eXperimental)
+Gnuspeech-SA (Stand-Alone)
 ==========================
 
-Gnuspeech-X is a port to C++/C of the TTS_Server in the original Gnuspeech
+Gnuspeech-SA is a port to C++/C of the TTS_Server in the original Gnuspeech
 (http://www.gnu.org/software/gnuspeech/) source code written for NeXTSTEP.
-Currently it is a command-line program that converts text to speech.
+It is a command-line program that converts text to speech.
 
 This project is based on code from Gnuspeech SVN, rev. 672, downloaded in
 2014-08-02. The source code was obtained from the directories:

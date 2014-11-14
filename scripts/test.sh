@@ -1,7 +1,7 @@
 #!/bin/sh
 
-param_file=/tmp/gnuspeech_x_param.txt
-output_file=/tmp/gnuspeech_x.wav
+param_file=/tmp/gnuspeech_sa_param.txt
+output_file=/tmp/gnuspeech_sa.wav
 
 if [ $# -ne 1 ]
 then
@@ -9,4 +9,4 @@ then
   exit 1
 fi
 
-./gnuspeech_x -c ../gnuspeech_x/data -p ${param_file} -o ${output_file} "$1" 2>/dev/null && aplay -q ${output_file}
+./gnuspeech_sa -c ../gnuspeech_sa/data -p ${param_file} -o ${output_file} "$1" 2>/dev/null && aplay -q ${output_file}

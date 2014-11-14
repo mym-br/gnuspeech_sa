@@ -11,11 +11,11 @@
 
 - Build (GNU/Linux):
 
-  mkdir ../gnuspeech_x-build
-  cd ../gnuspeech_x-build
-  cmake -D CMAKE_BUILD_TYPE=Release ../gnuspeech_x
+  mkdir ../gnuspeech_sa-build
+  cd ../gnuspeech_sa-build
+  cmake -D CMAKE_BUILD_TYPE=Release ../gnuspeech_sa
   make
 
 - Test (GNU/Linux):
 
-  ../gnuspeech_x/scripts/test.sh 'Hello world.'
+  ../gnuspeech_sa/scripts/test.sh 'Hello world.'

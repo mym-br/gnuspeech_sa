@@ -43,7 +43,7 @@ main(int argc, char* argv[])
 		inputFile = argv[2];
 		outputFile = argv[3];
 	} else {
-		fprintf(stderr, "Usage:  %s [-v] inputFile outputFile\n", argv[0]);
+		fprintf(stderr, "Usage: %s [-v] inputFile outputFile\n", argv[0]);
 		return -1;
 	}
 

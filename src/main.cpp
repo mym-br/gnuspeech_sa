@@ -37,9 +37,9 @@ void showUsage();
 
 
 void
-showUsage()
+showUsage(const char* programName)
 {
-	std::cout << "Usage: gnuspeech_x [-v] -c config_dir [-i input_file.txt] -p trm_param_file -o output_file.wav text" << std::endl;
+	std::cout << "Usage: " << programName << " [-v] -c config_dir [-i input_file.txt] -p trm_param_file -o output_file.wav text" << std::endl;
 	std::cout << "         -v : verbose" << std::endl;
 }
 
@@ -47,7 +47,7 @@ int
 main(int argc, char* argv[])
 {
 	if (argc < 2) {
-		showUsage();
+		showUsage(argv[0]);
 		return 1;
 	}
 
@@ -65,7 +65,7 @@ main(int argc, char* argv[])
 		} else if (strcmp(argv[i], "-c") == 0) {
 			++i;
 			if (i == argc) {
-				showUsage();
+				showUsage(argv[0]);
 				return 1;
 			}
 			configDirPath = argv[i];
@@ -73,7 +73,7 @@ main(int argc, char* argv[])
 		} else if (strcmp(argv[i], "-i") == 0) {
 			++i;
 			if (i == argc) {
-				showUsage();
+				showUsage(argv[0]);
 				return 1;
 			}
 			inputFile = argv[i];
@@ -81,7 +81,7 @@ main(int argc, char* argv[])
 		} else if (strcmp(argv[i], "-p") == 0) {
 			++i;
 			if (i == argc) {
-				showUsage();
+				showUsage(argv[0]);
 				return 1;
 			}
 			trmParamFile = argv[i];
@@ -89,7 +89,7 @@ main(int argc, char* argv[])
 		} else if (strcmp(argv[i], "-o") == 0) {
 			++i;
 			if (i == argc) {
-				showUsage();
+				showUsage(argv[0]);
 				return 1;
 			}
 			outputFile = argv[i];
@@ -102,7 +102,7 @@ main(int argc, char* argv[])
 	}
 
 	if (configDirPath == nullptr || trmParamFile == nullptr || outputFile == nullptr) {
-		showUsage();
+		showUsage(argv[0]);
 		return 1;
 	}
 
