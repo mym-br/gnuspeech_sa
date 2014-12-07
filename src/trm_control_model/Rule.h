@@ -167,7 +167,7 @@ private:
 	ExpressionSymbolEquations exprSymbolEquations_;
 	RuleBooleanNodeList booleanNodeList_;
 
-	friend class ConfigFile;
+	friend class XMLConfigFile;
 };
 
 typedef std::vector<Rule_ptr> RuleList;

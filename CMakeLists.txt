@@ -74,7 +74,6 @@ add_library(gnuspeechsa STATIC
 
     src/trm_control_model/Category.cpp src/trm_control_model/Category.h
     src/trm_control_model/DriftGenerator.cpp src/trm_control_model/DriftGenerator.h
-    src/trm_control_model/ConfigFile.cpp src/trm_control_model/ConfigFile.h
     src/trm_control_model/Controller.cpp src/trm_control_model/Controller.h
     src/trm_control_model/Equation.cpp src/trm_control_model/Equation.h
     src/trm_control_model/EventList.cpp src/trm_control_model/EventList.h
@@ -86,6 +85,7 @@ add_library(gnuspeechsa STATIC
     src/trm_control_model/Rule.cpp src/trm_control_model/Rule.h
     src/trm_control_model/Transition.cpp src/trm_control_model/Transition.h
     src/trm_control_model/TRMControlModelConfiguration.cpp src/trm_control_model/TRMControlModelConfiguration.h
+    src/trm_control_model/XMLConfigFile.cpp src/trm_control_model/XMLConfigFile.h
 
     src/xml/SimpleXMLParser.cpp src/xml/SimpleXMLParser.h
 )

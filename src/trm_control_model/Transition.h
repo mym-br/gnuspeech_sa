@@ -167,7 +167,7 @@ private:
 	bool special_;
 	TransitionPointOrSlopeList pointOrSlopeList_;
 
-	friend class ConfigFile;
+	friend class XMLConfigFile;
 };
 
 typedef std::unique_ptr<Transition> Transition_ptr;

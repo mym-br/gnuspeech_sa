@@ -24,7 +24,7 @@
 
 #include <iostream>
 
-#include "ConfigFile.h"
+#include "XMLConfigFile.h"
 #include "Log.h"
 
 
@@ -56,7 +56,7 @@ Model::load(const char* configDirPath, const char* configFileName)
 
 	// Load the configuration file.
 	LOG_DEBUG("Loading xml configuration: " << filePath);
-	ConfigFile cfg(*this, filePath);
+	XMLConfigFile cfg(*this, filePath);
 	cfg.loadModel();
 
 	preparePhones();

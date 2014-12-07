@@ -80,7 +80,7 @@ private:
 	void prepareEquations();
 	void prepareRules();
 
-	friend class ConfigFile;
+	friend class XMLConfigFile;
 };
 
 

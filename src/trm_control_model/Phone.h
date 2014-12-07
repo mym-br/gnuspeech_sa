@@ -80,7 +80,7 @@ private:
 	CategoryList categoryList_;
 	Symbols symbols_;
 
-	friend class ConfigFile;
+	friend class XMLConfigFile;
 };
 
 typedef std::unique_ptr<Phone> Phone_ptr;

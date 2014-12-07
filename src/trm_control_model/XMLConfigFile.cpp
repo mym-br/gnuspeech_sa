@@ -20,7 +20,7 @@
 // This file was created by Marcelo Y. Matuda, and code/information
 // from Gnuspeech was added to it later.
 
-#include "ConfigFile.h"
+#include "XMLConfigFile.h"
 
 #include <iostream>
 
@@ -38,7 +38,7 @@ namespace GS {
 namespace TRMControlModel {
 
 void
-ConfigFile::parseCategories()
+XMLConfigFile::parseCategories()
 {
 	typedef CategoryMap::iterator MI;
 	typedef CategoryMap::value_type VT;
@@ -63,7 +63,7 @@ ConfigFile::parseCategories()
 }
 
 void
-ConfigFile::parseParameters()
+XMLConfigFile::parseParameters()
 {
 	for (const std::string* parameter = parser_.getFirstChild(parameterTagName_);
 				parameter;
@@ -79,7 +79,7 @@ ConfigFile::parseParameters()
 }
 
 void
-ConfigFile::parseSymbols()
+XMLConfigFile::parseSymbols()
 {
 	for (const std::string* symbol = parser_.getFirstChild(symbolTagName_);
 				symbol;
@@ -89,7 +89,7 @@ ConfigFile::parseSymbols()
 }
 
 void
-ConfigFile::parsePostureSymbols(Phone& phone)
+XMLConfigFile::parsePostureSymbols(Phone& phone)
 {
 	for (const std::string* target = parser_.getFirstChild(targetTagName_);
 				target;
@@ -109,7 +109,7 @@ ConfigFile::parsePostureSymbols(Phone& phone)
 }
 
 void
-ConfigFile::parsePostureCategories(Phone& phone)
+XMLConfigFile::parsePostureCategories(Phone& phone)
 {
 	for (const std::string* catRef = parser_.getFirstChild(categoryRefTagName_);
 				catRef;
@@ -120,7 +120,7 @@ ConfigFile::parsePostureCategories(Phone& phone)
 }
 
 void
-ConfigFile::parsePostureParameters(Phone& phone)
+XMLConfigFile::parsePostureParameters(Phone& phone)
 {
 	for (const std::string* target = parser_.getFirstChild(targetTagName_);
 				target;
@@ -134,7 +134,7 @@ ConfigFile::parsePostureParameters(Phone& phone)
 }
 
 void
-ConfigFile::parsePosture()
+XMLConfigFile::parsePosture()
 {
 	Phone_ptr p(new Phone(parser_.getAttribute(symbolAttrName_)));
 
@@ -155,7 +155,7 @@ ConfigFile::parsePosture()
 }
 
 void
-ConfigFile::parsePostures()
+XMLConfigFile::parsePostures()
 {
 	for (const std::string* posture = parser_.getFirstChild(postureTagName_);
 				posture;
@@ -165,7 +165,7 @@ ConfigFile::parsePostures()
 }
 
 void
-ConfigFile::parseEquationsGroup()
+XMLConfigFile::parseEquationsGroup()
 {
 	typedef EquationMap::iterator MI;
 	typedef EquationMap::value_type VT;
@@ -198,7 +198,7 @@ ConfigFile::parseEquationsGroup()
 }
 
 void
-ConfigFile::parseEquations()
+XMLConfigFile::parseEquations()
 {
 	for (const std::string* group = parser_.getFirstChild(equationGroupTagName_);
 				group;
@@ -208,7 +208,7 @@ ConfigFile::parseEquations()
 }
 
 void
-ConfigFile::parseSlopeRatio(Transition& transition)
+XMLConfigFile::parseSlopeRatio(Transition& transition)
 {
 	std::unique_ptr<Transition::SlopeRatio> p(new Transition::SlopeRatio());
 
@@ -247,7 +247,7 @@ ConfigFile::parseSlopeRatio(Transition& transition)
 }
 
 void
-ConfigFile::parseTransitionPointOrSlopes(Transition& transition)
+XMLConfigFile::parseTransitionPointOrSlopes(Transition& transition)
 {
 	for (const std::string* child = parser_.getFirstChild();
 				child;
@@ -271,7 +271,7 @@ ConfigFile::parseTransitionPointOrSlopes(Transition& transition)
 }
 
 void
-ConfigFile::parseTransitionsGroup(bool special)
+XMLConfigFile::parseTransitionsGroup(bool special)
 {
 	typedef TransitionMap::iterator MI;
 	typedef TransitionMap::value_type VT;
@@ -307,7 +307,7 @@ ConfigFile::parseTransitionsGroup(bool special)
 }
 
 void
-ConfigFile::parseTransitions(bool special)
+XMLConfigFile::parseTransitions(bool special)
 {
 	for (const std::string* group = parser_.getFirstChild(transitionGroupTagName_);
 				group;
@@ -317,7 +317,7 @@ ConfigFile::parseTransitions(bool special)
 }
 
 void
-ConfigFile::parseRuleParameterProfiles(Rule& rule)
+XMLConfigFile::parseRuleParameterProfiles(Rule& rule)
 {
 	for (const std::string* paramTrans = parser_.getFirstChild(parameterTransitionTagName_);
 				paramTrans;
@@ -331,7 +331,7 @@ ConfigFile::parseRuleParameterProfiles(Rule& rule)
 }
 
 void
-ConfigFile::parseRuleSpecialProfiles(Rule& rule)
+XMLConfigFile::parseRuleSpecialProfiles(Rule& rule)
 {
 	for (const std::string* paramTrans = parser_.getFirstChild(parameterTransitionTagName_);
 				paramTrans;
@@ -345,7 +345,7 @@ ConfigFile::parseRuleSpecialProfiles(Rule& rule)
 }
 
 void
-ConfigFile::parseRuleExpressionSymbols(Rule& rule)
+XMLConfigFile::parseRuleExpressionSymbols(Rule& rule)
 {
 	for (const std::string* symbEqu = parser_.getFirstChild(symbolEquationTagName_);
 				symbEqu;
@@ -367,7 +367,7 @@ ConfigFile::parseRuleExpressionSymbols(Rule& rule)
 }
 
 void
-ConfigFile::parseRuleBooleanExpressions(Rule& rule)
+XMLConfigFile::parseRuleBooleanExpressions(Rule& rule)
 {
 	for (const std::string* boolExpr = parser_.getFirstChild(booleanExpressionTagName_);
 				boolExpr;
@@ -377,7 +377,7 @@ ConfigFile::parseRuleBooleanExpressions(Rule& rule)
 }
 
 void
-ConfigFile::parseRule()
+XMLConfigFile::parseRule()
 {
 	Rule_ptr p(new Rule());
 	p->number_ = model_.ruleList_.size() + 1;
@@ -400,7 +400,7 @@ ConfigFile::parseRule()
 }
 
 void
-ConfigFile::parseRules()
+XMLConfigFile::parseRules()
 {
 	for (const std::string* rule = parser_.getFirstChild(ruleTagName_);
 				rule;
@@ -414,7 +414,7 @@ ConfigFile::parseRules()
 /*******************************************************************************
  * Constructor.
  */
-ConfigFile::ConfigFile(Model& model, const std::string& filePath)
+XMLConfigFile::XMLConfigFile(Model& model, const std::string& filePath)
 		: model_(model)
 
 		, booleanExpressionTagName_  ("boolean-expression")
@@ -493,7 +493,7 @@ ConfigFile::ConfigFile(Model& model, const std::string& filePath)
 /*******************************************************************************
  * Destructor.
  */
-ConfigFile::~ConfigFile()
+XMLConfigFile::~XMLConfigFile()
 {
 }
 
@@ -501,7 +501,7 @@ ConfigFile::~ConfigFile()
  *
  */
 void
-ConfigFile::loadModel()
+XMLConfigFile::loadModel()
 {
 	LOG_DEBUG("categories");
 	if (parser_.getFirstChild(categoriesTagName_) == 0) {
