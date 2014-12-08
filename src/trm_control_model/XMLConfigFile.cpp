@@ -99,13 +99,13 @@ XMLConfigFile::parsePostureSymbols(Phone& phone)
 		const std::string& name = parser_.getAttribute(nameAttrName_);
 		const std::string& value = parser_.getAttribute(valueAttrName_);
 		if (name == durationSymbolName_) {
-			phone.symbols_.duration = Text::parseString<float>(value);
+			phone.symbols().duration = Text::parseString<float>(value);
 		} else if (name == transitionSymbolName_) {
-			phone.symbols_.transition = Text::parseString<float>(value);
+			phone.symbols().transition = Text::parseString<float>(value);
 		} else if (name == qssaSymbolName_) {
-			phone.symbols_.qssa = Text::parseString<float>(value);
+			phone.symbols().qssa = Text::parseString<float>(value);
 		} else if (name == qssbSymbolName_) {
-			phone.symbols_.qssb = Text::parseString<float>(value);
+			phone.symbols().qssb = Text::parseString<float>(value);
 		}
 	}
 }
@@ -117,7 +117,7 @@ XMLConfigFile::parsePostureCategories(Phone& phone)
 				catRef;
 				catRef = parser_.getNextSibling(categoryRefTagName_)) {
 		Category_ptr cat(new Category(parser_.getAttribute(nameAttrName_), 0));
-		phone.categoryList_.push_back(std::move(cat));
+		phone.categoryList().push_back(std::move(cat));
 	}
 }
 
@@ -153,7 +153,7 @@ XMLConfigFile::parsePosture()
 		}
 	}
 
-	const std::string& name = p->name_;
+	const std::string& name = p->name();
 	insert(model_.phoneMap_, name, std::move(p));
 }
 
@@ -246,7 +246,7 @@ XMLConfigFile::parseSlopeRatio(Transition& transition)
 		}
 	}
 
-	transition.pointOrSlopeList_.push_back(std::move(p));
+	transition.pointOrSlopeList().push_back(std::move(p));
 }
 
 void
@@ -266,7 +266,7 @@ XMLConfigFile::parseTransitionPointOrSlopes(Transition& transition)
 			if (parser_.getAttribute(isPhantomAttrName_) == "yes") {
 				p->isPhantom = true;
 			}
-			transition.pointOrSlopeList_.push_back(std::move(p));
+			transition.pointOrSlopeList().push_back(std::move(p));
 		} else if (*child == slopeRatioTagName_) {
 			parseSlopeRatio(transition);
 		}
@@ -287,10 +287,11 @@ XMLConfigFile::parseTransitionsGroup(bool special)
 	for (const std::string* child = parser_.getFirstChild(transitionTagName_);
 				child;
 				child = parser_.getNextSibling(transitionTagName_)) {
-		Transition_ptr p(new Transition(special));
-		p->groupName_ = groupName;
-		p->name_ = parser_.getAttribute(nameAttrName_);
-		p->type_ = Transition::getTypeFromName(parser_.getAttribute(typeAttrName_));
+
+		std::string name = parser_.getAttribute(nameAttrName_);
+		Transition::Type type = Transition::getTypeFromName(parser_.getAttribute(typeAttrName_));
+
+		Transition_ptr p(new Transition(groupName, name,type, special));
 
 		for (const std::string* transitionChild = parser_.getFirstChild();
 					transitionChild;
@@ -300,7 +301,6 @@ XMLConfigFile::parseTransitionsGroup(bool special)
 			} // else: comment
 		}
 
-		const std::string name = p->name_;
 		std::pair<MI, bool> res = map.insert(VT(name, std::move(p)));
 		if (!res.second) {
 			//THROW_EXCEPTION(TRMControlModelException, "Duplicate transition: " << name << '.');
@@ -329,7 +329,7 @@ XMLConfigFile::parseRuleParameterProfiles(Rule& rule)
 		std::string parameterName = parser_.getAttribute(nameAttrName_);
 		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
 
-		rule.paramProfileTransitionList_[parameterIndex] = parser_.getAttribute(transitionAttrName_);
+		rule.setParamProfileTransition(parameterIndex, parser_.getAttribute(transitionAttrName_));
 	}
 }
 
@@ -343,7 +343,7 @@ XMLConfigFile::parseRuleSpecialProfiles(Rule& rule)
 		std::string parameterName = parser_.getAttribute(nameAttrName_);
 		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
 
-		rule.specialProfileTransitionList_[parameterIndex] = parser_.getAttribute(transitionAttrName_);
+		rule.setSpecialProfileTransition(parameterIndex, parser_.getAttribute(transitionAttrName_));
 	}
 }
 
@@ -356,15 +356,15 @@ XMLConfigFile::parseRuleExpressionSymbols(Rule& rule)
 		const std::string& name = parser_.getAttribute(nameAttrName_);
 		const std::string& equation = parser_.getAttribute(equationAttrName_);
 		if (name == rdSymbolName_) {
-			rule.exprSymbolEquations_.ruleDuration = equation;
+			rule.exprSymbolEquations().ruleDuration = equation;
 		} else if (name == beatSymbolName_) {
-			rule.exprSymbolEquations_.beat = equation;
+			rule.exprSymbolEquations().beat = equation;
 		} else if (name == mark1SymbolName_) {
-			rule.exprSymbolEquations_.mark1 = equation;
+			rule.exprSymbolEquations().mark1 = equation;
 		} else if (name == mark2SymbolName_) {
-			rule.exprSymbolEquations_.mark2 = equation;
+			rule.exprSymbolEquations().mark2 = equation;
 		} else if (name == mark3SymbolName_) {
-			rule.exprSymbolEquations_.mark3 = equation;
+			rule.exprSymbolEquations().mark3 = equation;
 		}
 	}
 }
@@ -375,17 +375,16 @@ XMLConfigFile::parseRuleBooleanExpressions(Rule& rule)
 	for (const std::string* boolExpr = parser_.getFirstChild(booleanExpressionTagName_);
 				boolExpr;
 				boolExpr = parser_.getNextSibling(booleanExpressionTagName_)) {
-		rule.booleanExpressionList_.push_back(parser_.getText());
+		rule.booleanExpressionList().push_back(parser_.getText());
 	}
 }
 
 void
 XMLConfigFile::parseRule()
 {
-	Rule_ptr p(new Rule());
-	p->number_ = model_.ruleList_.size() + 1;
-	p->paramProfileTransitionList_.resize(model_.getNumParameters());
-	p->specialProfileTransitionList_.resize(model_.getNumParameters());
+	Rule_ptr p(new Rule(model_.ruleList_.size() + 1));
+	p->paramProfileTransitionList().resize(model_.getNumParameters());
+	p->specialProfileTransitionList().resize(model_.getNumParameters());
 
 	for (const std::string* child = parser_.getFirstChild();
 				child;

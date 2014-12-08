@@ -59,6 +59,7 @@ public:
 	const std::string& name() const {
 		return name_;
 	}
+
 	std::vector<float>& parameterTargetList() { return parameterTargetList_; }
 
 	float getParameterTarget(unsigned int parameterIndex) const {
@@ -68,12 +69,12 @@ public:
 
 		return parameterTargetList_[parameterIndex];
 	}
-	const Symbols& symbols() const {
-		return symbols_;
-	}
-	const CategoryList& categoryList() const {
-		return categoryList_;
-	}
+
+	Symbols& symbols() { return symbols_; }
+	const Symbols& symbols() const { return symbols_; }
+
+	CategoryList& categoryList() { return categoryList_; }
+	const CategoryList& categoryList() const { return categoryList_; }
 private:
 	Phone(const Phone&);
 	Phone& operator=(const Phone&);
@@ -82,8 +83,6 @@ private:
 	std::vector<float> parameterTargetList_;
 	CategoryList categoryList_;
 	Symbols symbols_;
-
-	friend class XMLConfigFile;
 };
 
 typedef std::unique_ptr<Phone> Phone_ptr;

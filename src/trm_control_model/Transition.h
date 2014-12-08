@@ -51,7 +51,7 @@ public:
 		virtual ~PointOrSlope() {}
 		virtual bool isSlopeRatio() const = 0;
 	};
-	typedef std::vector<std::unique_ptr<PointOrSlope>> TransitionPointOrSlopeList;
+	typedef std::unique_ptr<PointOrSlope> PointOrSlope_ptr;
 
 	struct Point : PointOrSlope {
 		enum Type {
@@ -88,7 +88,7 @@ public:
 		Point(const Point&);
 		Point& operator=(const Point&);
 	};
-	typedef std::vector<std::unique_ptr<Point>> TransitionPointList;
+	typedef std::unique_ptr<Point> Point_ptr;
 
 	struct Slope {
 		float slope;
@@ -99,11 +99,11 @@ public:
 		Slope(const Slope&);
 		Slope& operator=(const Slope&);
 	};
-	typedef std::vector<std::unique_ptr<Slope>> TransitionSlopeList;
+	typedef std::unique_ptr<Slope> Slope_ptr;
 
 	struct SlopeRatio : PointOrSlope {
-		TransitionPointList pointList;
-		TransitionSlopeList slopeList;
+		std::vector<Point_ptr> pointList;
+		std::vector<Slope_ptr> slopeList;
 
 		SlopeRatio() {}
 		virtual ~SlopeRatio() {}
@@ -114,10 +114,15 @@ public:
 		SlopeRatio(const SlopeRatio&);
 		SlopeRatio& operator=(const SlopeRatio&);
 	};
-	typedef std::vector<std::unique_ptr<SlopeRatio>> TransitionSlopeRatioList;
 
-	Transition(bool special)
-			: type_(TYPE_INVALID)
+	Transition(
+		const std::string& groupName,
+		const std::string& name,
+		Type type,
+		bool special)
+			: groupName_(groupName)
+			, name_(name)
+			, type_(type)
 			, special_(special)
 	{
 	}
@@ -134,13 +139,9 @@ public:
 	bool special() const {
 		return special_;
 	}
-//	size_t getNumberOfPointsInList() const {
-//		return pointListList_[listNumber].size();
-//	}
-//	const Point& getPoint(size_t listNumber, size_t pointNumber) const {
-//		return *pointListList_[listNumber][pointNumber];
-//	}
-	const TransitionPointOrSlopeList& pointOrSlopeList() const { return pointOrSlopeList_; }
+
+	std::vector<PointOrSlope_ptr>& pointOrSlopeList() { return pointOrSlopeList_; }
+	const std::vector<PointOrSlope_ptr>& pointOrSlopeList() const { return pointOrSlopeList_; }
 
 	static double getPointTime(const Transition::Point& point, const Model& model);
 	static void getPointData(const Transition::Point& point, const Model& model,
@@ -159,15 +160,12 @@ public:
 			THROW_EXCEPTION(TRMControlModelException, "Invalid transition type: " << typeName << '.');
 		}
 	}
-
 private:
 	std::string groupName_;
 	std::string name_;
 	Type type_;
 	bool special_;
-	TransitionPointOrSlopeList pointOrSlopeList_;
-
-	friend class XMLConfigFile;
+	std::vector<PointOrSlope_ptr> pointOrSlopeList_;
 };
 
 typedef std::unique_ptr<Transition> Transition_ptr;

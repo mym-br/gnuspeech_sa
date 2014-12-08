@@ -131,8 +131,8 @@ public:
 		ExpressionSymbolEquations() {}
 	};
 
-	Rule()
-		: number_(0)
+	Rule(RuleNumber number)
+		: number_(number)
 	{
 	}
 
@@ -144,27 +144,52 @@ public:
 	RuleNumber number() const {
 		return number_;
 	}
-	const ExpressionSymbolEquations& exprSymbolEquations() const {
-		return exprSymbolEquations_;
-	}
-	const std::string& getParamProfileTransition(int parameterIndex) const {
+
+	ExpressionSymbolEquations& exprSymbolEquations() { return exprSymbolEquations_; }
+	const ExpressionSymbolEquations& exprSymbolEquations() const { return exprSymbolEquations_; }
+
+	const std::string& getParamProfileTransition(unsigned int parameterIndex) const {
+		if (parameterIndex >= paramProfileTransitionList_.size()) {
+			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+		}
+
 		return paramProfileTransitionList_[parameterIndex];
 	}
-	const std::string& getSpecialProfileTransition(int parameterIndex) const {
+	void setParamProfileTransition(unsigned int parameterIndex, const std::string& transition) {
+		if (parameterIndex >= paramProfileTransitionList_.size()) {
+			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+		}
+
+		paramProfileTransitionList_[parameterIndex] = transition;
+	}
+
+	const std::string& getSpecialProfileTransition(unsigned int parameterIndex) const {
+		if (parameterIndex >= specialProfileTransitionList_.size()) {
+			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+		}
+
 		return specialProfileTransitionList_[parameterIndex]; // may return an empty string
 	}
-	void evaluateExpressionSymbols(const double* tempos, const PhoneSequence& phones, Model& model, double* ruleSymbols) const;
-private:
-	typedef std::vector<std::string> BooleanExpressionList;
+	void setSpecialProfileTransition(unsigned int parameterIndex, const std::string& transition) {
+		if (parameterIndex >= specialProfileTransitionList_.size()) {
+			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+		}
 
+		specialProfileTransitionList_[parameterIndex] = transition;
+	}
+
+	void evaluateExpressionSymbols(const double* tempos, const PhoneSequence& phones, Model& model, double* ruleSymbols) const;
+
+	std::vector<std::string>& booleanExpressionList() { return booleanExpressionList_; }
+	std::vector<std::string>& paramProfileTransitionList() { return paramProfileTransitionList_; }
+	std::vector<std::string>& specialProfileTransitionList() { return specialProfileTransitionList_; }
+private:
 	RuleNumber number_;
-	BooleanExpressionList booleanExpressionList_;
+	std::vector<std::string> booleanExpressionList_;
 	std::vector<std::string> paramProfileTransitionList_;
 	std::vector<std::string> specialProfileTransitionList_;
 	ExpressionSymbolEquations exprSymbolEquations_;
 	RuleBooleanNodeList booleanNodeList_;
-
-	friend class XMLConfigFile;
 };
 
 typedef std::vector<Rule_ptr> RuleList;

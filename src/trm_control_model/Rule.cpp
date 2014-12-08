@@ -459,7 +459,7 @@ Rule::numberOfExpressions() const
 void
 Rule::parseBooleanExpression(const CategoryMap& categoryMap)
 {
-	for (BooleanExpressionList::size_type size = booleanExpressionList_.size(), i = 0; i < size; ++i) {
+	for (std::vector<std::string>::size_type size = booleanExpressionList_.size(), i = 0; i < size; ++i) {
 		Parser p(booleanExpressionList_[i], categoryMap);
 		booleanNodeList_.push_back(p.getBooleanNode());
 	}
