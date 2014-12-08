@@ -23,6 +23,8 @@
 #include "Rule.h"
 
 #include <cassert>
+#include <string>
+#include <unordered_map>
 
 #include "Category.h"
 #include "Exception.h"
@@ -66,7 +68,7 @@ bool isSeparator(char c)
 
 class Parser {
 public:
-	Parser(const std::string& s, const CategoryMap& categoryMap)
+	Parser(const std::string& s, const std::unordered_map<std::string, Category*>& categoryMap)
 				: categoryMap_(categoryMap)
 				, s_(s)
 				, pos_(0)
@@ -85,7 +87,7 @@ public:
 	void nextSymbol();
 	RuleBooleanNode_ptr getBooleanNode();
 private:
-	const CategoryMap& categoryMap_;
+	const std::unordered_map<std::string, Category*>& categoryMap_;
 	const std::string s_;
 	std::string::size_type pos_;
 	std::string symbol_;
@@ -457,7 +459,7 @@ Rule::numberOfExpressions() const
  *
  */
 void
-Rule::parseBooleanExpression(const CategoryMap& categoryMap)
+Rule::parseBooleanExpression(const std::unordered_map<std::string, Category*>& categoryMap)
 {
 	for (std::vector<std::string>::size_type size = booleanExpressionList_.size(), i = 0; i < size; ++i) {
 		Parser p(booleanExpressionList_[i], categoryMap);

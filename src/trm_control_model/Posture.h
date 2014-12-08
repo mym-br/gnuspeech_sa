@@ -23,10 +23,11 @@
 #ifndef TRM_CONTROL_MODEL_POSTURE_H_
 #define TRM_CONTROL_MODEL_POSTURE_H_
 
-#include <string>
-#include <vector>
+#include <list>
 #include <memory>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "Category.h"
 #include "Exception.h"
@@ -50,7 +51,7 @@ public:
 
 	Posture(const std::string& name) : name_(name) {}
 
-	bool isMemberOfCategory(int code) const;
+	bool isMemberOfCategory(unsigned int categoryCode) const;
 	bool isMemberOfCategory(const std::string& categoryName, bool postureNameOnly) const;
 	bool isMemberOfCategory(const Category& category) const;
 	template<typename T> bool isMemberOfCategory(const std::string& categoryName, T match) const;
@@ -73,8 +74,8 @@ public:
 	Symbols& symbols() { return symbols_; }
 	const Symbols& symbols() const { return symbols_; }
 
-	CategoryList& categoryList() { return categoryList_; }
-	const CategoryList& categoryList() const { return categoryList_; }
+	std::list<Category>& categoryList() { return categoryList_; }
+	const std::list<Category>& categoryList() const { return categoryList_; }
 
 private:
 	Posture(const Posture&);
@@ -82,7 +83,7 @@ private:
 
 	std::string name_;
 	std::vector<float> parameterTargetList_;
-	CategoryList categoryList_;
+	std::list<Category> categoryList_;
 	Symbols symbols_;
 };
 
@@ -127,9 +128,9 @@ inline
 const Category*
 Posture::findCategory(const std::string& name) const
 {
-	for (auto& category : categoryList_) {
-		if (category->name == name) {
-			return category.get();
+	for (const auto& category : categoryList_) {
+		if (category.name == name) {
+			return &category;
 		}
 	}
 	return nullptr;
@@ -140,10 +141,10 @@ Posture::findCategory(const std::string& name) const
  */
 inline
 bool
-Posture::isMemberOfCategory(int code) const
+Posture::isMemberOfCategory(unsigned int categoryCode) const
 {
-	for (CategoryList::size_type size = categoryList_.size(), i = 0; i < size; ++i) {
-		if (categoryList_[i]->code == code) {
+	for (const auto& category : categoryList_) {
+		if (category.code == categoryCode) {
 			return true;
 		}
 	}
@@ -160,8 +161,8 @@ Posture::isMemberOfCategory(const std::string& categoryName, bool postureNameOnl
 	if (name_ == categoryName) return true;
 
 	if (!postureNameOnly) {
-		for (CategoryList::size_type size = categoryList_.size(), i = 0; i < size; ++i) {
-			if (categoryList_[i]->name == categoryName) {
+		for (const auto& category : categoryList_) {
+			if (category.name == categoryName) {
 				return true;
 			}
 		}
@@ -178,8 +179,8 @@ bool
 Posture::isMemberOfCategory(const Category& category) const
 {
 	if (category.code != 0) {
-		for (const auto& c : categoryList_) {
-			if (c->code == category.code) {
+		for (const auto& category : categoryList_) {
+			if (category.code == category.code) {
 				return true;
 			}
 		}

@@ -18,30 +18,19 @@
 #ifndef TRM_CONTROL_MODEL_CATEGORY_H_
 #define TRM_CONTROL_MODEL_CATEGORY_H_
 
-#include <memory>
 #include <string>
-#include <unordered_map>
-#include <vector>
 
 
 
 namespace GS {
 namespace TRMControlModel {
 
-struct Category;
-typedef std::unordered_map<std::string, std::unique_ptr<Category>> CategoryMap;
-
 struct Category {
 	std::string name;
-	int code;
+	unsigned int code; // optimization
 
 	Category(const std::string& newName, int newCode) : name(newName), code(newCode) {}
-
-	static int getCode(const CategoryMap& categoryMap, const std::string& name);
 };
-
-typedef std::unique_ptr<Category> Category_ptr;
-typedef std::vector<Category_ptr> CategoryList;
 
 } /* namespace TRMControlModel */
 } /* namespace GS */

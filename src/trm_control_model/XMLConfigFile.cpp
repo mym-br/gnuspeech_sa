@@ -40,21 +40,12 @@ namespace TRMControlModel {
 void
 XMLConfigFile::parseCategories()
 {
-	typedef CategoryMap::iterator MI;
-	typedef CategoryMap::value_type VT;
-
-	int n = 0;
+	int code = 0;
 	for (const std::string* category = parser_.getFirstChild(categoryTagName_);
 				category;
 				category = parser_.getNextSibling(categoryTagName_)) {
-		const std::string& name = parser_.getAttribute(nameAttrName_);
 
-		Category_ptr cat(new Category(name, ++n)); // starts with 1
-		VT item(name, std::move(cat));
-		std::pair<MI, bool> res = model_.categoryMap_.insert(std::move(item));
-		if (!res.second) {
-			THROW_EXCEPTION(TRMControlModelException, "Duplicate category: " << name << '.');
-		}
+		model_.categoryList_.emplace_back(parser_.getAttribute(nameAttrName_), ++code); // code starts with 1
 
 		if (parser_.getFirstChild()) { // skip comment
 			parser_.getNextSibling();
@@ -116,8 +107,8 @@ XMLConfigFile::parsePostureCategories(Posture& posture)
 	for (const std::string* catRef = parser_.getFirstChild(categoryRefTagName_);
 				catRef;
 				catRef = parser_.getNextSibling(categoryRefTagName_)) {
-		Category_ptr cat(new Category(parser_.getAttribute(nameAttrName_), 0));
-		posture.categoryList().push_back(std::move(cat));
+
+		posture.categoryList().emplace_back(parser_.getAttribute(nameAttrName_), 0);
 	}
 }
 

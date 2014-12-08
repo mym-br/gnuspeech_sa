@@ -72,7 +72,7 @@ add_library(gnuspeechsa STATIC
     src/trm/Tube.cpp src/trm/Tube.h
     src/trm/WavetableGlottalSource.cpp src/trm/WavetableGlottalSource.h
 
-    src/trm_control_model/Category.cpp src/trm_control_model/Category.h
+    src/trm_control_model/Category.h
     src/trm_control_model/DriftGenerator.cpp src/trm_control_model/DriftGenerator.h
     src/trm_control_model/Controller.cpp src/trm_control_model/Controller.h
     src/trm_control_model/Equation.cpp src/trm_control_model/Equation.h

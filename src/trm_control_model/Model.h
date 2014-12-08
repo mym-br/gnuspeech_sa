@@ -67,9 +67,11 @@ public:
 	const Transition* findSpecialTransition(const std::string& name) const;
 	const Rule* findFirstMatchingRule(const PostureSequence& postureSequence, unsigned int& ruleIndex) const;
 	const Category* findCategory(const std::string& name) const;
+	unsigned int getCategoryCode(const std::string& name) const;
 
 private:
-	CategoryMap categoryMap_;
+	std::vector<Category> categoryList_;
+	std::unordered_map<std::string, Category*> categoryMap_; // optimization
 	std::vector<Parameter_ptr> parameterList_;
 	PostureMap postureMap_;
 	RuleList ruleList_;
@@ -79,6 +81,7 @@ private:
 	TransitionMap specialTransitionMap_;
 	FormulaSymbolList formulaSymbolList_;
 
+	void prepareCategories();
 	void preparePostures();
 	void prepareEquations();
 	void prepareRules();
@@ -260,22 +263,6 @@ Model::findFirstMatchingRule(const PostureSequence& postureSequence, unsigned in
 		}
 	}
 	return ruleList_.back().get();
-}
-
-/*******************************************************************************
- * Find the Category code.
- *
- * Returns nullptr if the Category was not found.
- */
-inline
-const Category*
-Model::findCategory(const std::string& name) const
-{
-	auto iter = categoryMap_.find(name);
-	if (iter != categoryMap_.end()) {
-		return iter->second.get();
-	}
-	return nullptr;
 }
 
 } /* namespace TRMControlModel */

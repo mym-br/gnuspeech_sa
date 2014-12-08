@@ -23,6 +23,7 @@
 #include "Model.h"
 
 #include <iostream>
+#include <utility> /* make_pair */
 
 #include "XMLConfigFile.h"
 #include "Log.h"
@@ -59,9 +60,26 @@ Model::load(const char* configDirPath, const char* configFileName)
 	XMLConfigFile cfg(*this, filePath);
 	cfg.loadModel();
 
+	prepareCategories();
 	preparePostures();
 	prepareEquations();
 	prepareRules();
+}
+
+/*******************************************************************************
+ *
+ */
+void
+Model::prepareCategories()
+{
+	LOG_DEBUG("Preparing categories...");
+
+	for (auto& category : categoryList_) {
+		auto res = categoryMap_.insert(std::make_pair(category.name, &category));
+		if (!res.second) {
+			THROW_EXCEPTION(TRMControlModelException, "Duplicate category: " << category.name << '.');
+		}
+	}
 }
 
 /*******************************************************************************
@@ -73,12 +91,11 @@ Model::preparePostures()
 	LOG_DEBUG("Preparing postures...");
 
 	// Fill the category code in the category list of each Posture.
-	for (auto itPost = postureMap_.begin(); itPost != postureMap_.end(); ++itPost) {
-		const PostureMap::value_type& v = *itPost;
-		for (auto itCat = v.second->categoryList().begin(); itCat != v.second->categoryList().end(); ++itCat) {
-			auto itMap = categoryMap_.find((*itCat)->name);
-			if (itMap != categoryMap_.end()) {
-				(*itCat)->code = itMap->second->code;
+	for (auto& posturePair : postureMap_) {
+		for (auto& postureCategory : posturePair.second->categoryList()) {
+			auto catIter = categoryMap_.find(postureCategory.name);
+			if (catIter != categoryMap_.end()) {
+				postureCategory.code = catIter->second->code;
 			}
 		}
 	}
@@ -135,9 +152,9 @@ Model::printInfo() const
 		const PostureMap::value_type& v = *iter;
 		std::cout << "posture symbol: " << v.second->name() << " r8: " << v.second->getParameterTarget(14 /* R8 */) << std::endl;
 
-		for (CategoryList::const_iterator it2 = v.second->categoryList().begin();
+		for (auto it2 = v.second->categoryList().begin();
 				it2 != v.second->categoryList().end(); ++it2) {
-			std::cout << "  categ: " << (*it2)->name << "_" << (*it2)->code << std::endl;
+			std::cout << "  categ: " << it2->name << "_" << it2->code << std::endl;
 		}
 		std::cout << "  symbols.duration: "   << v.second->symbols().duration   << std::endl;
 		std::cout << "  symbols.transition: " << v.second->symbols().transition << std::endl;
@@ -268,6 +285,34 @@ Model::findParameterIndex(const std::string& name) const
 		}
 	}
 	THROW_EXCEPTION(InvalidParameterException, "Parameter name not found: " << name << '.');
+}
+
+/*******************************************************************************
+ * Find the Category code.
+ *
+ * Returns nullptr if the Category was not found.
+ */
+const Category*
+Model::findCategory(const std::string& name) const
+{
+	auto iter = categoryMap_.find(name);
+	if (iter != categoryMap_.end()) {
+		return iter->second;
+	}
+	return nullptr;
+}
+
+/*******************************************************************************
+ *
+ */
+unsigned int
+Model::getCategoryCode(const std::string& name) const
+{
+	auto iter = categoryMap_.find(name);
+	if (iter == categoryMap_.end()) {
+		THROW_EXCEPTION(TRMControlModelException, "Category not found: " << name << '.');
+	}
+	return iter->second->code;
 }
 
 } /* namespace TRMControlModel */

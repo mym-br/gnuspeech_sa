@@ -26,9 +26,11 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <unordered_map>
 #include <utility> /* move */
 #include <vector>
 
+#include "Category.h"
 #include "Posture.h"
 
 
@@ -139,7 +141,7 @@ public:
 	std::size_t numberOfExpressions() const;
 	bool evalBooleanExpression(const PostureSequence& postureSequence) const;
 	void printBooleanNodeTree() const;
-	void parseBooleanExpression(const CategoryMap& categoryMap);
+	void parseBooleanExpression(const std::unordered_map<std::string, Category*>& categoryMap);
 
 	RuleNumber number() const {
 		return number_;
