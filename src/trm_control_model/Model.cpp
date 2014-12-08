@@ -51,19 +51,44 @@ Model::~Model()
  *
  */
 void
+Model::clear()
+{
+	categoryList_.clear();
+	categoryMap_.clear();
+	parameterList_.clear();
+	postureList_.clear();
+	postureMap_.clear();
+	ruleList_.clear();
+	equationMap_.clear();
+	transitionMap_.clear();
+	specialTransitionMap_.clear();
+	formulaSymbolList_.fill(0.0f);
+}
+
+/*******************************************************************************
+ *
+ */
+void
 Model::load(const char* configDirPath, const char* configFileName)
 {
-	std::string filePath = std::string(configDirPath) + configFileName;
+	clear();
 
-	// Load the configuration file.
-	LOG_DEBUG("Loading xml configuration: " << filePath);
-	XMLConfigFile cfg(*this, filePath);
-	cfg.loadModel();
+	try {
+		std::string filePath = std::string(configDirPath) + configFileName;
 
-	prepareCategories();
-	preparePostures();
-	prepareEquations();
-	prepareRules();
+		// Load the configuration file.
+		LOG_DEBUG("Loading xml configuration: " << filePath);
+		XMLConfigFile cfg(*this, filePath);
+		cfg.loadModel();
+
+		prepareCategories();
+		preparePostures();
+		prepareEquations();
+		prepareRules();
+	} catch (...) {
+		clear();
+		throw;
+	}
 }
 
 /*******************************************************************************
@@ -75,7 +100,6 @@ Model::prepareCategories()
 	LOG_DEBUG("Preparing categories...");
 
 	categoryMap_.clear();
-
 	for (auto& category : categoryList_) {
 		auto res = categoryMap_.insert(std::make_pair(category.name(), &category));
 		if (!res.second) {
@@ -92,9 +116,15 @@ Model::preparePostures()
 {
 	LOG_DEBUG("Preparing postures...");
 
-	// Fill the category code in the category list of each Posture.
-	for (auto& posturePair : postureMap_) {
-		for (auto& postureCategory : posturePair.second->categoryList()) {
+	postureMap_.clear();
+	for (auto& posture : postureList_) {
+		auto res = postureMap_.insert(std::make_pair(posture.name(), &posture));
+		if (!res.second) {
+			THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture.name() << '.');
+		}
+
+		// Fill the category code in the category list of each Posture.
+		for (auto& postureCategory : posture.categoryList()) {
 			auto catIter = categoryMap_.find(postureCategory.name());
 			if (catIter != categoryMap_.end()) {
 				postureCategory.setCode(catIter->second->code());
@@ -150,8 +180,8 @@ Model::printInfo() const
 	//---------------------------------------------------------
 	// Postures.
 	std::cout << std::string(40, '-') << "\nPostures:\n" << std::endl;
-	for (PostureMap::const_iterator iter = postureMap_.begin(); iter != postureMap_.end(); ++iter) {
-		const PostureMap::value_type& v = *iter;
+	for (auto iter = postureMap_.begin(); iter != postureMap_.end(); ++iter) {
+		const auto& v = *iter;
 		std::cout << "posture symbol: " << v.second->name() << " r8: " << v.second->getParameterTarget(14 /* R8 */) << std::endl;
 
 		for (auto it2 = v.second->categoryList().begin();
@@ -253,7 +283,7 @@ Model::printInfo() const
 		r.printBooleanNodeTree();
 	}
 	std::cout << "--------------------------------------" << std::endl;
-	PostureSequence postSeq;
+	std::vector<const Posture*> postSeq;
 	const Posture* pp = findPosture("m");
 	if (pp) postSeq.push_back(pp);
 	pp = findPosture("ah");
@@ -315,6 +345,29 @@ Model::getCategoryCode(const std::string& name) const
 		THROW_EXCEPTION(TRMControlModelException, "Category not found: " << name << '.');
 	}
 	return iter->second->code();
+}
+
+/*******************************************************************************
+ * Precondition: postureList_ is synchronized with postureMap_.
+ */
+void
+Model::addPosture(Posture& posture)
+{
+	if (posture.name().empty()) {
+		THROW_EXCEPTION(TRMControlModelException, "Empty posture name.");
+	}
+
+	auto findIter = postureMap_.find(posture.name());
+	if (findIter != postureMap_.end()) {
+		THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture.name() << '.');
+	}
+
+	postureList_.push_back(posture);
+
+	auto res = postureMap_.insert(std::make_pair(posture.name(), &postureList_.back()));
+	if (!res.second) { // should not happen
+		THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture.name() << '.');
+	}
 }
 
 } /* namespace TRMControlModel */

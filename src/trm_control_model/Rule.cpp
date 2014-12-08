@@ -433,7 +433,7 @@ Rule::printBooleanNodeTree() const
  *
  */
 bool
-Rule::evalBooleanExpression(const PostureSequence& postureSequence) const
+Rule::evalBooleanExpression(const std::vector<const Posture*>& postureSequence) const
 {
 	if (postureSequence.size() < booleanNodeList_.size()) return false;
 	if (booleanNodeList_.empty()) return false;
@@ -475,7 +475,7 @@ Rule::parseBooleanExpression(const std::unordered_map<std::string, Category*>& c
 // ruleSymbols: {rd, beat, mark1, mark2, mark3}
 // tempos[4]
 void
-Rule::evaluateExpressionSymbols(const double* tempos, const PostureSequence& postures, Model& model, double* ruleSymbols) const
+Rule::evaluateExpressionSymbols(const double* tempos, const std::vector<const Posture*>& postures, Model& model, double* ruleSymbols) const
 {
 	double localTempos[4];
 

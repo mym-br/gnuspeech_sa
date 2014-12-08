@@ -122,30 +122,28 @@ XMLConfigFile::parsePostureParameters(Posture& posture)
 		std::string parameterName = parser_.getAttribute(nameAttrName_);
 		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
 
-		posture.parameterTargetList()[parameterIndex] = Text::parseString<float>(parser_.getAttribute(valueAttrName_));
+		posture.setParameterTarget(parameterIndex, Text::parseString<float>(parser_.getAttribute(valueAttrName_)));
 	}
 }
 
 void
 XMLConfigFile::parsePosture()
 {
-	Posture_ptr p(new Posture(parser_.getAttribute(symbolAttrName_)));
-	p->parameterTargetList().resize(model_.getNumParameters());
+	model_.postureList_.emplace_back(model_.getNumParameters());
+	Posture& posture = model_.postureList_.back();
+	posture.setName(parser_.getAttribute(symbolAttrName_));
 
 	for (const std::string* child = parser_.getFirstChild();
 				child;
 				child = parser_.getNextSibling()) {
 		if (*child == postureCategoriesTagName_) {
-			parsePostureCategories(*p);
+			parsePostureCategories(posture);
 		} else if (*child == parameterTargetsTagName_) {
-			parsePostureParameters(*p);
+			parsePostureParameters(posture);
 		} else if (*child == symbolTargetsTagName_) {
-			parsePostureSymbols(*p);
+			parsePostureSymbols(posture);
 		}
 	}
-
-	const std::string& name = p->name();
-	insert(model_.postureMap_, name, std::move(p));
 }
 
 void
@@ -493,13 +491,11 @@ XMLConfigFile::~XMLConfigFile()
 }
 
 /*******************************************************************************
- *
+ * Precondition: the model is empty.
  */
 void
 XMLConfigFile::loadModel()
 {
-	model_.clear();
-
 	LOG_DEBUG("categories");
 	if (parser_.getFirstChild(categoriesTagName_) == 0) {
 		THROW_EXCEPTION(TRMControlModelException, "Categories element not found.");

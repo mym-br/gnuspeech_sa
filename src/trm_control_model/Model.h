@@ -63,9 +63,10 @@ public:
 	float getParameterMaximum(unsigned int parameterIndex) const;
 	const Parameter& getParameter(unsigned int parameterIndex) const;
 	const Posture* findPosture(const std::string& name) const;
+	void addPosture(Posture& posture);
 	const Transition* findTransition(const std::string& name) const;
 	const Transition* findSpecialTransition(const std::string& name) const;
-	const Rule* findFirstMatchingRule(const PostureSequence& postureSequence, unsigned int& ruleIndex) const;
+	const Rule* findFirstMatchingRule(const std::vector<const Posture*>& postureSequence, unsigned int& ruleIndex) const;
 	const Category* findCategory(const std::string& name) const;
 	unsigned int getCategoryCode(const std::string& name) const;
 
@@ -73,7 +74,8 @@ private:
 	std::vector<Category> categoryList_;
 	std::unordered_map<std::string, Category*> categoryMap_; // optimization
 	std::vector<Parameter_ptr> parameterList_;
-	PostureMap postureMap_;
+	std::list<Posture> postureList_;
+	std::unordered_map<std::string, Posture*> postureMap_; // optimization
 	RuleList ruleList_;
 	const FormulaSymbol formulaSymbol_;
 	EquationMap equationMap_;
@@ -90,23 +92,6 @@ private:
 };
 
 
-
-/*******************************************************************************
- *
- */
-inline
-void
-Model::clear()
-{
-	categoryMap_.clear();
-	parameterList_.clear();
-	postureMap_.clear();
-	ruleList_.clear();
-	equationMap_.clear();
-	transitionMap_.clear();
-	specialTransitionMap_.clear();
-	formulaSymbolList_.fill(0.0f);
-}
 
 /*******************************************************************************
  *
@@ -205,11 +190,11 @@ inline
 const Posture*
 Model::findPosture(const std::string& name) const
 {
-	PostureMap::const_iterator itPost = postureMap_.find(name);
-	if (itPost == postureMap_.end()) {
+	auto postureIter = postureMap_.find(name);
+	if (postureIter == postureMap_.end()) {
 		return nullptr;
 	}
-	return itPost->second.get();
+	return postureIter->second;
 }
 
 /*******************************************************************************
@@ -251,7 +236,7 @@ Model::findSpecialTransition(const std::string& name) const
  */
 inline
 const Rule*
-Model::findFirstMatchingRule(const PostureSequence& postureSequence, unsigned int& ruleIndex) const
+Model::findFirstMatchingRule(const std::vector<const Posture*>& postureSequence, unsigned int& ruleIndex) const
 {
 	for (unsigned int i = 0; i < ruleList_.size(); ++i) {
 		const Rule& r = *ruleList_[i];

@@ -24,9 +24,7 @@
 #define TRM_CONTROL_MODEL_POSTURE_H_
 
 #include <list>
-#include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "Category.h"
@@ -49,20 +47,19 @@ public:
 		Symbols() : duration(0.0), transition(0.0), qssa(0.0), qssb(0.0) {}
 	};
 
-	Posture(const std::string& name) : name_(name) {}
-
-	bool isMemberOfCategory(unsigned int categoryCode) const;
-	bool isMemberOfCategory(const std::string& categoryName, bool postureNameOnly) const;
-	bool isMemberOfCategory(const Category& category) const;
-	template<typename T> bool isMemberOfCategory(const std::string& categoryName, T match) const;
-	const Category* findCategory(const std::string& name) const;
-
-	const std::string& name() const {
-		return name_;
+	Posture(unsigned int numParameters) : parameterTargetList_(numParameters) {
+		if (numParameters == 0) {
+			THROW_EXCEPTION(InvalidParameterException, "Invalid number of parameters: " << numParameters << '.');
+		}
 	}
 
-	std::vector<float>& parameterTargetList() { return parameterTargetList_; }
+	const std::string& name() const { return name_; }
+	void setName(const std::string& name) { name_ = name; }
 
+	std::list<Category>& categoryList() { return categoryList_; }
+	const std::list<Category>& categoryList() const { return categoryList_; }
+
+	std::vector<float>& parameterTargetList() { return parameterTargetList_; }
 	float getParameterTarget(unsigned int parameterIndex) const {
 		if (parameterIndex >= parameterTargetList_.size()) {
 			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
@@ -70,42 +67,31 @@ public:
 
 		return parameterTargetList_[parameterIndex];
 	}
+	void setParameterTarget(unsigned int parameterIndex, float target) {
+		if (parameterIndex >= parameterTargetList_.size()) {
+			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+		}
+
+		parameterTargetList_[parameterIndex] = target;
+	}
 
 	Symbols& symbols() { return symbols_; }
 	const Symbols& symbols() const { return symbols_; }
 
-	std::list<Category>& categoryList() { return categoryList_; }
-	const std::list<Category>& categoryList() const { return categoryList_; }
+	bool isMemberOfCategory(unsigned int categoryCode) const;
+	bool isMemberOfCategory(const std::string& categoryName, bool postureNameOnly) const;
+	bool isMemberOfCategory(const Category& category) const;
+	template<typename T> bool isMemberOfCategory(const std::string& categoryName, T match) const;
+	const Category* findCategory(const std::string& name) const;
 
 private:
-	Posture(const Posture&);
-	Posture& operator=(const Posture&);
-
 	std::string name_;
-	std::vector<float> parameterTargetList_;
 	std::list<Category> categoryList_;
+	std::vector<float> parameterTargetList_;
 	Symbols symbols_;
 };
 
-typedef std::unique_ptr<Posture> Posture_ptr;
-typedef std::unordered_map<std::string, Posture_ptr> PostureMap; // type of container that manages the Posture instances
-typedef std::vector<const Posture*> PostureSequence;
 
-/*******************************************************************************
- *
- */
-inline
-void
-insert(PostureMap& map, const std::string& key, Posture_ptr value)
-{
-	typedef PostureMap::iterator MI;
-	typedef PostureMap::value_type VT;
-
-	std::pair<MI, bool> res = map.insert(VT(key, std::move(value)));
-	if (!res.second) {
-		THROW_EXCEPTION(TRMControlModelException, "Duplicate posture: " << key << '.');
-	}
-}
 
 /*******************************************************************************
  * Obs.: Considers only the name of the posture.

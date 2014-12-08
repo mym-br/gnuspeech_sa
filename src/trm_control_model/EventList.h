@@ -173,7 +173,7 @@ private:
 	void newPosture();
 	Event* insertEvent(int number, double time, double value);
 	void setZeroRef(int newValue);
-	void applyRule(const Rule& rule, const PostureSequence& postureList, const double* tempos, int postureIndex);
+	void applyRule(const Rule& rule, const std::vector<const Posture*>& postureList, const double* tempos, int postureIndex);
 	void printDataStructures();
 	double createSlopeRatioEvents(const Transition::SlopeRatio& slopeRatio,
 			double baseline, double parameterDelta, double min, double max, int eventIndex);

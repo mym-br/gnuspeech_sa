@@ -139,7 +139,7 @@ public:
 	}
 
 	std::size_t numberOfExpressions() const;
-	bool evalBooleanExpression(const PostureSequence& postureSequence) const;
+	bool evalBooleanExpression(const std::vector<const Posture*>& postureSequence) const;
 	void printBooleanNodeTree() const;
 	void parseBooleanExpression(const std::unordered_map<std::string, Category*>& categoryMap);
 
@@ -180,7 +180,7 @@ public:
 		specialProfileTransitionList_[parameterIndex] = transition;
 	}
 
-	void evaluateExpressionSymbols(const double* tempos, const PostureSequence& postures, Model& model, double* ruleSymbols) const;
+	void evaluateExpressionSymbols(const double* tempos, const std::vector<const Posture*>& postures, Model& model, double* ruleSymbols) const;
 
 	std::vector<std::string>& booleanExpressionList() { return booleanExpressionList_; }
 	std::vector<std::string>& paramProfileTransitionList() { return paramProfileTransitionList_; }

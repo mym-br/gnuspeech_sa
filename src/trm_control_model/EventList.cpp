@@ -442,7 +442,7 @@ EventList::createSlopeRatioEvents(
 
 // It is assumed that postureList.size() >= 2.
 void
-EventList::applyRule(const Rule& rule, const PostureSequence& postureList, const double* tempos, int postureIndex)
+EventList::applyRule(const Rule& rule, const std::vector<const Posture*>& postureList, const double* tempos, int postureIndex)
 {
 	int cont;
 	int currentType;
@@ -626,7 +626,7 @@ EventList::generateEventList()
 	}
 
 	int basePostureIndex = 0;
-	PostureSequence tempPostureList;
+	std::vector<const Posture*> tempPostureList;
 	while (basePostureIndex < currentPosture_) {
 		tempPostureList.clear();
 		for (int i = 0; i < 4; i++) {
