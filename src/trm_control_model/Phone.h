@@ -25,7 +25,6 @@
 
 #include <string>
 #include <vector>
-#include <array>
 #include <memory>
 #include <unordered_map>
 
@@ -37,8 +36,6 @@
 
 namespace GS {
 namespace TRMControlModel {
-
-//class Model;
 
 class Phone {
 public:
@@ -62,8 +59,14 @@ public:
 	const std::string& name() const {
 		return name_;
 	}
-	float getParameterValue(/*Parameter::Code*/ int parameter) const {
-		return parameters_[parameter];
+	std::vector<float>& parameterTargetList() { return parameterTargetList_; }
+
+	float getParameterTarget(unsigned int parameterIndex) const {
+		if (parameterIndex >= parameterTargetList_.size()) {
+			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+		}
+
+		return parameterTargetList_[parameterIndex];
 	}
 	const Symbols& symbols() const {
 		return symbols_;
@@ -76,7 +79,7 @@ private:
 	Phone& operator=(const Phone&);
 
 	std::string name_;
-	std::array<float, Parameter::NUM_PARAMETERS> parameters_;
+	std::vector<float> parameterTargetList_;
 	CategoryList categoryList_;
 	Symbols symbols_;
 

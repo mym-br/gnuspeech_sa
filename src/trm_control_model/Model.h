@@ -50,27 +50,30 @@ public:
 	Model();
 	~Model();
 
+	void clear();
 	void load(const char* configDirPath, const char* configFileName);
 	void printInfo() const;
 	void clearFormulaSymbolList();
 	void setFormulaSymbolValue(FormulaSymbol::Code symbol, float value);
 	float getFormulaSymbolValue(FormulaSymbol::Code symbol) const;
 	float evalEquationFormula(const std::string& equationName) const;
-	float getParameterMinimum(Parameter::Code parameter) const;
-	float getParameterMaximum(Parameter::Code parameter) const;
-	const Parameter::Info& getParameterInfo(int parameter) const;
+	unsigned int getNumParameters() const { return parameterList_.size(); }
+	unsigned int findParameterIndex(const std::string& name) const;
+	float getParameterMinimum(unsigned int parameterIndex) const;
+	float getParameterMaximum(unsigned int parameterIndex) const;
+	const Parameter& getParameter(unsigned int parameterIndex) const;
 	const Phone* findPhone(const std::string& name) const;
 	const Transition* findTransition(const std::string& name) const;
 	const Transition* findSpecialTransition(const std::string& name) const;
-	const Rule* findFirstMatchingRule(const PhoneSequence& phoneSequence, int& ruleIndex) const;
+	const Rule* findFirstMatchingRule(const PhoneSequence& phoneSequence, unsigned int& ruleIndex) const;
 	const Category* findCategory(const std::string& name) const;
+
 private:
 	CategoryMap categoryMap_;
-	Parameter::CodeMap parameterCodeMap_;
-	Parameter::Info::Array parameterInfoArray_;
+	std::vector<Parameter_ptr> parameterList_;
 	PhoneMap phoneMap_;
 	RuleList ruleList_;
-	FormulaSymbol formulaSymbol_;
+	const FormulaSymbol formulaSymbol_;
 	EquationMap equationMap_;
 	TransitionMap transitionMap_;
 	TransitionMap specialTransitionMap_;
@@ -84,6 +87,23 @@ private:
 };
 
 
+
+/*******************************************************************************
+ *
+ */
+inline
+void
+Model::clear()
+{
+	categoryMap_.clear();
+	parameterList_.clear();
+	phoneMap_.clear();
+	ruleList_.clear();
+	equationMap_.clear();
+	transitionMap_.clear();
+	specialTransitionMap_.clear();
+	formulaSymbolList_.fill(0.0f);
+}
 
 /*******************************************************************************
  *
@@ -135,9 +155,13 @@ Model::evalEquationFormula(const std::string& equationName) const
  */
 inline
 float
-Model::getParameterMinimum(Parameter::Code parameter) const
+Model::getParameterMinimum(unsigned int parameterIndex) const
 {
-	return parameterInfoArray_[parameter].minimum;
+	if (parameterIndex >= parameterList_.size()) {
+		THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+	}
+
+	return parameterList_[parameterIndex]->minimum();
 }
 
 /*******************************************************************************
@@ -145,47 +169,28 @@ Model::getParameterMinimum(Parameter::Code parameter) const
  */
 inline
 float
-Model::getParameterMaximum(Parameter::Code parameter) const
+Model::getParameterMaximum(unsigned int parameterIndex) const
 {
-	return parameterInfoArray_[parameter].maximum;
+	if (parameterIndex >= parameterList_.size()) {
+		THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+	}
+
+	return parameterList_[parameterIndex]->maximum();
 }
 
 /*******************************************************************************
  *
  */
 inline
-const Parameter::Info&
-Model::getParameterInfo(int parameter) const
+const Parameter&
+Model::getParameter(unsigned int parameterIndex) const
 {
-	return parameterInfoArray_[parameter];
-}
+	if (parameterIndex >= parameterList_.size()) {
+		THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+	}
 
-///*******************************************************************************
-// *
-// */
-//inline
-//void
-//Model::clipParameterValue(float& value, Parameter::Code parameter) const
-//{
-//	if (Parameter::isVolumeParameter(parameter)) {
-//		// Volumes are not in dB.
-//		if (value < 0.0f) {
-//			value = 0.0f;
-//		} else if (value > 1.0f) {
-//			value = 1.0f;
-//		}
-//	} else {
-//		const Parameter::Info& info = parameterInfoArray_[parameter];
-//		if (value < info.minimum) {
-//			value = info.minimum;
-//		} else {
-//			const float max = info.minimum + info.span;
-//			if (value > max) {
-//				value = max;
-//			}
-//		}
-//	}
-//}
+	return *parameterList_[parameterIndex];
+}
 
 /*******************************************************************************
  * Find a Phone with the given name.
@@ -243,9 +248,9 @@ Model::findSpecialTransition(const std::string& name) const
  */
 inline
 const Rule*
-Model::findFirstMatchingRule(const PhoneSequence& phoneSequence, int& ruleIndex) const
+Model::findFirstMatchingRule(const PhoneSequence& phoneSequence, unsigned int& ruleIndex) const
 {
-	for (int i = 0; i < ruleList_.size(); ++i) {
+	for (unsigned int i = 0; i < ruleList_.size(); ++i) {
 		const Rule& r = *ruleList_[i];
 		if (r.numberOfExpressions() <= phoneSequence.size()) {
 			if (r.evalBooleanExpression(phoneSequence)) {

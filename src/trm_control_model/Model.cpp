@@ -133,7 +133,7 @@ Model::printInfo() const
 	std::cout << std::string(40, '-') << "\nPhones:\n" << std::endl;
 	for (PhoneMap::const_iterator iter = phoneMap_.begin(); iter != phoneMap_.end(); ++iter) {
 		const PhoneMap::value_type& v = *iter;
-		std::cout << "phone symbol: " << v.second->name() << " r8: " << v.second->getParameterValue(Parameter::PARAMETER_R8) << std::endl;
+		std::cout << "phone symbol: " << v.second->name() << " r8: " << v.second->getParameterTarget(14 /* R8 */) << std::endl;
 
 		for (CategoryList::const_iterator it2 = v.second->categoryList().begin();
 				it2 != v.second->categoryList().end(); ++it2) {
@@ -254,6 +254,20 @@ Model::printInfo() const
 		std::cout << "Rule number: " << r.number() << std::endl;
 		std::cout << "Number of boolean expressions = " << r.numberOfExpressions() << std::endl;
 	}
+}
+
+/*******************************************************************************
+ *
+ */
+unsigned int
+Model::findParameterIndex(const std::string& name) const
+{
+	for (unsigned int i = 0; i < parameterList_.size(); ++i) {
+		if (parameterList_[i]->name() == name) {
+			return i;
+		}
+	}
+	THROW_EXCEPTION(InvalidParameterException, "Parameter name not found: " << name << '.');
 }
 
 } /* namespace TRMControlModel */

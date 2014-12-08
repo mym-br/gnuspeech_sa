@@ -444,7 +444,7 @@ EventList::createSlopeRatioEvents(
 void
 EventList::applyRule(const Rule& rule, const PhoneSequence& phoneList, const double* tempos, int phoneIndex)
 {
-	int i, j, cont;
+	int cont;
 	int currentType;
 	double currentValueDelta, value, lastValue;
 	double ruleSymbols[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
@@ -489,12 +489,12 @@ EventList::applyRule(const Rule& rule, const PhoneSequence& phoneList, const dou
 	//tempTargets = (List *) [rule parameterList];
 
 	/* Loop through the parameters */
-	for (i = 0; i < Parameter::NUM_PARAMETERS; i++) {
+	for (unsigned int i = 0; i < model_.getNumParameters(); i++) {
 		/* Get actual parameter target values */
-		targets[0] = phoneList[0]->getParameterValue(i);
-		targets[1] = phoneList[1]->getParameterValue(i);
-		targets[2] = (phoneList.size() >= 3) ? phoneList[2]->getParameterValue(i) : 0.0;
-		targets[3] = (phoneList.size() == 4) ? phoneList[3]->getParameterValue(i) : 0.0;
+		targets[0] = phoneList[0]->getParameterTarget(i);
+		targets[1] = phoneList[1]->getParameterTarget(i);
+		targets[2] = (phoneList.size() >= 3) ? phoneList[2]->getParameterTarget(i) : 0.0;
+		targets[3] = (phoneList.size() == 4) ? phoneList[3]->getParameterTarget(i) : 0.0;
 
 		/* Optimization, Don't calculate if no changes occur */
 		cont = 1;
@@ -528,7 +528,7 @@ EventList::applyRule(const Rule& rule, const PhoneSequence& phoneList, const dou
 			const Transition* trans = model_.findTransition(paramTransition); //TODO: check not null
 
 			/* Apply lists to parameter */
-			for (j = 0; j < trans->pointOrSlopeList().size(); ++j) {
+			for (unsigned int j = 0; j < trans->pointOrSlopeList().size(); ++j) {
 				const Transition::PointOrSlope& pointOrSlope = *trans->pointOrSlopeList()[j];
 				if (pointOrSlope.isSlopeRatio()) {
 					const auto& slopeRatio = dynamic_cast<const Transition::SlopeRatio&>(pointOrSlope);
@@ -566,11 +566,11 @@ EventList::applyRule(const Rule& rule, const PhoneSequence& phoneList, const dou
 	}
 
 	/* Special Event Profiles */
-	for (i = 0; i < Parameter::NUM_PARAMETERS; i++) {
+	for (unsigned int i = 0; i < model_.getNumParameters(); i++) {
 		const std::string& specialTransition = rule.getSpecialProfileTransition(i);
 		if (!specialTransition.empty()) {
 			const Transition* trans = model_.findSpecialTransition(specialTransition); //TODO: check not null
-			for (j = 0; j < trans->pointOrSlopeList().size(); ++j) {
+			for (unsigned int j = 0; j < trans->pointOrSlopeList().size(); ++j) {
 				const Transition::PointOrSlope& pointOrSlope = *trans->pointOrSlopeList()[j];
 				const auto& point = dynamic_cast<const Transition::Point&>(pointOrSlope);
 
@@ -582,7 +582,7 @@ EventList::applyRule(const Rule& rule, const PhoneSequence& phoneList, const dou
 				//maxValue = value;
 
 				/* insert event into event list */
-				insertEvent(i + 16, tempTime, value);
+				insertEvent(i + 16U, tempTime, value);
 			}
 		}
 	}
@@ -595,10 +595,10 @@ EventList::applyRule(const Rule& rule, const PhoneSequence& phoneList, const dou
 void
 EventList::generateEventList()
 {
-	for (int i = 0; i < 16; i++) {
-		const Parameter::Info* tempParameter = &model_.getParameterInfo(i);
-		min_[i] = (double) tempParameter->minimum;
-		max_[i] = (double) tempParameter->maximum;
+	for (unsigned int i = 0; i < 16; i++) { //TODO: replace hard-coded value
+		const Parameter& param = model_.getParameter(i);
+		min_[i] = (double) param.minimum();
+		max_[i] = (double) param.maximum();
 	}
 
 	/* Calculate Rhythm including regression */
@@ -640,10 +640,10 @@ EventList::generateEventList()
 		if (tempPhoneList.size() < 2) {
 			break;
 		}
-		int ruleIndex = 0;
+		unsigned int ruleIndex = 0;
 		const Rule* tempRule = model_.findFirstMatchingRule(tempPhoneList, ruleIndex);
 
-		ruleData_[currentRule_].number = ruleIndex + 1;
+		ruleData_[currentRule_].number = ruleIndex + 1U;
 
 		applyRule(*tempRule, tempPhoneList, &phoneTempo_[basePhoneindex], basePhoneindex);
 

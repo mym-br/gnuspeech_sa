@@ -25,7 +25,6 @@
 
 #include <iostream>
 #include <string>
-#include <array>
 #include <memory>
 #include <utility> /* move */
 #include <vector>
@@ -123,8 +122,6 @@ typedef std::vector<Rule_ptr>::size_type RuleNumber;
 
 class Rule {
 public:
-	typedef std::array<std::string, Parameter::NUM_PARAMETERS> TransitionNameArray;
-
 	struct ExpressionSymbolEquations {
 		std::string ruleDuration;
 		std::string beat;
@@ -150,11 +147,11 @@ public:
 	const ExpressionSymbolEquations& exprSymbolEquations() const {
 		return exprSymbolEquations_;
 	}
-	const std::string& getParamProfileTransition(/*Parameter::Code*/ int parameter) const {
-		return paramProfileTransitions_[parameter];
+	const std::string& getParamProfileTransition(int parameterIndex) const {
+		return paramProfileTransitionList_[parameterIndex];
 	}
-	const std::string& getSpecialProfileTransition(/*Parameter::Code*/ int parameter) const {
-		return specialProfileTransitions_[parameter]; // may return an empty string
+	const std::string& getSpecialProfileTransition(int parameterIndex) const {
+		return specialProfileTransitionList_[parameterIndex]; // may return an empty string
 	}
 	void evaluateExpressionSymbols(const double* tempos, const PhoneSequence& phones, Model& model, double* ruleSymbols) const;
 private:
@@ -162,8 +159,8 @@ private:
 
 	RuleNumber number_;
 	BooleanExpressionList booleanExpressionList_;
-	TransitionNameArray paramProfileTransitions_;
-	TransitionNameArray specialProfileTransitions_;
+	std::vector<std::string> paramProfileTransitionList_;
+	std::vector<std::string> specialProfileTransitionList_;
 	ExpressionSymbolEquations exprSymbolEquations_;
 	RuleBooleanNodeList booleanNodeList_;
 

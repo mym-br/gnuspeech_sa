@@ -23,91 +23,36 @@
 #ifndef TRM_CONTROL_MODEL_PARAMETER_H_
 #define TRM_CONTROL_MODEL_PARAMETER_H_
 
+#include <memory>
 #include <string>
-#include <array>
-#include <unordered_map>
-
-#include "Exception.h"
 
 
 
 namespace GS {
 namespace TRMControlModel {
-namespace Parameter {
 
-enum Code {
-	PARAMETER_MICRO_INT,
-	PARAMETER_GLOT_VOL,
-	PARAMETER_ASP_VOL,
-	PARAMETER_FRIC_VOL,
-	PARAMETER_FRIC_POS,
-	PARAMETER_FRIC_CF,
-	PARAMETER_FRIC_BW,
-	PARAMETER_R1,
-	PARAMETER_R2,
-	PARAMETER_R3,
-	PARAMETER_R4,
-	PARAMETER_R5,
-	PARAMETER_R6,
-	PARAMETER_R7,
-	PARAMETER_R8,
-	PARAMETER_VELUM,
-	NUM_PARAMETERS
+class Parameter {
+public:
+	Parameter(const std::string& name, float minimum, float maximum, float defaultValue)
+		: name_(name)
+		, minimum_(minimum)
+		, maximum_(maximum)
+		, defaultValue_(defaultValue)
+	{}
+
+	const std::string& name() const { return name_; }
+	float minimum() const { return minimum_; }
+	float maximum() const { return maximum_; }
+	float defaultValue() const { return defaultValue_; }
+private:
+	std::string name_;
+	float minimum_;
+	float maximum_;
+	float defaultValue_;
 };
 
-struct CodeMap : public std::unordered_map<std::string, Code> {
-	CodeMap();
-};
+typedef std::unique_ptr<Parameter> Parameter_ptr;
 
-struct Info {
-	// Note: For volume parameters, the values are in dB.
-	float minimum;
-	float maximum;
-	float defaultValue;
-
-	typedef std::array<Info, NUM_PARAMETERS> Array;
-};
-
-//inline
-//bool
-//isVolumeParameter(Code parameter)
-//{
-//	switch (parameter) {
-//	case PARAMETER_GLOT_VOL:
-//	case PARAMETER_ASP_VOL:
-//	case PARAMETER_FRIC_VOL:
-//		return true;
-//	default:
-//		return false;
-//	}
-//}
-
-void setInfo(Info::Array& parameterInfoArray, const CodeMap& parameterCodeMap, const std::string& name,
-		float min, float max, float defaultValue);
-
-template<typename T>
-void
-setValue(const CodeMap& parameterCodeMap, T& t, const std::string& name, float value) {
-
-	CodeMap::const_iterator iter = parameterCodeMap.find(name);
-	if (iter == parameterCodeMap.end()) {
-		THROW_EXCEPTION(TRMControlModelException, "Parameter not found: " << name << '.');
-	}
-	t[iter->second] = value;
-}
-
-template<typename T>
-void
-setValue(const CodeMap& parameterCodeMap, T& t, const std::string& name, const std::string& value) {
-
-	CodeMap::const_iterator iter = parameterCodeMap.find(name);
-	if (iter == parameterCodeMap.end()) {
-		THROW_EXCEPTION(TRMControlModelException, "Parameter not found: " << name << '.');
-	}
-	t[iter->second] = value;
-}
-
-} /* namespace Parameter */
 } /* namespace TRMControlModel */
 } /* namespace GS */
 

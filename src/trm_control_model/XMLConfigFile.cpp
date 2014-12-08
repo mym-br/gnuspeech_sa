@@ -68,13 +68,15 @@ XMLConfigFile::parseParameters()
 	for (const std::string* parameter = parser_.getFirstChild(parameterTagName_);
 				parameter;
 				parameter = parser_.getNextSibling(parameterTagName_)) {
-		Parameter::setInfo(
-			model_.parameterInfoArray_,
-			model_.parameterCodeMap_,
-			parser_.getAttribute(nameAttrName_),
-			Text::parseString<float>(parser_.getAttribute(minimumAttrName_)),
-			Text::parseString<float>(parser_.getAttribute(maximumAttrName_)),
-			Text::parseString<float>(parser_.getAttribute(defaultAttrName_)));
+
+		std::string name   = parser_.getAttribute(nameAttrName_);
+		float minimum      = Text::parseString<float>(parser_.getAttribute(minimumAttrName_));
+		float maximum      = Text::parseString<float>(parser_.getAttribute(maximumAttrName_));
+		float defaultValue = Text::parseString<float>(parser_.getAttribute(defaultAttrName_));
+
+		Parameter_ptr p(new Parameter(name, minimum, maximum, defaultValue));
+
+		model_.parameterList_.push_back(std::move(p));
 	}
 }
 
@@ -125,11 +127,11 @@ XMLConfigFile::parsePostureParameters(Phone& phone)
 	for (const std::string* target = parser_.getFirstChild(targetTagName_);
 				target;
 				target = parser_.getNextSibling(targetTagName_)) {
-		Parameter::setValue(
-			model_.parameterCodeMap_,
-			phone.parameters_,
-			parser_.getAttribute(nameAttrName_),
-			Text::parseString<float>(parser_.getAttribute(valueAttrName_)));
+
+		std::string parameterName = parser_.getAttribute(nameAttrName_);
+		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
+
+		phone.parameterTargetList()[parameterIndex] = Text::parseString<float>(parser_.getAttribute(valueAttrName_));
 	}
 }
 
@@ -137,6 +139,7 @@ void
 XMLConfigFile::parsePosture()
 {
 	Phone_ptr p(new Phone(parser_.getAttribute(symbolAttrName_)));
+	p->parameterTargetList().resize(model_.getNumParameters());
 
 	for (const std::string* child = parser_.getFirstChild();
 				child;
@@ -322,11 +325,11 @@ XMLConfigFile::parseRuleParameterProfiles(Rule& rule)
 	for (const std::string* paramTrans = parser_.getFirstChild(parameterTransitionTagName_);
 				paramTrans;
 				paramTrans = parser_.getNextSibling(parameterTransitionTagName_)) {
-		Parameter::setValue(
-			model_.parameterCodeMap_,
-			rule.paramProfileTransitions_,
-			parser_.getAttribute(nameAttrName_),
-			parser_.getAttribute(transitionAttrName_));
+
+		std::string parameterName = parser_.getAttribute(nameAttrName_);
+		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
+
+		rule.paramProfileTransitionList_[parameterIndex] = parser_.getAttribute(transitionAttrName_);
 	}
 }
 
@@ -336,11 +339,11 @@ XMLConfigFile::parseRuleSpecialProfiles(Rule& rule)
 	for (const std::string* paramTrans = parser_.getFirstChild(parameterTransitionTagName_);
 				paramTrans;
 				paramTrans = parser_.getNextSibling(parameterTransitionTagName_)) {
-		Parameter::setValue(
-			model_.parameterCodeMap_,
-			rule.specialProfileTransitions_,
-			parser_.getAttribute(nameAttrName_),
-			parser_.getAttribute(transitionAttrName_));
+
+		std::string parameterName = parser_.getAttribute(nameAttrName_);
+		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
+
+		rule.specialProfileTransitionList_[parameterIndex] = parser_.getAttribute(transitionAttrName_);
 	}
 }
 
@@ -381,6 +384,8 @@ XMLConfigFile::parseRule()
 {
 	Rule_ptr p(new Rule());
 	p->number_ = model_.ruleList_.size() + 1;
+	p->paramProfileTransitionList_.resize(model_.getNumParameters());
+	p->specialProfileTransitionList_.resize(model_.getNumParameters());
 
 	for (const std::string* child = parser_.getFirstChild();
 				child;
@@ -503,6 +508,8 @@ XMLConfigFile::~XMLConfigFile()
 void
 XMLConfigFile::loadModel()
 {
+	model_.clear();
+
 	LOG_DEBUG("categories");
 	if (parser_.getFirstChild(categoriesTagName_) == 0) {
 		THROW_EXCEPTION(TRMControlModelException, "Categories element not found.");

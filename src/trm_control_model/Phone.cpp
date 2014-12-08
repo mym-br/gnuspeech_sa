@@ -33,7 +33,6 @@ namespace TRMControlModel {
 Phone::Phone(const std::string& name)
 		: name_(name)
 {
-	parameters_.fill(0.0);
 }
 
 } /* namespace TRMControlModel */
