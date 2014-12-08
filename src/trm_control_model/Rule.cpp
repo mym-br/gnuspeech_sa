@@ -230,9 +230,9 @@ Parser::getBooleanNode()
 		int categoryCode = 0;
 		if (!matchAll) {
 			// Try to find a code for the category.
-			auto itMap = categoryMap_.find(symbolTmp);
-			if (itMap != categoryMap_.end()) {
-				categoryCode = itMap->second->code;
+			auto catIter = categoryMap_.find(symbolTmp);
+			if (catIter != categoryMap_.end()) {
+				categoryCode = catIter->second->code();
 			}
 		}
 

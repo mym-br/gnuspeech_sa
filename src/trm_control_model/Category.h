@@ -25,11 +25,18 @@
 namespace GS {
 namespace TRMControlModel {
 
-struct Category {
-	std::string name;
-	unsigned int code; // optimization
+class Category {
+public:
+	Category(const std::string& name, unsigned int code) : name_(name), code_(code) {}
 
-	Category(const std::string& newName, int newCode) : name(newName), code(newCode) {}
+	std::string& name() { return name_; }
+	const std::string& name() const { return name_; }
+
+	unsigned int code() const { return code_; }
+	void setCode(unsigned int code) { code_ = code; }
+private:
+	std::string name_;
+	unsigned int code_; // optimization
 };
 
 } /* namespace TRMControlModel */

@@ -743,7 +743,7 @@ EventList::applyIntonation()
 		/* Set up intonation boundary variables */
 		for (j = firstFoot; j <= endFoot; j++) {
 			postureIndex = feet_[j].start;
-			while (!postureData_[postureIndex].posture->isMemberOfCategory(vocoidCategory->code)) {
+			while (!postureData_[postureIndex].posture->isMemberOfCategory(vocoidCategory->code())) {
 				postureIndex++;
 				//printf("Checking posture %s for vocoid\n", [posture[postureIndex].posture symbol]);
 				if (postureIndex > feet_[j].end) {

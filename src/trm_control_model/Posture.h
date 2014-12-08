@@ -129,7 +129,7 @@ const Category*
 Posture::findCategory(const std::string& name) const
 {
 	for (const auto& category : categoryList_) {
-		if (category.name == name) {
+		if (category.name() == name) {
 			return &category;
 		}
 	}
@@ -144,7 +144,7 @@ bool
 Posture::isMemberOfCategory(unsigned int categoryCode) const
 {
 	for (const auto& category : categoryList_) {
-		if (category.code == categoryCode) {
+		if (category.code() == categoryCode) {
 			return true;
 		}
 	}
@@ -162,7 +162,7 @@ Posture::isMemberOfCategory(const std::string& categoryName, bool postureNameOnl
 
 	if (!postureNameOnly) {
 		for (const auto& category : categoryList_) {
-			if (category.name == categoryName) {
+			if (category.name() == categoryName) {
 				return true;
 			}
 		}
@@ -178,13 +178,13 @@ inline
 bool
 Posture::isMemberOfCategory(const Category& category) const
 {
-	if (category.code != 0) {
-		for (const auto& category : categoryList_) {
-			if (category.code == category.code) {
+	if (category.code() != 0) {
+		for (const auto& c : categoryList_) {
+			if (c.code() == category.code()) {
 				return true;
 			}
 		}
-	} else if (name_ == category.name) {
+	} else if (name_ == category.name()) {
 		return true;
 	}
 	return false;

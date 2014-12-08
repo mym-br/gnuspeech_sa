@@ -77,9 +77,9 @@ Model::prepareCategories()
 	categoryMap_.clear();
 
 	for (auto& category : categoryList_) {
-		auto res = categoryMap_.insert(std::make_pair(category.name, &category));
+		auto res = categoryMap_.insert(std::make_pair(category.name(), &category));
 		if (!res.second) {
-			THROW_EXCEPTION(TRMControlModelException, "Duplicate category: " << category.name << '.');
+			THROW_EXCEPTION(TRMControlModelException, "Duplicate category: " << category.name() << '.');
 		}
 	}
 }
@@ -95,9 +95,9 @@ Model::preparePostures()
 	// Fill the category code in the category list of each Posture.
 	for (auto& posturePair : postureMap_) {
 		for (auto& postureCategory : posturePair.second->categoryList()) {
-			auto catIter = categoryMap_.find(postureCategory.name);
+			auto catIter = categoryMap_.find(postureCategory.name());
 			if (catIter != categoryMap_.end()) {
-				postureCategory.code = catIter->second->code;
+				postureCategory.setCode(catIter->second->code());
 			}
 		}
 	}
@@ -144,7 +144,7 @@ Model::printInfo() const
 	std::cout << std::string(40, '-') << "\nCategories:\n" << std::endl;
 	for (auto iter = categoryMap_.begin();
 			iter != categoryMap_.end(); ++iter) {
-		std::cout << "category: " << iter->first << " code: " << iter->second->code << std::endl;
+		std::cout << "category: " << iter->first << " code: " << iter->second->code() << std::endl;
 	}
 
 	//---------------------------------------------------------
@@ -156,7 +156,7 @@ Model::printInfo() const
 
 		for (auto it2 = v.second->categoryList().begin();
 				it2 != v.second->categoryList().end(); ++it2) {
-			std::cout << "  categ: " << it2->name << "_" << it2->code << std::endl;
+			std::cout << "  categ: " << it2->name() << "_" << it2->code() << std::endl;
 		}
 		std::cout << "  symbols.duration: "   << v.second->symbols().duration   << std::endl;
 		std::cout << "  symbols.transition: " << v.second->symbols().transition << std::endl;
@@ -314,7 +314,7 @@ Model::getCategoryCode(const std::string& name) const
 	if (iter == categoryMap_.end()) {
 		THROW_EXCEPTION(TRMControlModelException, "Category not found: " << name << '.');
 	}
-	return iter->second->code;
+	return iter->second->code();
 }
 
 } /* namespace TRMControlModel */
