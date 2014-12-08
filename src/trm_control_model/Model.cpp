@@ -74,6 +74,8 @@ Model::prepareCategories()
 {
 	LOG_DEBUG("Preparing categories...");
 
+	categoryMap_.clear();
+
 	for (auto& category : categoryList_) {
 		auto res = categoryMap_.insert(std::make_pair(category.name, &category));
 		if (!res.second) {
