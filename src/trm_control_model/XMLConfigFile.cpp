@@ -65,9 +65,7 @@ XMLConfigFile::parseParameters()
 		float maximum      = Text::parseString<float>(parser_.getAttribute(maximumAttrName_));
 		float defaultValue = Text::parseString<float>(parser_.getAttribute(defaultAttrName_));
 
-		Parameter_ptr p(new Parameter(name, minimum, maximum, defaultValue));
-
-		model_.parameterList_.push_back(std::move(p));
+		model_.parameterList_.emplace_back(name, minimum, maximum, defaultValue);
 	}
 }
 

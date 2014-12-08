@@ -51,8 +51,6 @@ private:
 	float defaultValue_;
 };
 
-typedef std::unique_ptr<Parameter> Parameter_ptr;
-
 } /* namespace TRMControlModel */
 } /* namespace GS */
 

@@ -312,7 +312,7 @@ unsigned int
 Model::findParameterIndex(const std::string& name) const
 {
 	for (unsigned int i = 0; i < parameterList_.size(); ++i) {
-		if (parameterList_[i]->name() == name) {
+		if (parameterList_[i].name() == name) {
 			return i;
 		}
 	}
@@ -368,6 +368,152 @@ Model::addPosture(Posture& posture)
 	if (!res.second) { // should not happen
 		THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture.name() << '.');
 	}
+}
+
+/*******************************************************************************
+ *
+ */
+void
+Model::clearFormulaSymbolList()
+{
+	formulaSymbolList_.fill(0.0);
+}
+
+/*******************************************************************************
+ *
+ */
+void
+Model::setFormulaSymbolValue(FormulaSymbol::Code symbol, float value)
+{
+	formulaSymbolList_[symbol] = value;
+}
+
+/*******************************************************************************
+ *
+ */
+float
+Model::getFormulaSymbolValue(FormulaSymbol::Code symbol) const
+{
+	return formulaSymbolList_[symbol];
+}
+
+/*******************************************************************************
+ *
+ */
+float
+Model::evalEquationFormula(const std::string& equationName) const
+{
+	EquationMap::const_iterator iter = equationMap_.find(equationName);
+	if (iter == equationMap_.end()) {
+		THROW_EXCEPTION(TRMControlModelException, "Equation not found: " << equationName << '.');
+	}
+
+	return iter->second->evalFormula(formulaSymbolList_);
+}
+
+/*******************************************************************************
+ *
+ */
+float
+Model::getParameterMinimum(unsigned int parameterIndex) const
+{
+	if (parameterIndex >= parameterList_.size()) {
+		THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+	}
+
+	return parameterList_[parameterIndex].minimum();
+}
+
+/*******************************************************************************
+ *
+ */
+float
+Model::getParameterMaximum(unsigned int parameterIndex) const
+{
+	if (parameterIndex >= parameterList_.size()) {
+		THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+	}
+
+	return parameterList_[parameterIndex].maximum();
+}
+
+/*******************************************************************************
+ *
+ */
+const Parameter&
+Model::getParameter(unsigned int parameterIndex) const
+{
+	if (parameterIndex >= parameterList_.size()) {
+		THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
+	}
+
+	return parameterList_[parameterIndex];
+}
+
+/*******************************************************************************
+ * Find a Posture with the given name.
+ *
+ * Returns a pointer to the Posture, or 0 (zero) if a Posture
+ * was not found.
+ */
+const Posture*
+Model::findPosture(const std::string& name) const
+{
+	auto postureIter = postureMap_.find(name);
+	if (postureIter == postureMap_.end()) {
+		return nullptr;
+	}
+	return postureIter->second;
+}
+
+/*******************************************************************************
+ * Find a Transition with the given name.
+ *
+ * Returns a pointer to the Transition, or 0 (zero) if a Transition
+ * was not found.
+ */
+const Transition*
+Model::findTransition(const std::string& name) const
+{
+	TransitionMap::const_iterator itTrans = transitionMap_.find(name);
+	if (itTrans == transitionMap_.end()) {
+		return nullptr;
+	}
+	return itTrans->second.get();
+}
+
+/*******************************************************************************
+ * Find a Special Transition with the given name.
+ *
+ * Returns a pointer to the Special Transition, or 0 (zero) if a Special
+ * Transition was not found.
+ */
+const Transition*
+Model::findSpecialTransition(const std::string& name) const
+{
+	TransitionMap::const_iterator itTrans = specialTransitionMap_.find(name);
+	if (itTrans == specialTransitionMap_.end()) {
+		return nullptr;
+	}
+	return itTrans->second.get();
+}
+
+/*******************************************************************************
+ * Finds the first Rule that matches the given sequence of Postures.
+ */
+const Rule*
+Model::findFirstMatchingRule(const std::vector<const Posture*>& postureSequence, unsigned int& ruleIndex) const
+{
+	for (unsigned int i = 0; i < ruleList_.size(); ++i) {
+		const Rule& r = *ruleList_[i];
+		if (r.numberOfExpressions() <= postureSequence.size()) {
+			if (r.evalBooleanExpression(postureSequence)) {
+				ruleIndex = i;
+				return &r;
+			}
+		}
+	}
+	return ruleList_.back().get();
 }
 
 } /* namespace TRMControlModel */
