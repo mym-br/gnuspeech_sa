@@ -59,7 +59,7 @@ Model::load(const char* configDirPath, const char* configFileName)
 	XMLConfigFile cfg(*this, filePath);
 	cfg.loadModel();
 
-	preparePhones();
+	preparePostures();
 	prepareEquations();
 	prepareRules();
 }
@@ -68,13 +68,13 @@ Model::load(const char* configDirPath, const char* configFileName)
  *
  */
 void
-Model::preparePhones()
+Model::preparePostures()
 {
-	LOG_DEBUG("Preparing phones...");
+	LOG_DEBUG("Preparing postures...");
 
-	// Fill the category code in the category list of each Phone.
-	for (auto itPost = phoneMap_.begin(); itPost != phoneMap_.end(); ++itPost) {
-		const PhoneMap::value_type& v = *itPost;
+	// Fill the category code in the category list of each Posture.
+	for (auto itPost = postureMap_.begin(); itPost != postureMap_.end(); ++itPost) {
+		const PostureMap::value_type& v = *itPost;
 		for (auto itCat = v.second->categoryList().begin(); itCat != v.second->categoryList().end(); ++itCat) {
 			auto itMap = categoryMap_.find((*itCat)->name);
 			if (itMap != categoryMap_.end()) {
@@ -129,11 +129,11 @@ Model::printInfo() const
 	}
 
 	//---------------------------------------------------------
-	// Phones.
-	std::cout << std::string(40, '-') << "\nPhones:\n" << std::endl;
-	for (PhoneMap::const_iterator iter = phoneMap_.begin(); iter != phoneMap_.end(); ++iter) {
-		const PhoneMap::value_type& v = *iter;
-		std::cout << "phone symbol: " << v.second->name() << " r8: " << v.second->getParameterTarget(14 /* R8 */) << std::endl;
+	// Postures.
+	std::cout << std::string(40, '-') << "\nPostures:\n" << std::endl;
+	for (PostureMap::const_iterator iter = postureMap_.begin(); iter != postureMap_.end(); ++iter) {
+		const PostureMap::value_type& v = *iter;
+		std::cout << "posture symbol: " << v.second->name() << " r8: " << v.second->getParameterTarget(14 /* R8 */) << std::endl;
 
 		for (CategoryList::const_iterator it2 = v.second->categoryList().begin();
 				it2 != v.second->categoryList().end(); ++it2) {
@@ -234,12 +234,12 @@ Model::printInfo() const
 		r.printBooleanNodeTree();
 	}
 	std::cout << "--------------------------------------" << std::endl;
-	PhoneSequence postSeq;
-	const Phone* pp = findPhone("m");
+	PostureSequence postSeq;
+	const Posture* pp = findPosture("m");
 	if (pp) postSeq.push_back(pp);
-	pp = findPhone("ah");
+	pp = findPosture("ah");
 	if (pp) postSeq.push_back(pp);
-	pp = findPhone("s");
+	pp = findPosture("s");
 	if (pp) postSeq.push_back(pp);
 	for (RuleList::const_iterator iter = ruleList_.begin(); iter != ruleList_.end(); ++iter) {
 		const Rule& r = **iter;

@@ -59,7 +59,7 @@ private:
 	double semitone_;      /* Value of the in semitones */
 	double offsetTime_;    /* Points are timed wrt a beat + this offset */
 	double slope_;         /* Slope of point */
-	int ruleIndex_;        /* Index of phone which is the focus of this point */
+	int ruleIndex_;        /* Index of posture which is the focus of this point */
 	EventList& eventList_; /* Current EventList */
 };
 

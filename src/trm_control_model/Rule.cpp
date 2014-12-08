@@ -277,11 +277,11 @@ RuleBooleanAndExpression::~RuleBooleanAndExpression()
 }
 
 bool
-RuleBooleanAndExpression::eval(const Phone& phone) const
+RuleBooleanAndExpression::eval(const Posture& posture) const
 {
 	assert(child1_.get() != 0 && child2_.get() != 0);
 
-	return child1_->eval(phone) && child2_->eval(phone);
+	return child1_->eval(posture) && child2_->eval(posture);
 }
 
 void
@@ -306,11 +306,11 @@ RuleBooleanOrExpression::~RuleBooleanOrExpression()
 }
 
 bool
-RuleBooleanOrExpression::eval(const Phone& phone) const
+RuleBooleanOrExpression::eval(const Posture& posture) const
 {
 	assert(child1_.get() != 0 && child2_.get() != 0);
 
-	return child1_->eval(phone) || child2_->eval(phone);
+	return child1_->eval(posture) || child2_->eval(posture);
 }
 
 void
@@ -335,11 +335,11 @@ RuleBooleanXorExpression::~RuleBooleanXorExpression()
 }
 
 bool
-RuleBooleanXorExpression::eval(const Phone& phone) const
+RuleBooleanXorExpression::eval(const Posture& posture) const
 {
 	assert(child1_.get() != 0 && child2_.get() != 0);
 
-	return child1_->eval(phone) != child2_->eval(phone);
+	return child1_->eval(posture) != child2_->eval(posture);
 }
 
 void
@@ -364,11 +364,11 @@ RuleBooleanNotExpression::~RuleBooleanNotExpression()
 }
 
 bool
-RuleBooleanNotExpression::eval(const Phone& phone) const
+RuleBooleanNotExpression::eval(const Posture& posture) const
 {
 	assert(child_.get() != 0);
 
-	return !(child_->eval(phone));
+	return !(child_->eval(posture));
 }
 
 void
@@ -392,15 +392,15 @@ RuleBooleanTerminal::~RuleBooleanTerminal()
 }
 
 bool
-RuleBooleanTerminal::eval(const Phone& phone) const
+RuleBooleanTerminal::eval(const Posture& posture) const
 {
 	if (matchAll_) {
-		return phone.isMemberOfCategory(text_, Text::MatchWithOptionalCharSuffix('\''));
+		return posture.isMemberOfCategory(text_, Text::MatchWithOptionalCharSuffix('\''));
 	} else {
 		if (categoryCode_ != 0) {
-			return phone.isMemberOfCategory(categoryCode_);
+			return posture.isMemberOfCategory(categoryCode_);
 		} else {
-			return phone.isMemberOfCategory(text_, true);
+			return posture.isMemberOfCategory(text_, true);
 		}
 	}
 }
@@ -422,7 +422,7 @@ void
 Rule::printBooleanNodeTree() const
 {
 	for (RuleBooleanNodeList::size_type size = booleanNodeList_.size(), i = 0; i < size; ++i) {
-		std::cout << "Phone: " << (i + 1) << std::endl;
+		std::cout << "Posture: " << (i + 1) << std::endl;
 		booleanNodeList_[i]->print(std::cout);
 	}
 }
@@ -431,13 +431,13 @@ Rule::printBooleanNodeTree() const
  *
  */
 bool
-Rule::evalBooleanExpression(const PhoneSequence& phoneSequence) const
+Rule::evalBooleanExpression(const PostureSequence& postureSequence) const
 {
-	if (phoneSequence.size() < booleanNodeList_.size()) return false;
+	if (postureSequence.size() < booleanNodeList_.size()) return false;
 	if (booleanNodeList_.empty()) return false;
 
 	for (RuleBooleanNodeList::size_type size = booleanNodeList_.size(), i = 0; i < size; ++i) {
-		if ( !(booleanNodeList_[i]->eval(*phoneSequence[i])) ) {
+		if ( !(booleanNodeList_[i]->eval(*postureSequence[i])) ) {
 			return false;
 		}
 	}
@@ -473,40 +473,40 @@ Rule::parseBooleanExpression(const CategoryMap& categoryMap)
 // ruleSymbols: {rd, beat, mark1, mark2, mark3}
 // tempos[4]
 void
-Rule::evaluateExpressionSymbols(const double* tempos, const PhoneSequence& phones, Model& model, double* ruleSymbols) const
+Rule::evaluateExpressionSymbols(const double* tempos, const PostureSequence& postures, Model& model, double* ruleSymbols) const
 {
 	double localTempos[4];
 
 	model.clearFormulaSymbolList();
-	if (phones.size() >= 2) {
-		const Phone& phone = *phones[0];
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION1, phone.symbols().transition);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA1      , phone.symbols().qssa);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB1      , phone.symbols().qssb);
-		const Phone& phone2 = *phones[1];
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION2, phone2.symbols().transition);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA2      , phone2.symbols().qssa);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB2      , phone2.symbols().qssb);
+	if (postures.size() >= 2) {
+		const Posture& posture = *postures[0];
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION1, posture.symbols().transition);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA1      , posture.symbols().qssa);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB1      , posture.symbols().qssb);
+		const Posture& posture2 = *postures[1];
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION2, posture2.symbols().transition);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA2      , posture2.symbols().qssa);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB2      , posture2.symbols().qssb);
 		localTempos[0] = tempos[0];
 		localTempos[1] = tempos[1];
 	} else {
 		localTempos[0] = 0.0;
 		localTempos[1] = 0.0;
 	}
-	if (phones.size() >= 3) {
-		const Phone& phone = *phones[2];
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION3, phone.symbols().transition);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA3      , phone.symbols().qssa);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB3      , phone.symbols().qssb);
+	if (postures.size() >= 3) {
+		const Posture& posture = *postures[2];
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION3, posture.symbols().transition);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA3      , posture.symbols().qssa);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB3      , posture.symbols().qssb);
 		localTempos[2] = tempos[2];
 	} else {
 		localTempos[2] = 0.0;
 	}
-	if (phones.size() == 4) {
-		const Phone& phone = *phones[3];
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION4, phone.symbols().transition);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA4      , phone.symbols().qssa);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB4      , phone.symbols().qssb);
+	if (postures.size() == 4) {
+		const Posture& posture = *postures[3];
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION4, posture.symbols().transition);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA4      , posture.symbols().qssa);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB4      , posture.symbols().qssb);
 		localTempos[3] = tempos[3];
 	} else {
 		localTempos[3] = 0.0;

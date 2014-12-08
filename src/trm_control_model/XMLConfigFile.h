@@ -26,7 +26,7 @@
 #include <string>
 
 #include "Equation.h"
-#include "Phone.h"
+#include "Posture.h"
 #include "Rule.h"
 #include "SimpleXMLParser.h"
 #include "Transition.h"
@@ -127,9 +127,9 @@ private:
 
 	void parseSymbols();
 
-	void parsePostureSymbols(Phone& phone);
-	void parsePostureCategories(Phone& phone);
-	void parsePostureParameters(Phone& phone);
+	void parsePostureSymbols(Posture& posture);
+	void parsePostureCategories(Posture& posture);
+	void parsePostureParameters(Posture& posture);
 	void parsePosture();
 	void parsePostures();
 

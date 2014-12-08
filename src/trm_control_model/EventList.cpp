@@ -86,11 +86,11 @@ EventList::setUp()
 	multiplier_ = 1.0;
 	intonParms_ = nullptr;
 
-	phoneData_.clear();
-	phoneData_.push_back(PhoneData());
-	phoneTempo_.clear();
-	phoneTempo_.push_back(1.0);
-	currentPhone_ = 0;
+	postureData_.clear();
+	postureData_.push_back(PostureData());
+	postureTempo_.clear();
+	postureTempo_.push_back(1.0);
+	currentPosture_ = 0;
 
 	feet_.clear();
 	feet_.push_back(Foot());
@@ -187,25 +187,25 @@ EventList::getBeatAtIndex(int ruleIndex) const
 }
 
 void
-EventList::newPhoneWithObject(const Phone& p)
+EventList::newPostureWithObject(const Posture& p)
 {
-	if (phoneData_[currentPhone_].phone) {
-		phoneData_.push_back(PhoneData());
-		phoneTempo_.push_back(1.0);
-		currentPhone_++;
+	if (postureData_[currentPosture_].posture) {
+		postureData_.push_back(PostureData());
+		postureTempo_.push_back(1.0);
+		currentPosture_++;
 	}
-	phoneTempo_[currentPhone_] = 1.0;
-	phoneData_[currentPhone_].ruleTempo = 1.0;
-	phoneData_[currentPhone_].phone = &p;
+	postureTempo_[currentPosture_] = 1.0;
+	postureData_[currentPosture_].ruleTempo = 1.0;
+	postureData_[currentPosture_].posture = &p;
 }
 
 void
-EventList::replaceCurrentPhoneWith(const Phone& p)
+EventList::replaceCurrentPostureWith(const Posture& p)
 {
-	if (phoneData_[currentPhone_].phone) {
-		phoneData_[currentPhone_].phone = &p;
+	if (postureData_[currentPosture_].posture) {
+		postureData_[currentPosture_].posture = &p;
 	} else {
-		phoneData_[currentPhone_ - 1].phone = &p;
+		postureData_[currentPosture_ - 1].posture = &p;
 	}
 }
 
@@ -218,15 +218,15 @@ EventList::setCurrentToneGroupType(int type)
 void
 EventList::newFoot()
 {
-	if (currentPhone_ == 0) {
+	if (currentPosture_ == 0) {
 		return;
 	}
 
-	feet_[currentFoot_++].end = currentPhone_;
-	newPhone();
+	feet_[currentFoot_++].end = currentPosture_;
+	newPosture();
 
 	feet_.push_back(Foot());
-	feet_[currentFoot_].start = currentPhone_;
+	feet_[currentFoot_].start = currentPosture_;
 	feet_[currentFoot_].end = -1;
 	feet_[currentFoot_].tempo = 1.0;
 }
@@ -250,15 +250,15 @@ EventList::setCurrentFootTempo(double tempo)
 }
 
 void
-EventList::setCurrentPhoneTempo(double tempo)
+EventList::setCurrentPostureTempo(double tempo)
 {
-	phoneTempo_[currentPhone_] = tempo;
+	postureTempo_[currentPosture_] = tempo;
 }
 
 void
-EventList::setCurrentPhoneRuleTempo(float tempo)
+EventList::setCurrentPostureRuleTempo(float tempo)
 {
-	phoneData_[currentPhone_].ruleTempo = tempo;
+	postureData_[currentPosture_].ruleTempo = tempo;
 }
 
 void
@@ -277,20 +277,20 @@ EventList::newToneGroup()
 }
 
 void
-EventList::newPhone()
+EventList::newPosture()
 {
-	if (phoneData_[currentPhone_].phone) {
-		phoneData_.push_back(PhoneData());
-		phoneTempo_.push_back(1.0);
-		currentPhone_++;
+	if (postureData_[currentPosture_].posture) {
+		postureData_.push_back(PostureData());
+		postureTempo_.push_back(1.0);
+		currentPosture_++;
 	}
-	phoneTempo_[currentPhone_] = 1.0;
+	postureTempo_[currentPosture_] = 1.0;
 }
 
 void
-EventList::setCurrentPhoneSyllable()
+EventList::setCurrentPostureSyllable()
 {
-	phoneData_[currentPhone_].syllable = 1;
+	postureData_[currentPosture_].syllable = 1;
 }
 
 Event*
@@ -440,9 +440,9 @@ EventList::createSlopeRatioEvents(
 	return value;
 }
 
-// It is assumed that phoneList.size() >= 2.
+// It is assumed that postureList.size() >= 2.
 void
-EventList::applyRule(const Rule& rule, const PhoneSequence& phoneList, const double* tempos, int phoneIndex)
+EventList::applyRule(const Rule& rule, const PostureSequence& postureList, const double* tempos, int postureIndex)
 {
 	int cont;
 	int currentType;
@@ -452,15 +452,15 @@ EventList::applyRule(const Rule& rule, const PhoneSequence& phoneList, const dou
 	double targets[4];
 	Event* tempEvent = nullptr;
 
-	rule.evaluateExpressionSymbols(tempos, phoneList, model_, ruleSymbols);
+	rule.evaluateExpressionSymbols(tempos, postureList, model_, ruleSymbols);
 
-	multiplier_ = 1.0 / (double) (phoneData_[phoneIndex].ruleTempo);
+	multiplier_ = 1.0 / (double) (postureData_[postureIndex].ruleTempo);
 
 	int type = rule.numberOfExpressions();
 	setDuration((int) (ruleSymbols[0] * multiplier_));
 
-	ruleData_[currentRule_].firstPhone = phoneIndex;
-	ruleData_[currentRule_].lastPhone = phoneIndex + (type - 1);
+	ruleData_[currentRule_].firstPosture = postureIndex;
+	ruleData_[currentRule_].lastPosture = postureIndex + (type - 1);
 	ruleData_[currentRule_].beat = (ruleSymbols[1] * multiplier_) + (double) zeroRef_;
 	ruleData_[currentRule_++].duration = ruleSymbols[0] * multiplier_;
 	ruleData_.push_back(RuleData());
@@ -468,19 +468,19 @@ EventList::applyRule(const Rule& rule, const PhoneSequence& phoneList, const dou
 	switch (type) {
 	/* Note: Case 4 should execute all of the below, case 3 the last two */
 	case 4:
-		if (phoneList.size() == 4) {
-			phoneData_[phoneIndex + 3].onset = (double) zeroRef_ + ruleSymbols[1];
+		if (postureList.size() == 4) {
+			postureData_[postureIndex + 3].onset = (double) zeroRef_ + ruleSymbols[1];
 			tempEvent = insertEvent(-1, ruleSymbols[3], 0.0);
 			if (tempEvent) tempEvent->flag = 1;
 		}
 	case 3:
-		if (phoneList.size() >= 3) {
-			phoneData_[phoneIndex + 2].onset = (double) zeroRef_ + ruleSymbols[1];
+		if (postureList.size() >= 3) {
+			postureData_[postureIndex + 2].onset = (double) zeroRef_ + ruleSymbols[1];
 			tempEvent = insertEvent(-1, ruleSymbols[2], 0.0);
 			if (tempEvent) tempEvent->flag = 1;
 		}
 	case 2:
-		phoneData_[phoneIndex + 1].onset = (double) zeroRef_ + ruleSymbols[1];
+		postureData_[postureIndex + 1].onset = (double) zeroRef_ + ruleSymbols[1];
 		tempEvent = insertEvent(-1, 0.0, 0.0);
 		if (tempEvent) tempEvent->flag = 1;
 		break;
@@ -491,10 +491,10 @@ EventList::applyRule(const Rule& rule, const PhoneSequence& phoneList, const dou
 	/* Loop through the parameters */
 	for (unsigned int i = 0; i < model_.getNumParameters(); i++) {
 		/* Get actual parameter target values */
-		targets[0] = phoneList[0]->getParameterTarget(i);
-		targets[1] = phoneList[1]->getParameterTarget(i);
-		targets[2] = (phoneList.size() >= 3) ? phoneList[2]->getParameterTarget(i) : 0.0;
-		targets[3] = (phoneList.size() == 4) ? phoneList[3]->getParameterTarget(i) : 0.0;
+		targets[0] = postureList[0]->getParameterTarget(i);
+		targets[1] = postureList[1]->getParameterTarget(i);
+		targets[2] = (postureList.size() >= 3) ? postureList[2]->getParameterTarget(i) : 0.0;
+		targets[3] = (postureList.size() == 4) ? postureList[3]->getParameterTarget(i) : 0.0;
 
 		/* Optimization, Don't calculate if no changes occur */
 		cont = 1;
@@ -616,38 +616,38 @@ EventList::generateEventList()
 			footTempo = globalTempo_ * feet_[i].tempo;
 		}
 		for (int j = feet_[i].start; j < feet_[i].end + 1; j++) {
-			phoneTempo_[j] *= footTempo;
-			if (phoneTempo_[j] < 0.2) {
-				phoneTempo_[j] = 0.2;
-			} else if (phoneTempo_[j] > 2.0) {
-				phoneTempo_[j] = 2.0;
+			postureTempo_[j] *= footTempo;
+			if (postureTempo_[j] < 0.2) {
+				postureTempo_[j] = 0.2;
+			} else if (postureTempo_[j] > 2.0) {
+				postureTempo_[j] = 2.0;
 			}
 		}
 	}
 
-	int basePhoneindex = 0;
-	PhoneSequence tempPhoneList;
-	while (basePhoneindex < currentPhone_) {
-		tempPhoneList.clear();
+	int basePostureIndex = 0;
+	PostureSequence tempPostureList;
+	while (basePostureIndex < currentPosture_) {
+		tempPostureList.clear();
 		for (int i = 0; i < 4; i++) {
-			int phoneIndex = basePhoneindex + i;
-			if (phoneIndex <= currentPhone_ && phoneData_[phoneIndex].phone) {
-				tempPhoneList.push_back(phoneData_[phoneIndex].phone);
+			int postureIndex = basePostureIndex + i;
+			if (postureIndex <= currentPosture_ && postureData_[postureIndex].posture) {
+				tempPostureList.push_back(postureData_[postureIndex].posture);
 			} else {
 				break;
 			}
 		}
-		if (tempPhoneList.size() < 2) {
+		if (tempPostureList.size() < 2) {
 			break;
 		}
 		unsigned int ruleIndex = 0;
-		const Rule* tempRule = model_.findFirstMatchingRule(tempPhoneList, ruleIndex);
+		const Rule* tempRule = model_.findFirstMatchingRule(tempPostureList, ruleIndex);
 
 		ruleData_[currentRule_].number = ruleIndex + 1U;
 
-		applyRule(*tempRule, tempPhoneList, &phoneTempo_[basePhoneindex], basePhoneindex);
+		applyRule(*tempRule, tempPostureList, &postureTempo_[basePostureIndex], basePostureIndex);
 
-		basePhoneindex += tempRule->numberOfExpressions() - 1;
+		basePostureIndex += tempRule->numberOfExpressions() - 1;
 	}
 
 	//[dataPtr[numElements-1] setFlag:1];
@@ -666,7 +666,7 @@ EventList::applyIntonation()
 {
 	int tgRandom;
 	int firstFoot, endFoot;
-	int ruleIndex = 0, phoneIndex;
+	int ruleIndex = 0, postureIndex;
 	int i, j, k;
 	double startTime, endTime, pretonicDelta, offsetTime = 0.0;
 	double randomSemitone, randomSlope;
@@ -683,8 +683,8 @@ EventList::applyIntonation()
 		firstFoot = toneGroups_[i].startFoot;
 		endFoot = toneGroups_[i].endFoot;
 
-		startTime = phoneData_[feet_[firstFoot].start].onset;
-		endTime = phoneData_[feet_[endFoot].end].onset;
+		startTime = postureData_[feet_[firstFoot].start].onset;
+		endTime = postureData_[feet_[endFoot].end].onset;
 
 		//printf("Tg: %d First: %d  end: %d  StartTime: %f  endTime: %f\n", i, firstFoot, endFoot, startTime, endTime);
 
@@ -742,19 +742,19 @@ EventList::applyIntonation()
 
 		/* Set up intonation boundary variables */
 		for (j = firstFoot; j <= endFoot; j++) {
-			phoneIndex = feet_[j].start;
-			while (!phoneData_[phoneIndex].phone->isMemberOfCategory(vocoidCategory->code)) {
-				phoneIndex++;
-				//printf("Checking phone %s for vocoid\n", [phones[phoneIndex].phone symbol]);
-				if (phoneIndex > feet_[j].end) {
-					phoneIndex = feet_[j].start;
+			postureIndex = feet_[j].start;
+			while (!postureData_[postureIndex].posture->isMemberOfCategory(vocoidCategory->code)) {
+				postureIndex++;
+				//printf("Checking posture %s for vocoid\n", [posture[postureIndex].posture symbol]);
+				if (postureIndex > feet_[j].end) {
+					postureIndex = feet_[j].start;
 					break;
 				}
 			}
 
 			if (!feet_[j].marked) {
 				for (k = 0; k < currentRule_; k++) {
-					if ((phoneIndex >= ruleData_[k].firstPhone) && (phoneIndex <= ruleData_[k].lastPhone)) {
+					if ((postureIndex >= ruleData_[k].firstPosture) && (postureIndex <= ruleData_[k].lastPosture)) {
 						ruleIndex = k;
 						break;
 					}
@@ -769,11 +769,11 @@ EventList::applyIntonation()
 					randomSlope = 0.02;
 				}
 
-				//printf("phoneIndex = %d onsetTime : %f Delta: %f\n", phoneIndex,
-				//	phones[phoneIndex].onset-startTime,
-				//	((phones[phoneIndex].onset-startTime)*pretonicDelta) + intonParms[1] + randomSemitone);
+				//printf("postureIndex = %d onsetTime : %f Delta: %f\n", postureIndex,
+				//	postures[postureIndex].onset-startTime,
+				//	((postures[postureIndex].onset-startTime)*pretonicDelta) + intonParms[1] + randomSemitone);
 
-				addIntonationPoint((phoneData_[phoneIndex].onset - startTime) * pretonicDelta + intonParms_[1] + randomSemitone,
+				addIntonationPoint((postureData_[postureIndex].onset - startTime) * pretonicDelta + intonParms_[1] + randomSemitone,
 							offsetTime, randomSlope, ruleIndex);
 			} else { /* Tonic */
 				if (toneGroups_[i].type == 3) {
@@ -783,7 +783,7 @@ EventList::applyIntonation()
 				}
 
 				for (k = 0; k < currentRule_; k++) {
-					if ((phoneIndex >= ruleData_[k].firstPhone) && (phoneIndex <= ruleData_[k].lastPhone)) {
+					if ((postureIndex >= ruleData_[k].firstPosture) && (postureIndex <= ruleData_[k].lastPosture)) {
 						ruleIndex = k;
 						break;
 					}
@@ -800,9 +800,9 @@ EventList::applyIntonation()
 				addIntonationPoint(intonParms_[2] + intonParms_[1] + randomSemitone,
 							offsetTime, randomSlope, ruleIndex);
 
-				phoneIndex = feet_[j].end;
+				postureIndex = feet_[j].end;
 				for (k = ruleIndex; k < currentRule_; k++) {
-					if ((phoneIndex >= ruleData_[k].firstPhone) && (phoneIndex <= ruleData_[k].lastPhone)) {
+					if ((postureIndex >= ruleData_[k].firstPosture) && (postureIndex <= ruleData_[k].lastPosture)) {
 						ruleIndex = k;
 						break;
 					}
@@ -1064,16 +1064,16 @@ EventList::printDataStructures()
 			feet_[i].start, feet_[i].end, feet_[i].marked, feet_[i].last, feet_[i].onset1, feet_[i].onset2);
 	}
 
-	printf("\nPhones %d\n", currentPhone_);
-	for (int i = 0; i < currentPhone_; i++) {
+	printf("\nPostures %d\n", currentPosture_);
+	for (int i = 0; i < currentPosture_; i++) {
 		printf("%d  \"%s\" tempo: %f syllable: %d onset: %f ruleTempo: %f\n",
-			 i, phoneData_[i].phone->name().c_str(), phoneTempo_[i], phoneData_[i].syllable, phoneData_[i].onset, phoneData_[i].ruleTempo);
+			 i, postureData_[i].posture->name().c_str(), postureTempo_[i], postureData_[i].syllable, postureData_[i].onset, postureData_[i].ruleTempo);
 	}
 
 	printf("\nRules %d\n", currentRule_);
 	for (int i = 0; i < currentRule_; i++) {
-		printf("Number: %d  start: %d  end: %d  duration %f\n", ruleData_[i].number, ruleData_[i].firstPhone,
-			ruleData_[i].lastPhone, ruleData_[i].duration);
+		printf("Number: %d  start: %d  end: %d  duration %f\n", ruleData_[i].number, ruleData_[i].firstPosture,
+			ruleData_[i].lastPosture, ruleData_[i].duration);
 	}
 #if 0
 	printf("\nEvents %d\n", list_.size());

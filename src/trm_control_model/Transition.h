@@ -56,9 +56,9 @@ public:
 	struct Point : PointOrSlope {
 		enum Type {
 			TYPE_INVALID    = 0,
-			TYPE_DIPHONE    = 2, // Phone 1 --> Phone 2
-			TYPE_TRIPHONE   = 3, // Phone 2 --> Phone 3
-			TYPE_TETRAPHONE = 4  // Phone 3 --> Phone 4
+			TYPE_DIPHONE    = 2, // Posture 1 --> Posture 2
+			TYPE_TRIPHONE   = 3, // Posture 2 --> Posture 3
+			TYPE_TETRAPHONE = 4  // Posture 3 --> Posture 4
 		};
 		Type type;
 		float value;

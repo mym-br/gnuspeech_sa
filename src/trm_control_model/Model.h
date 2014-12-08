@@ -33,7 +33,7 @@
 #include "Exception.h"
 #include "FormulaSymbol.h"
 #include "Parameter.h"
-#include "Phone.h"
+#include "Posture.h"
 #include "Rule.h"
 #include "Transition.h"
 
@@ -62,16 +62,16 @@ public:
 	float getParameterMinimum(unsigned int parameterIndex) const;
 	float getParameterMaximum(unsigned int parameterIndex) const;
 	const Parameter& getParameter(unsigned int parameterIndex) const;
-	const Phone* findPhone(const std::string& name) const;
+	const Posture* findPosture(const std::string& name) const;
 	const Transition* findTransition(const std::string& name) const;
 	const Transition* findSpecialTransition(const std::string& name) const;
-	const Rule* findFirstMatchingRule(const PhoneSequence& phoneSequence, unsigned int& ruleIndex) const;
+	const Rule* findFirstMatchingRule(const PostureSequence& postureSequence, unsigned int& ruleIndex) const;
 	const Category* findCategory(const std::string& name) const;
 
 private:
 	CategoryMap categoryMap_;
 	std::vector<Parameter_ptr> parameterList_;
-	PhoneMap phoneMap_;
+	PostureMap postureMap_;
 	RuleList ruleList_;
 	const FormulaSymbol formulaSymbol_;
 	EquationMap equationMap_;
@@ -79,7 +79,7 @@ private:
 	TransitionMap specialTransitionMap_;
 	FormulaSymbolList formulaSymbolList_;
 
-	void preparePhones();
+	void preparePostures();
 	void prepareEquations();
 	void prepareRules();
 
@@ -97,7 +97,7 @@ Model::clear()
 {
 	categoryMap_.clear();
 	parameterList_.clear();
-	phoneMap_.clear();
+	postureMap_.clear();
 	ruleList_.clear();
 	equationMap_.clear();
 	transitionMap_.clear();
@@ -193,17 +193,17 @@ Model::getParameter(unsigned int parameterIndex) const
 }
 
 /*******************************************************************************
- * Find a Phone with the given name.
+ * Find a Posture with the given name.
  *
- * Returns a pointer to the Phone, or 0 (zero) if a Phone
+ * Returns a pointer to the Posture, or 0 (zero) if a Posture
  * was not found.
  */
 inline
-const Phone*
-Model::findPhone(const std::string& name) const
+const Posture*
+Model::findPosture(const std::string& name) const
 {
-	PhoneMap::const_iterator itPost = phoneMap_.find(name);
-	if (itPost == phoneMap_.end()) {
+	PostureMap::const_iterator itPost = postureMap_.find(name);
+	if (itPost == postureMap_.end()) {
 		return nullptr;
 	}
 	return itPost->second.get();
@@ -244,16 +244,16 @@ Model::findSpecialTransition(const std::string& name) const
 }
 
 /*******************************************************************************
- * Finds the first Rule that matches the given sequence of Phones.
+ * Finds the first Rule that matches the given sequence of Postures.
  */
 inline
 const Rule*
-Model::findFirstMatchingRule(const PhoneSequence& phoneSequence, unsigned int& ruleIndex) const
+Model::findFirstMatchingRule(const PostureSequence& postureSequence, unsigned int& ruleIndex) const
 {
 	for (unsigned int i = 0; i < ruleList_.size(); ++i) {
 		const Rule& r = *ruleList_[i];
-		if (r.numberOfExpressions() <= phoneSequence.size()) {
-			if (r.evalBooleanExpression(phoneSequence)) {
+		if (r.numberOfExpressions() <= postureSequence.size()) {
+			if (r.evalBooleanExpression(postureSequence)) {
 				ruleIndex = i;
 				return &r;
 			}

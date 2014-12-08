@@ -81,7 +81,7 @@ add_library(gnuspeechsa STATIC
     src/trm_control_model/IntonationPoint.cpp src/trm_control_model/IntonationPoint.h
     src/trm_control_model/Model.cpp src/trm_control_model/Model.h
     src/trm_control_model/Parameter.h
-    src/trm_control_model/Phone.cpp src/trm_control_model/Phone.h
+    src/trm_control_model/Posture.h
     src/trm_control_model/Rule.cpp src/trm_control_model/Rule.h
     src/trm_control_model/Transition.cpp src/trm_control_model/Transition.h
     src/trm_control_model/TRMControlModelConfiguration.cpp src/trm_control_model/TRMControlModelConfiguration.h

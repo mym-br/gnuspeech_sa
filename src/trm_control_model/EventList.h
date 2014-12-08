@@ -39,13 +39,13 @@
 namespace GS {
 namespace TRMControlModel {
 
-struct PhoneData {
-	const Phone* phone;
+struct PostureData {
+	const Posture* posture;
 	int    syllable;
 	double onset;
 	float  ruleTempo;
-	PhoneData()
-		: phone(nullptr)
+	PostureData()
+		: posture(nullptr)
 		, syllable(0)
 		, onset(0.0)
 		, ruleTempo(0.0) {}
@@ -81,14 +81,14 @@ struct ToneGroup {
 
 struct RuleData {
 	int    number;
-	int    firstPhone;
-	int    lastPhone;
+	int    firstPosture;
+	int    lastPosture;
 	double duration;
 	double beat;
 	RuleData()
 		: number(0)
-		, firstPhone(0)
-		, lastPhone(0)
+		, firstPosture(0)
+		, lastPosture(0)
 		, duration(0.0)
 		, beat(0.0) {}
 };
@@ -142,18 +142,18 @@ public:
 
 	void setTgUseRandom(bool tgUseRandom) { tgUseRandom_ = tgUseRandom; }
 	bool tgUseRandom() const { return tgUseRandom_; }
-	void setCurrentPhoneSyllable();
+	void setCurrentPostureSyllable();
 	void setUp();
 	double getBeatAtIndex(int ruleIndex) const;
-	void newPhoneWithObject(const Phone& p);
-	void replaceCurrentPhoneWith(const Phone& p);
+	void newPostureWithObject(const Posture& p);
+	void replaceCurrentPostureWith(const Posture& p);
 	void setCurrentToneGroupType(int type);
 	void newFoot();
 	void setCurrentFootMarked();
 	void setCurrentFootLast();
 	void setCurrentFootTempo(double tempo);
-	void setCurrentPhoneTempo(double tempo);
-	void setCurrentPhoneRuleTempo(float tempo);
+	void setCurrentPostureTempo(double tempo);
+	void setCurrentPostureRuleTempo(float tempo);
 	void newToneGroup();
 	void generateEventList();
 	void applyIntonation();
@@ -170,10 +170,10 @@ private:
 	void printToneGroups();
 	void addIntonationPoint(double semitone, double offsetTime, double slope, int ruleIndex);
 	void setFullTimeScale();
-	void newPhone();
+	void newPosture();
 	Event* insertEvent(int number, double time, double value);
 	void setZeroRef(int newValue);
-	void applyRule(const Rule& rule, const PhoneSequence& phoneList, const double* tempos, int phoneIndex);
+	void applyRule(const Rule& rule, const PostureSequence& postureList, const double* tempos, int postureIndex);
 	void printDataStructures();
 	double createSlopeRatioEvents(const Transition::SlopeRatio& slopeRatio,
 			double baseline, double parameterDelta, double min, double max, int eventIndex);
@@ -195,10 +195,10 @@ private:
 	double multiplier_;
 	float* intonParms_;
 
-	/* NOTE phoneData and phoneTempo are separate for optimization reasons */
-	std::vector<PhoneData> phoneData_;
-	std::vector<double> phoneTempo_;
-	int currentPhone_;
+	/* NOTE postureData and postureTempo are separate for optimization reasons */
+	std::vector<PostureData> postureData_;
+	std::vector<double> postureTempo_;
+	int currentPosture_;
 
 	std::vector<Foot> feet_;
 	int currentFoot_;

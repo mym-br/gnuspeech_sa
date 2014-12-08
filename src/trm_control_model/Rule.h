@@ -29,7 +29,7 @@
 #include <utility> /* move */
 #include <vector>
 
-#include "Phone.h"
+#include "Posture.h"
 
 
 
@@ -42,7 +42,7 @@ class RuleBooleanNode {
 public:
 	virtual ~RuleBooleanNode();
 
-	virtual bool eval(const Phone& phone) const = 0;
+	virtual bool eval(const Posture& posture) const = 0;
 	virtual void print(std::ostream& out, int level = 0) const = 0;
 };
 
@@ -56,7 +56,7 @@ public:
 			: RuleBooleanNode(), child1_(std::move(c1)), child2_(std::move(c2)) {}
 	virtual ~RuleBooleanAndExpression();
 
-	virtual bool eval(const Phone& phone) const;
+	virtual bool eval(const Posture& posture) const;
 	virtual void print(std::ostream& out, int level = 0) const;
 private:
 	RuleBooleanNode_ptr child1_;
@@ -69,7 +69,7 @@ public:
 			: RuleBooleanNode(), child1_(std::move(c1)), child2_(std::move(c2)) {}
 	virtual ~RuleBooleanOrExpression();
 
-	virtual bool eval(const Phone& phone) const;
+	virtual bool eval(const Posture& posture) const;
 	virtual void print(std::ostream& out, int level = 0) const;
 private:
 	RuleBooleanNode_ptr child1_;
@@ -82,7 +82,7 @@ public:
 			: RuleBooleanNode(), child1_(std::move(c1)), child2_(std::move(c2)) {}
 	virtual ~RuleBooleanXorExpression();
 
-	virtual bool eval(const Phone& phone) const;
+	virtual bool eval(const Posture& posture) const;
 	virtual void print(std::ostream& out, int level = 0) const;
 private:
 	RuleBooleanNode_ptr child1_;
@@ -95,7 +95,7 @@ public:
 			: RuleBooleanNode(), child_(std::move(c)) {}
 	virtual ~RuleBooleanNotExpression();
 
-	virtual bool eval(const Phone& phone) const;
+	virtual bool eval(const Posture& posture) const;
 	virtual void print(std::ostream& out, int level = 0) const;
 private:
 	RuleBooleanNode_ptr child_;
@@ -107,7 +107,7 @@ public:
 			: RuleBooleanNode(), text_(text), matchAll_(matchAll), categoryCode_(categoryCode) {}
 	virtual ~RuleBooleanTerminal();
 
-	virtual bool eval(const Phone& phone) const;
+	virtual bool eval(const Posture& posture) const;
 	virtual void print(std::ostream& out, int level = 0) const;
 private:
 	std::string text_;
@@ -137,7 +137,7 @@ public:
 	}
 
 	std::size_t numberOfExpressions() const;
-	bool evalBooleanExpression(const PhoneSequence& phoneSequence) const;
+	bool evalBooleanExpression(const PostureSequence& postureSequence) const;
 	void printBooleanNodeTree() const;
 	void parseBooleanExpression(const CategoryMap& categoryMap);
 
@@ -178,7 +178,7 @@ public:
 		specialProfileTransitionList_[parameterIndex] = transition;
 	}
 
-	void evaluateExpressionSymbols(const double* tempos, const PhoneSequence& phones, Model& model, double* ruleSymbols) const;
+	void evaluateExpressionSymbols(const double* tempos, const PostureSequence& postures, Model& model, double* ruleSymbols) const;
 
 	std::vector<std::string>& booleanExpressionList() { return booleanExpressionList_; }
 	std::vector<std::string>& paramProfileTransitionList() { return paramProfileTransitionList_; }

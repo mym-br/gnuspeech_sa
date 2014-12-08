@@ -29,7 +29,7 @@
 #include "Log.h"
 #include "Model.h"
 #include "Parameter.h"
-#include "Phone.h"
+#include "Posture.h"
 #include "Text.h"
 
 
@@ -91,7 +91,7 @@ XMLConfigFile::parseSymbols()
 }
 
 void
-XMLConfigFile::parsePostureSymbols(Phone& phone)
+XMLConfigFile::parsePostureSymbols(Posture& posture)
 {
 	for (const std::string* target = parser_.getFirstChild(targetTagName_);
 				target;
@@ -99,30 +99,30 @@ XMLConfigFile::parsePostureSymbols(Phone& phone)
 		const std::string& name = parser_.getAttribute(nameAttrName_);
 		const std::string& value = parser_.getAttribute(valueAttrName_);
 		if (name == durationSymbolName_) {
-			phone.symbols().duration = Text::parseString<float>(value);
+			posture.symbols().duration = Text::parseString<float>(value);
 		} else if (name == transitionSymbolName_) {
-			phone.symbols().transition = Text::parseString<float>(value);
+			posture.symbols().transition = Text::parseString<float>(value);
 		} else if (name == qssaSymbolName_) {
-			phone.symbols().qssa = Text::parseString<float>(value);
+			posture.symbols().qssa = Text::parseString<float>(value);
 		} else if (name == qssbSymbolName_) {
-			phone.symbols().qssb = Text::parseString<float>(value);
+			posture.symbols().qssb = Text::parseString<float>(value);
 		}
 	}
 }
 
 void
-XMLConfigFile::parsePostureCategories(Phone& phone)
+XMLConfigFile::parsePostureCategories(Posture& posture)
 {
 	for (const std::string* catRef = parser_.getFirstChild(categoryRefTagName_);
 				catRef;
 				catRef = parser_.getNextSibling(categoryRefTagName_)) {
 		Category_ptr cat(new Category(parser_.getAttribute(nameAttrName_), 0));
-		phone.categoryList().push_back(std::move(cat));
+		posture.categoryList().push_back(std::move(cat));
 	}
 }
 
 void
-XMLConfigFile::parsePostureParameters(Phone& phone)
+XMLConfigFile::parsePostureParameters(Posture& posture)
 {
 	for (const std::string* target = parser_.getFirstChild(targetTagName_);
 				target;
@@ -131,14 +131,14 @@ XMLConfigFile::parsePostureParameters(Phone& phone)
 		std::string parameterName = parser_.getAttribute(nameAttrName_);
 		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
 
-		phone.parameterTargetList()[parameterIndex] = Text::parseString<float>(parser_.getAttribute(valueAttrName_));
+		posture.parameterTargetList()[parameterIndex] = Text::parseString<float>(parser_.getAttribute(valueAttrName_));
 	}
 }
 
 void
 XMLConfigFile::parsePosture()
 {
-	Phone_ptr p(new Phone(parser_.getAttribute(symbolAttrName_)));
+	Posture_ptr p(new Posture(parser_.getAttribute(symbolAttrName_)));
 	p->parameterTargetList().resize(model_.getNumParameters());
 
 	for (const std::string* child = parser_.getFirstChild();
@@ -154,7 +154,7 @@ XMLConfigFile::parsePosture()
 	}
 
 	const std::string& name = p->name();
-	insert(model_.phoneMap_, name, std::move(p));
+	insert(model_.postureMap_, name, std::move(p));
 }
 
 void

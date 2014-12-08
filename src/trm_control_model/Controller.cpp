@@ -204,7 +204,7 @@ Controller::initVoices(const char* configDirPath)
 }
 
 int
-Controller::validPhone(const char* token)
+Controller::validPosture(const char* token)
 {
 	switch(token[0]) {
 	case '0':
@@ -219,7 +219,7 @@ Controller::validPhone(const char* token)
 	case '9':
 		return 1;
 	default:
-		return (model_.findPhone(token) != nullptr);
+		return (model_.findPosture(token) != nullptr);
 	}
 }
 

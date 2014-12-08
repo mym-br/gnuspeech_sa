@@ -40,19 +40,19 @@ private:
 
 	struct RewriterData {
 		int currentState;
-		const TRMControlModel::Phone* lastPhone;
-		RewriterData() : currentState(0), lastPhone(nullptr) {}
+		const TRMControlModel::Posture* lastPosture;
+		RewriterData() : currentState(0), lastPosture(nullptr) {}
 	};
 
 	void initVowelTransitions(const char* configDirPath);
 	void printVowelTransitions();
-	const TRMControlModel::Phone* rewrite(const TRMControlModel::Phone& nextPhone, int wordMarker, RewriterData& data);
-	const TRMControlModel::Phone* calcVowelTransition(const TRMControlModel::Phone& nextPhone, RewriterData& data);
+	const TRMControlModel::Posture* rewrite(const TRMControlModel::Posture& nextPosture, int wordMarker, RewriterData& data);
+	const TRMControlModel::Posture* calcVowelTransition(const TRMControlModel::Posture& nextPosture, RewriterData& data);
 
 	const TRMControlModel::Model& model_;
 	TRMControlModel::EventList& eventList_;
 	const TRMControlModel::Category* category_[18];
-	const TRMControlModel::Phone* returnPhone_[7];
+	const TRMControlModel::Posture* returnPhone_[7];
 	int vowelTransitions_[13][13];
 };
 

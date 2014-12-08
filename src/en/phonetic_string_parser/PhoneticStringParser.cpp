@@ -48,9 +48,9 @@ PhoneticStringParser::PhoneticStringParser(const char* configDirPath, TRMControl
 	const std::vector<const char*> postureList = {"h", "h'", "hv", "hv'", "ll", "ll'", "s", "s'", "z", "z'"};
 	for (unsigned int i = 0; i < postureList.size(); ++i) {
 		const char* posture = postureList[i];
-		const TRMControlModel::Phone* tempPhone = model_.findPhone(posture);
-		if (!tempPhone) THROW_EXCEPTION(UnavailableResourceException, "Could not find the posture \"" << posture << "\".");
-		category_[i + 4U] = tempPhone->findCategory(posture);
+		const TRMControlModel::Posture* tempPosture = model_.findPosture(posture);
+		if (!tempPosture) THROW_EXCEPTION(UnavailableResourceException, "Could not find the posture \"" << posture << "\".");
+		category_[i + 4U] = tempPosture->findCategory(posture);
 	}
 
 	category_[14] = model_.findCategory("whistlehack");
@@ -58,13 +58,13 @@ PhoneticStringParser::PhoneticStringParser(const char* configDirPath, TRMControl
 	category_[16] = model_.findCategory("whistlehack");
 	category_[17] = model_.findCategory("whistlehack");
 
-	returnPhone_[0] = model_.findPhone("qc");
-	returnPhone_[1] = model_.findPhone("qt");
-	returnPhone_[2] = model_.findPhone("qp");
-	returnPhone_[3] = model_.findPhone("qk");
-	returnPhone_[4] = model_.findPhone("gs");
-	returnPhone_[5] = model_.findPhone("qs");
-	returnPhone_[6] = model_.findPhone("qz");
+	returnPhone_[0] = model_.findPosture("qc");
+	returnPhone_[1] = model_.findPosture("qt");
+	returnPhone_[2] = model_.findPosture("qp");
+	returnPhone_[3] = model_.findPosture("qk");
+	returnPhone_[4] = model_.findPosture("gs");
+	returnPhone_[5] = model_.findPosture("qs");
+	returnPhone_[6] = model_.findPosture("qz");
 
 	initVowelTransitions(configDirPath);
 }
@@ -128,13 +128,13 @@ PhoneticStringParser::printVowelTransitions()
 	}
 }
 
-const TRMControlModel::Phone*
-PhoneticStringParser::rewrite(const TRMControlModel::Phone& nextPhone, int wordMarker, RewriterData& data)
+const TRMControlModel::Posture*
+PhoneticStringParser::rewrite(const TRMControlModel::Posture& nextPosture, int wordMarker, RewriterData& data)
 {
-	const TRMControlModel::Phone* tempPhone;
+	const TRMControlModel::Posture* tempPosture;
 	int transitionMade = 0;
 	const char* temp;
-	const TRMControlModel::Phone* returnValue = nullptr;
+	const TRMControlModel::Posture* returnValue = nullptr;
 
 	static const int stateTable[19][18] = {
 		{ 1,  9,  0,  7,  0,  0,  0,  0,  5,  5, 13, 13, 15, 15,  0,  0,  0, 17},		/* State 0 */
@@ -159,7 +159,7 @@ PhoneticStringParser::rewrite(const TRMControlModel::Phone& nextPhone, int wordM
 	};
 
 	for (int i = 0; i < 18; i++) {
-		if (nextPhone.isMemberOfCategory(*category_[i])) {
+		if (nextPosture.isMemberOfCategory(*category_[i])) {
 			//printf("Found %s %s state %d -> %d\n", nextPhone.name().c_str(), category_[i]->name.c_str(),
 			//	data.currentState, stateTable[data.currentState][i]);
 			data.currentState = stateTable[data.currentState][i];
@@ -181,7 +181,7 @@ PhoneticStringParser::rewrite(const TRMControlModel::Phone& nextPhone, int wordM
 			case 2:
 			case 4:
 			case 11:
-				temp = data.lastPhone->name().c_str();
+				temp = data.lastPosture->name().c_str();
 				switch (temp[0]) {
 					case 'd':
 					case 't': returnValue = returnPhone_[1];
@@ -195,18 +195,18 @@ PhoneticStringParser::rewrite(const TRMControlModel::Phone& nextPhone, int wordM
 				}
 				break;
 			case 6:
-				if (strchr(nextPhone.name().c_str(), '\'')) {
-					tempPhone = model_.findPhone("l'");
+				if (strchr(nextPosture.name().c_str(), '\'')) {
+					tempPosture = model_.findPosture("l'");
 				} else {
-					tempPhone = model_.findPhone("l");
+					tempPosture = model_.findPosture("l");
 				}
 
-				eventList_.replaceCurrentPhoneWith(*tempPhone);
+				eventList_.replaceCurrentPostureWith(*tempPosture);
 
 				break;
 			case 8:
 				if (wordMarker) {
-					returnValue = calcVowelTransition(nextPhone, data);
+					returnValue = calcVowelTransition(nextPosture, data);
 				}
 
 				break;
@@ -228,21 +228,21 @@ PhoneticStringParser::rewrite(const TRMControlModel::Phone& nextPhone, int wordM
 					break;
 				}
 
-				if (strchr(nextPhone.name().c_str(), '\'')) {
-					tempPhone = model_.findPhone("ll'");
+				if (strchr(nextPosture.name().c_str(), '\'')) {
+					tempPosture = model_.findPosture("ll'");
 				} else {
-					tempPhone = model_.findPhone("ll");
+					tempPosture = model_.findPosture("ll");
 				}
 
 				//printf("Replacing with ll\n");
-				eventList_.replaceCurrentPhoneWith(*tempPhone);
+				eventList_.replaceCurrentPostureWith(*tempPosture);
 
 				break;
 		}
-		data.lastPhone = &nextPhone;
+		data.lastPosture = &nextPosture;
 	} else {
 		data.currentState = 0;
-		data.lastPhone = nullptr;
+		data.lastPosture = nullptr;
 	}
 	return returnValue;
 }
@@ -250,8 +250,8 @@ PhoneticStringParser::rewrite(const TRMControlModel::Phone& nextPhone, int wordM
 int
 PhoneticStringParser::parseString(const char* string)
 {
-	const TRMControlModel::Phone* tempPhone;
-	const TRMControlModel::Phone* tempPhone1;
+	const TRMControlModel::Posture* tempPosture;
+	const TRMControlModel::Posture* tempPosture1;
 	int length;
 	int index = 0, bufferIndex = 0;
 	int chunk = 0;
@@ -259,13 +259,13 @@ PhoneticStringParser::parseString(const char* string)
 	int lastFoot = 0, markedFoot = 0, wordMarker = 0;
 	double footTempo = 1.0;
 	double ruleTempo = 1.0;
-	double phoneTempo = 1.0;
+	double postureTempo = 1.0;
 	RewriterData rewriterData;
 
 	length = strlen(string);
 
-	tempPhone = model_.findPhone("^");
-	eventList_.newPhoneWithObject(*tempPhone);
+	tempPosture = model_.findPosture("^");
+	eventList_.newPostureWithObject(*tempPosture);
 
 	while (index < length) {
 		while ((isspace(string[index]) || (string[index] == '_')) && (index<length)) index++;
@@ -326,10 +326,10 @@ PhoneticStringParser::parseString(const char* string)
 				break;
 			case 'c': /* New Chunk */
 				if (chunk) {
-					tempPhone = model_.findPhone("#");
-					eventList_.newPhoneWithObject(*tempPhone);
-					tempPhone = model_.findPhone("^");
-					eventList_.newPhoneWithObject(*tempPhone);
+					tempPosture = model_.findPosture("#");
+					eventList_.newPostureWithObject(*tempPosture);
+					tempPosture = model_.findPosture("^");
+					eventList_.newPostureWithObject(*tempPosture);
 					index--;
 					return index;
 				} else {
@@ -379,7 +379,7 @@ PhoneticStringParser::parseString(const char* string)
 			}
 			break;
 		case '.': /* Syllable Marker */
-			eventList_.setCurrentPhoneSyllable();
+			eventList_.setCurrentPostureSyllable();
 			index++;
 			break;
 
@@ -396,7 +396,7 @@ PhoneticStringParser::parseString(const char* string)
 			while (isdigit(string[index]) || (string[index] == '.')) {
 				buffer[bufferIndex++] = string[index++];
 			}
-			phoneTempo = atof(buffer);
+			postureTempo = atof(buffer);
 			break;
 
 		default:
@@ -409,17 +409,17 @@ PhoneticStringParser::parseString(const char* string)
 				if (markedFoot) {
 					strcat(buffer,"'");
 				}
-				tempPhone = model_.findPhone(buffer);
-				if (tempPhone) {
-					tempPhone1 = rewrite(*tempPhone, wordMarker, rewriterData);
-					if (tempPhone1) {
-						eventList_.newPhoneWithObject(*tempPhone1);
+				tempPosture = model_.findPosture(buffer);
+				if (tempPosture) {
+					tempPosture1 = rewrite(*tempPosture, wordMarker, rewriterData);
+					if (tempPosture1) {
+						eventList_.newPostureWithObject(*tempPosture1);
 					}
-					eventList_.newPhoneWithObject(*tempPhone);
-					eventList_.setCurrentPhoneTempo(phoneTempo);
-					eventList_.setCurrentPhoneRuleTempo((float) ruleTempo);
+					eventList_.newPostureWithObject(*tempPosture);
+					eventList_.setCurrentPostureTempo(postureTempo);
+					eventList_.setCurrentPostureRuleTempo((float) ruleTempo);
 				}
-				phoneTempo = 1.0;
+				postureTempo = 1.0;
 				ruleTempo = 1.0;
 				wordMarker = 0;
 			} else {
@@ -431,14 +431,14 @@ PhoneticStringParser::parseString(const char* string)
 	return 0;
 }
 
-const TRMControlModel::Phone*
-PhoneticStringParser::calcVowelTransition(const TRMControlModel::Phone& nextPhone, RewriterData& data)
+const TRMControlModel::Posture*
+PhoneticStringParser::calcVowelTransition(const TRMControlModel::Posture& nextPosture, RewriterData& data)
 {
 	int vowelHash[13] = { 194, 201, 97, 101, 105, 111, 221, 117, 211, 216, 202, 215, 234 };
 	int lastValue, nextValue, i, action;
 	const char* temp;
 
-	temp = data.lastPhone->name().c_str();
+	temp = data.lastPosture->name().c_str();
 	lastValue = (int) temp[0];
 	if (temp[1] != '\'') {
 		lastValue += (int) temp[1];
@@ -454,7 +454,7 @@ PhoneticStringParser::calcVowelTransition(const TRMControlModel::Phone& nextPhon
 		return nullptr;
 	}
 
-	temp = nextPhone.name().c_str();
+	temp = nextPosture.name().c_str();
 	nextValue = (int) temp[0];
 	if (temp[1] != '\'') {
 		nextValue += (int) temp[1];
@@ -476,8 +476,8 @@ PhoneticStringParser::calcVowelTransition(const TRMControlModel::Phone& nextPhon
 	default:
 	case 0:
 		return nullptr;
-	case 1: return model_.findPhone("gs");
-	case 2: return model_.findPhone("r");
+	case 1: return model_.findPosture("gs");
+	case 2: return model_.findPosture("r");
 	}
 }
 

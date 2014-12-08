@@ -65,7 +65,7 @@ private:
 	void printVowelTransitions();
 	void initVoices(const char* configDirPath);
 
-	int validPhone(const char* token);
+	int validPosture(const char* token);
 	void setIntonation(int intonation);
 
 	template<typename T> void synthesizePhoneticStringChunk(T& phoneticStringParser, const char* phoneticStringChunk, const char* trmParamFile);

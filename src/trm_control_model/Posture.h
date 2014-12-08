@@ -20,8 +20,8 @@
 // This file was created by Marcelo Y. Matuda, and code/information
 // from Gnuspeech was added to it later.
 
-#ifndef TRM_CONTROL_MODEL_PHONE_H_
-#define TRM_CONTROL_MODEL_PHONE_H_
+#ifndef TRM_CONTROL_MODEL_POSTURE_H_
+#define TRM_CONTROL_MODEL_POSTURE_H_
 
 #include <string>
 #include <vector>
@@ -37,7 +37,7 @@
 namespace GS {
 namespace TRMControlModel {
 
-class Phone {
+class Posture {
 public:
 	struct Symbols {
 		float duration;
@@ -48,10 +48,10 @@ public:
 		Symbols() : duration(0.0), transition(0.0), qssa(0.0), qssb(0.0) {}
 	};
 
-	Phone(const std::string& name);
+	Posture(const std::string& name) : name_(name) {}
 
 	bool isMemberOfCategory(int code) const;
-	bool isMemberOfCategory(const std::string& categoryName, bool phoneNameOnly) const;
+	bool isMemberOfCategory(const std::string& categoryName, bool postureNameOnly) const;
 	bool isMemberOfCategory(const Category& category) const;
 	template<typename T> bool isMemberOfCategory(const std::string& categoryName, T match) const;
 	const Category* findCategory(const std::string& name) const;
@@ -75,9 +75,10 @@ public:
 
 	CategoryList& categoryList() { return categoryList_; }
 	const CategoryList& categoryList() const { return categoryList_; }
+
 private:
-	Phone(const Phone&);
-	Phone& operator=(const Phone&);
+	Posture(const Posture&);
+	Posture& operator=(const Posture&);
 
 	std::string name_;
 	std::vector<float> parameterTargetList_;
@@ -85,16 +86,32 @@ private:
 	Symbols symbols_;
 };
 
-typedef std::unique_ptr<Phone> Phone_ptr;
-typedef std::unordered_map<std::string, Phone_ptr> PhoneMap; // type of container that manages the Phone instances
-typedef std::vector<const Phone*> PhoneSequence;
+typedef std::unique_ptr<Posture> Posture_ptr;
+typedef std::unordered_map<std::string, Posture_ptr> PostureMap; // type of container that manages the Posture instances
+typedef std::vector<const Posture*> PostureSequence;
 
 /*******************************************************************************
- * Obs.: Considers only the name of the phone.
+ *
+ */
+inline
+void
+insert(PostureMap& map, const std::string& key, Posture_ptr value)
+{
+	typedef PostureMap::iterator MI;
+	typedef PostureMap::value_type VT;
+
+	std::pair<MI, bool> res = map.insert(VT(key, std::move(value)));
+	if (!res.second) {
+		THROW_EXCEPTION(TRMControlModelException, "Duplicate posture: " << key << '.');
+	}
+}
+
+/*******************************************************************************
+ * Obs.: Considers only the name of the posture.
  */
 template<typename T>
 bool
-Phone::isMemberOfCategory(const std::string& categoryName, T match) const
+Posture::isMemberOfCategory(const std::string& categoryName, T match) const
 {
 	if (match(categoryName, name_)) {
 		return true;
@@ -107,24 +124,8 @@ Phone::isMemberOfCategory(const std::string& categoryName, T match) const
  *
  */
 inline
-void
-insert(PhoneMap& map, const std::string& key, Phone_ptr value)
-{
-	typedef PhoneMap::iterator MI;
-	typedef PhoneMap::value_type VT;
-
-	std::pair<MI, bool> res = map.insert(VT(key, std::move(value)));
-	if (!res.second) {
-		THROW_EXCEPTION(TRMControlModelException, "Duplicate phone: " << key << '.');
-	}
-}
-
-/*******************************************************************************
- *
- */
-inline
 const Category*
-Phone::findCategory(const std::string& name) const
+Posture::findCategory(const std::string& name) const
 {
 	for (auto& category : categoryList_) {
 		if (category->name == name) {
@@ -139,7 +140,7 @@ Phone::findCategory(const std::string& name) const
  */
 inline
 bool
-Phone::isMemberOfCategory(int code) const
+Posture::isMemberOfCategory(int code) const
 {
 	for (CategoryList::size_type size = categoryList_.size(), i = 0; i < size; ++i) {
 		if (categoryList_[i]->code == code) {
@@ -150,15 +151,15 @@ Phone::isMemberOfCategory(int code) const
 }
 
 /*******************************************************************************
- * If phoneNameOnly = true, considers only the name of the phone.
+ * If postureNameOnly = true, considers only the name of the posture.
  */
 inline
 bool
-Phone::isMemberOfCategory(const std::string& categoryName, bool phoneNameOnly) const
+Posture::isMemberOfCategory(const std::string& categoryName, bool postureNameOnly) const
 {
 	if (name_ == categoryName) return true;
 
-	if (!phoneNameOnly) {
+	if (!postureNameOnly) {
 		for (CategoryList::size_type size = categoryList_.size(), i = 0; i < size; ++i) {
 			if (categoryList_[i]->name == categoryName) {
 				return true;
@@ -174,7 +175,7 @@ Phone::isMemberOfCategory(const std::string& categoryName, bool phoneNameOnly) c
  */
 inline
 bool
-Phone::isMemberOfCategory(const Category& category) const
+Posture::isMemberOfCategory(const Category& category) const
 {
 	if (category.code != 0) {
 		for (const auto& c : categoryList_) {
@@ -191,4 +192,4 @@ Phone::isMemberOfCategory(const Category& category) const
 } /* namespace TRMControlModel */
 } /* namespace GS */
 
-#endif /* TRM_CONTROL_MODEL_PHONE_H_ */
+#endif /* TRM_CONTROL_MODEL_POSTURE_H_ */
