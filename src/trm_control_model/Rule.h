@@ -117,11 +117,6 @@ private:
 	int categoryCode_;
 };
 
-class Rule;
-
-typedef std::unique_ptr<Rule> Rule_ptr;
-typedef std::vector<Rule_ptr>::size_type RuleNumber;
-
 class Rule {
 public:
 	struct ExpressionSymbolEquations {
@@ -133,8 +128,9 @@ public:
 		ExpressionSymbolEquations() {}
 	};
 
-	Rule(RuleNumber number)
-		: number_(number)
+	Rule(unsigned int numParameters)
+		: paramProfileTransitionList_(numParameters)
+		, specialProfileTransitionList_(numParameters)
 	{
 	}
 
@@ -142,10 +138,6 @@ public:
 	bool evalBooleanExpression(const std::vector<const Posture*>& postureSequence) const;
 	void printBooleanNodeTree() const;
 	void parseBooleanExpression(const std::unordered_map<std::string, Category*>& categoryMap);
-
-	RuleNumber number() const {
-		return number_;
-	}
 
 	ExpressionSymbolEquations& exprSymbolEquations() { return exprSymbolEquations_; }
 	const ExpressionSymbolEquations& exprSymbolEquations() const { return exprSymbolEquations_; }
@@ -186,15 +178,12 @@ public:
 	std::vector<std::string>& paramProfileTransitionList() { return paramProfileTransitionList_; }
 	std::vector<std::string>& specialProfileTransitionList() { return specialProfileTransitionList_; }
 private:
-	RuleNumber number_;
 	std::vector<std::string> booleanExpressionList_;
 	std::vector<std::string> paramProfileTransitionList_;
 	std::vector<std::string> specialProfileTransitionList_;
 	ExpressionSymbolEquations exprSymbolEquations_;
 	RuleBooleanNodeList booleanNodeList_;
 };
-
-typedef std::vector<Rule_ptr> RuleList;
 
 } /* namespace TRMControlModel */
 } /* namespace GS */

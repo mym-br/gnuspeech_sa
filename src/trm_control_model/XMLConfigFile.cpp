@@ -363,25 +363,23 @@ XMLConfigFile::parseRuleBooleanExpressions(Rule& rule)
 void
 XMLConfigFile::parseRule()
 {
-	Rule_ptr p(new Rule(model_.ruleList_.size() + 1));
-	p->paramProfileTransitionList().resize(model_.getNumParameters());
-	p->specialProfileTransitionList().resize(model_.getNumParameters());
+	Rule rule(model_.getNumParameters());
 
 	for (const std::string* child = parser_.getFirstChild();
 				child;
 				child = parser_.getNextSibling()) {
 		if (*child == booleanExpressionsTagName_) {
-			parseRuleBooleanExpressions(*p);
+			parseRuleBooleanExpressions(rule);
 		} else if (*child == parameterProfilesTagName_) {
-			parseRuleParameterProfiles(*p);
+			parseRuleParameterProfiles(rule);
 		} else if (*child == specialProfilesTagName_) {
-			parseRuleSpecialProfiles(*p);
+			parseRuleSpecialProfiles(rule);
 		} else if (*child == expressionSymbolsTagName_) {
-			parseRuleExpressionSymbols(*p);
+			parseRuleExpressionSymbols(rule);
 		}
 	}
 
-	model_.ruleList_.push_back(std::move(p));
+	model_.ruleList_.push_back(std::move(rule));
 }
 
 void

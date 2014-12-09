@@ -79,7 +79,7 @@ private:
 	std::list<Posture> postureList_;
 	std::unordered_map<std::string, Posture*> postureMap_; // optimization
 
-	RuleList ruleList_;
+	std::list<Rule> ruleList_;
 
 	std::vector<std::string> equationGroupList_;
 	std::list<Equation> equationList_;

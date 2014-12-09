@@ -201,9 +201,8 @@ Model::prepareRules()
 	LOG_DEBUG("Preparing rules...");
 
 	// Convert the boolean expression string of each Rule to a tree.
-	for (RuleList::const_iterator iter = ruleList_.begin(); iter != ruleList_.end(); ++iter) {
-		Rule& r = **iter;
-		r.parseBooleanExpression(categoryMap_);
+	for (auto& rule : ruleList_) {
+		rule.parseBooleanExpression(categoryMap_);
 	}
 }
 
@@ -320,10 +319,10 @@ Model::printInfo() const
 
 	// Print boolean expression tree for each Rule.
 	std::cout << std::string(40, '-') << "\nRules:\n" << std::endl;
-	for (RuleList::const_iterator iter = ruleList_.begin(); iter != ruleList_.end(); ++iter) {
-		const Rule& r = **iter;
+	unsigned int ruleNumber = 0;
+	for (auto& r : ruleList_) {
 		std::cout << "--------------------------------------" << std::endl;
-		std::cout << "Rule number: " << r.number() << '\n' << std::endl;
+		std::cout << "Rule number: " << ++ruleNumber << '\n' << std::endl;
 		r.printBooleanNodeTree();
 	}
 	std::cout << "--------------------------------------" << std::endl;
@@ -334,17 +333,17 @@ Model::printInfo() const
 	if (pp) postSeq.push_back(pp);
 	pp = findPosture("s");
 	if (pp) postSeq.push_back(pp);
-	for (RuleList::const_iterator iter = ruleList_.begin(); iter != ruleList_.end(); ++iter) {
-		const Rule& r = **iter;
+	ruleNumber = 0;
+	for (auto& r : ruleList_) {
 		std::cout << "---" << std::endl;
-		std::cout << "Rule number: " << r.number() << std::endl;
+		std::cout << "Rule number: " << ++ruleNumber << std::endl;
 		std::cout << "bool=" << r.evalBooleanExpression(postSeq) << std::endl;
 	}
 	std::cout << "--------------------------------------" << std::endl;
-	for (RuleList::const_iterator iter = ruleList_.begin(); iter != ruleList_.end(); ++iter) {
-		const Rule& r = **iter;
+	ruleNumber = 0;
+	for (auto& r : ruleList_) {
 		std::cout << "---" << std::endl;
-		std::cout << "Rule number: " << r.number() << std::endl;
+		std::cout << "Rule number: " << ++ruleNumber << std::endl;
 		std::cout << "Number of boolean expressions = " << r.numberOfExpressions() << std::endl;
 	}
 }
@@ -548,16 +547,17 @@ Model::findSpecialTransition(const std::string& name) const
 const Rule*
 Model::findFirstMatchingRule(const std::vector<const Posture*>& postureSequence, unsigned int& ruleIndex) const
 {
-	for (unsigned int i = 0; i < ruleList_.size(); ++i) {
-		const Rule& r = *ruleList_[i];
+	unsigned int i = 0;
+	for (auto& r : ruleList_) {
 		if (r.numberOfExpressions() <= postureSequence.size()) {
 			if (r.evalBooleanExpression(postureSequence)) {
 				ruleIndex = i;
 				return &r;
 			}
 		}
+		++i;
 	}
-	return ruleList_.back().get();
+	return &ruleList_.back();
 }
 
 } /* namespace TRMControlModel */
