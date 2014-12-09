@@ -73,19 +73,33 @@ public:
 private:
 	std::vector<Category> categoryList_;
 	std::unordered_map<std::string, Category*> categoryMap_; // optimization
+
 	std::vector<Parameter> parameterList_;
+
 	std::list<Posture> postureList_;
 	std::unordered_map<std::string, Posture*> postureMap_; // optimization
+
 	RuleList ruleList_;
-	const FormulaSymbol formulaSymbol_;
-	EquationMap equationMap_;
-	TransitionMap transitionMap_;
-	TransitionMap specialTransitionMap_;
+
+	std::vector<std::string> equationGroupList_;
+	std::list<Equation> equationList_;
+	std::unordered_map<std::string, Equation*> equationMap_; // optimization
+
+	std::vector<std::string> transitionGroupList_;
+	std::list<Transition> transitionList_;
+	std::unordered_map<std::string, Transition*> transitionMap_; // optimization
+
+	std::vector<std::string> specialTransitionGroupList_;
+	std::list<Transition> specialTransitionList_;
+	std::unordered_map<std::string, Transition*> specialTransitionMap_; // optimization
+
 	FormulaSymbolList formulaSymbolList_;
+	const FormulaSymbol formulaSymbol_;
 
 	void prepareCategories();
 	void preparePostures();
 	void prepareEquations();
+	void prepareTransitions();
 	void prepareRules();
 
 	friend class XMLConfigFile;

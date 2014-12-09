@@ -157,28 +157,22 @@ XMLConfigFile::parsePostures()
 void
 XMLConfigFile::parseEquationsGroup()
 {
-	typedef EquationMap::iterator MI;
-	typedef EquationMap::value_type VT;
-
 	const std::string groupName = parser_.getAttribute(nameAttrName_);
 	// Can't be a reference because it is used many times in the loop.
+	model_.equationGroupList_.push_back(groupName);
 
 	for (const std::string* equation = parser_.getFirstChild(equationTagName_);
 				equation;
 				equation = parser_.getNextSibling(equationTagName_)) {
-		Equation_ptr p(new Equation());
-		p->groupName = groupName;
-		p->name = parser_.getAttribute(nameAttrName_);
-		p->formula = parser_.getAttribute(formulaAttrName_);
+		Equation eq;
+		eq.groupName = groupName;
+		eq.name = parser_.getAttribute(nameAttrName_);
+		eq.formula = parser_.getAttribute(formulaAttrName_);
 
-		if (p->formula.empty()) {
-			LOG_ERROR("Equation " << p->name << " without formula (ignored)."); // should not happen
+		if (eq.formula.empty()) {
+			LOG_ERROR("Equation " << eq.name << " without formula (ignored)."); // should not happen
 		} else {
-			const std::string& name = p->name;
-			std::pair<MI,bool> res = model_.equationMap_.insert(VT(name, std::move(p)));
-			if (!res.second) {
-				THROW_EXCEPTION(TRMControlModelException, "Duplicate equation: " << name << '.');
-			}
+			model_.equationList_.push_back(std::move(eq));
 		}
 
 		if (parser_.getFirstChild()) {
@@ -263,13 +257,13 @@ XMLConfigFile::parseTransitionPointOrSlopes(Transition& transition)
 void
 XMLConfigFile::parseTransitionsGroup(bool special)
 {
-	typedef TransitionMap::iterator MI;
-	typedef TransitionMap::value_type VT;
-
 	const std::string groupName = parser_.getAttribute(nameAttrName_);
 	// Can't be a reference because it is used many times in the loop.
-
-	TransitionMap& map = special ? model_.specialTransitionMap_ : model_.transitionMap_;
+	if (special) {
+		model_.specialTransitionGroupList_.push_back(groupName);
+	} else {
+		model_.transitionGroupList_.push_back(groupName);
+	}
 
 	for (const std::string* child = parser_.getFirstChild(transitionTagName_);
 				child;
@@ -278,20 +272,20 @@ XMLConfigFile::parseTransitionsGroup(bool special)
 		std::string name = parser_.getAttribute(nameAttrName_);
 		Transition::Type type = Transition::getTypeFromName(parser_.getAttribute(typeAttrName_));
 
-		Transition_ptr p(new Transition(groupName, name,type, special));
+		Transition tr(groupName, name, type, special);
 
 		for (const std::string* transitionChild = parser_.getFirstChild();
 					transitionChild;
 					transitionChild = parser_.getNextSibling()) {
 			if (*transitionChild == pointOrSlopesTagName_) {
-				parseTransitionPointOrSlopes(*p);
+				parseTransitionPointOrSlopes(tr);
 			} // else: comment
 		}
 
-		std::pair<MI, bool> res = map.insert(VT(name, std::move(p)));
-		if (!res.second) {
-			//THROW_EXCEPTION(TRMControlModelException, "Duplicate transition: " << name << '.');
-			LOG_ERROR("Duplicate transition: " << name << " (ignored).");
+		if (special) {
+			model_.specialTransitionList_.push_back(std::move(tr));
+		} else {
+			model_.transitionList_.push_back(std::move(tr));
 		}
 	}
 }

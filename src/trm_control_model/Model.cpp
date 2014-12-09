@@ -55,13 +55,26 @@ Model::clear()
 {
 	categoryList_.clear();
 	categoryMap_.clear();
+
 	parameterList_.clear();
+
 	postureList_.clear();
 	postureMap_.clear();
+
 	ruleList_.clear();
+
+	equationGroupList_.clear();
+	equationList_.clear();
 	equationMap_.clear();
+
+	transitionGroupList_.clear();
+	transitionList_.clear();
 	transitionMap_.clear();
+
+	specialTransitionGroupList_.clear();
+	specialTransitionList_.clear();
 	specialTransitionMap_.clear();
+
 	formulaSymbolList_.fill(0.0f);
 }
 
@@ -84,6 +97,7 @@ Model::load(const char* configDirPath, const char* configFileName)
 		prepareCategories();
 		preparePostures();
 		prepareEquations();
+		prepareTransitions();
 		prepareRules();
 	} catch (...) {
 		clear();
@@ -141,10 +155,40 @@ Model::prepareEquations()
 {
 	LOG_DEBUG("Preparing equations...");
 
-	// Convert the formula expression to a tree.
-	for (EquationMap::const_iterator iter = equationMap_.begin(); iter != equationMap_.end(); ++iter) {
-		Equation& e = *iter->second;
-		e.parseFormula(formulaSymbol_);
+	equationMap_.clear();
+	for (auto& equation : equationList_) {
+		auto res = equationMap_.insert(std::make_pair(equation.name, &equation));
+		if (!res.second) {
+			THROW_EXCEPTION(TRMControlModelException, "Duplicate equation: " << equation.name << '.');
+		}
+
+		// Convert the formula expression to a tree.
+		equation.parseFormula(formulaSymbol_);
+	}
+}
+
+/*******************************************************************************
+ *
+ */
+void
+Model::prepareTransitions()
+{
+	transitionMap_.clear();
+	for (auto& transition : transitionList_) {
+		auto res = transitionMap_.insert(std::make_pair(transition.name(), &transition));
+		if (!res.second) {
+			//THROW_EXCEPTION(TRMControlModelException, "Duplicate transition: " << transition.name() << '.');
+			LOG_ERROR("Duplicate transition: " << transition.name() << " (ignored).");
+		}
+	}
+
+	specialTransitionMap_.clear();
+	for (auto& transition : specialTransitionList_) {
+		auto res = specialTransitionMap_.insert(std::make_pair(transition.name(), &transition));
+		if (!res.second) {
+			//THROW_EXCEPTION(TRMControlModelException, "Duplicate transition: " << transition.name() << '.');
+			LOG_ERROR("Duplicate special transition: " << transition.name() << " (ignored).");
+		}
 	}
 }
 
@@ -218,8 +262,8 @@ Model::printInfo() const
 	symbolList[FormulaSymbol::SYMB_MARK1] = 150.5f;
 	symbolList[FormulaSymbol::SYMB_MARK2] = 150.6f;
 	//symbolList[FormulaSymbol::SYMB_NULL] = 1.0f;
-	for (EquationMap::const_iterator iter = equationMap_.begin(); iter != equationMap_.end(); ++iter) {
-		const EquationMap::value_type& v = *iter;
+	for (auto iter = equationMap_.begin(); iter != equationMap_.end(); ++iter) {
+		const auto& v = *iter;
 		std::cout << "=== Equation: [" << v.second->name << "] group: " << v.second->groupName << std::endl;
 		std::cout << "    [" << v.second->formula << "]" << std::endl;
 		std::cout << *v.second->formulaRoot << std::endl;
@@ -403,7 +447,7 @@ Model::getFormulaSymbolValue(FormulaSymbol::Code symbol) const
 float
 Model::evalEquationFormula(const std::string& equationName) const
 {
-	EquationMap::const_iterator iter = equationMap_.find(equationName);
+	auto iter = equationMap_.find(equationName);
 	if (iter == equationMap_.end()) {
 		THROW_EXCEPTION(TRMControlModelException, "Equation not found: " << equationName << '.');
 	}
@@ -475,11 +519,11 @@ Model::findPosture(const std::string& name) const
 const Transition*
 Model::findTransition(const std::string& name) const
 {
-	TransitionMap::const_iterator itTrans = transitionMap_.find(name);
-	if (itTrans == transitionMap_.end()) {
+	auto transIter = transitionMap_.find(name);
+	if (transIter == transitionMap_.end()) {
 		return nullptr;
 	}
-	return itTrans->second.get();
+	return transIter->second;
 }
 
 /*******************************************************************************
@@ -491,11 +535,11 @@ Model::findTransition(const std::string& name) const
 const Transition*
 Model::findSpecialTransition(const std::string& name) const
 {
-	TransitionMap::const_iterator itTrans = specialTransitionMap_.find(name);
-	if (itTrans == specialTransitionMap_.end()) {
+	auto transIter = specialTransitionMap_.find(name);
+	if (transIter == specialTransitionMap_.end()) {
 		return nullptr;
 	}
-	return itTrans->second.get();
+	return transIter->second;
 }
 
 /*******************************************************************************

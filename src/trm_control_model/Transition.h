@@ -168,9 +168,6 @@ private:
 	std::vector<PointOrSlope_ptr> pointOrSlopeList_;
 };
 
-typedef std::unique_ptr<Transition> Transition_ptr;
-typedef std::unordered_map<std::string, Transition_ptr> TransitionMap; // type of container that manages the Transition instances
-
 } /* namespace TRMControlModel */
 } /* namespace GS */
 

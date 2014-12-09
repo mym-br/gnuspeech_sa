@@ -21,7 +21,6 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#include <unordered_map>
 #include <utility> /* move */
 
 #include "FormulaSymbol.h"
@@ -132,19 +131,16 @@ private:
 std::ostream& operator<<(std::ostream& out, const FormulaNode& node);
 
 struct Equation {
+	std::string groupName;
 	std::string name;
 	std::string formula;
-	std::string groupName;
 	FormulaNode_ptr formulaRoot;
 
-	Equation() : name(), formula(), groupName(), formulaRoot() {}
+	Equation() : groupName(), name(), formula(), formulaRoot() {}
 
 	void parseFormula(const FormulaSymbol& formulaSymbol);
 	float evalFormula(const FormulaSymbolList& symbolList) const;
 };
-
-typedef std::unique_ptr<Equation> Equation_ptr;
-typedef std::unordered_map<std::string, Equation_ptr> EquationMap; // type of container that manages the Equation instances
 
 } /* namespace TRMControlModel */
 } /* namespace GS */
