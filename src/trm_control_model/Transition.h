@@ -127,18 +127,13 @@ public:
 	{
 	}
 
-	const std::string& name() const {
-		return name_;
-	}
-	Type type() const {
-		return type_;
-	}
-	const std::string& groupName() const {
-		return groupName_;
-	}
-	bool special() const {
-		return special_;
-	}
+	const std::string& groupName() const { return groupName_; }
+	const std::string& name() const { return name_; }
+	Type type() const { return type_; }
+	bool special() const { return special_; }
+
+	const std::string& comment() const { return comment_; }
+	void setComment(const std::string& comment) { comment_ = comment; }
 
 	std::vector<PointOrSlope_ptr>& pointOrSlopeList() { return pointOrSlopeList_; }
 	const std::vector<PointOrSlope_ptr>& pointOrSlopeList() const { return pointOrSlopeList_; }
@@ -166,6 +161,7 @@ private:
 	Type type_;
 	bool special_;
 	std::vector<PointOrSlope_ptr> pointOrSlopeList_;
+	std::string comment_;
 };
 
 } /* namespace TRMControlModel */

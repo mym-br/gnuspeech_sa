@@ -27,15 +27,19 @@ namespace TRMControlModel {
 
 class Category {
 public:
-	Category(const std::string& name, unsigned int code) : name_(name), code_(code) {}
+	Category(const std::string& name, unsigned int code)
+		: name_(name), code_(code) {}
 
-	std::string& name() { return name_; }
 	const std::string& name() const { return name_; }
+
+	const std::string& comment() const { return comment_; }
+	void setComment(const std::string& comment) { comment_ = comment; }
 
 	unsigned int code() const { return code_; }
 	void setCode(unsigned int code) { code_ = code; }
 private:
 	std::string name_;
+	std::string comment_;
 	unsigned int code_; // optimization
 };
 

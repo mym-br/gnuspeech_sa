@@ -78,6 +78,9 @@ public:
 	Symbols& symbols() { return symbols_; }
 	const Symbols& symbols() const { return symbols_; }
 
+	const std::string& comment() const { return comment_; }
+	void setComment(const std::string& comment) { comment_ = comment; }
+
 	bool isMemberOfCategory(unsigned int categoryCode) const;
 	bool isMemberOfCategory(const std::string& categoryName, bool postureNameOnly) const;
 	bool isMemberOfCategory(const Category& category) const;
@@ -89,6 +92,7 @@ private:
 	std::list<Category> categoryList_;
 	std::vector<float> parameterTargetList_;
 	Symbols symbols_;
+	std::string comment_;
 };
 
 

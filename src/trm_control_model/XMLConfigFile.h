@@ -56,6 +56,7 @@ private:
 	std::string categoriesTagName_;
 	std::string categoryTagName_;
 	std::string categoryRefTagName_;
+	std::string commentTagName_;
 	std::string equationTagName_;
 	std::string equationGroupTagName_;
 	std::string equationsTagName_;

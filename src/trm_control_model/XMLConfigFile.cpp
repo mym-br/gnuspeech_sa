@@ -47,7 +47,8 @@ XMLConfigFile::parseCategories()
 
 		model_.categoryList_.emplace_back(parser_.getAttribute(nameAttrName_), ++code); // code starts with 1
 
-		if (parser_.getFirstChild()) { // skip comment
+		if (parser_.getFirstChild()) {
+			model_.categoryList_.back().setComment(parser_.getText());
 			parser_.getNextSibling();
 		}
 	}
@@ -140,6 +141,8 @@ XMLConfigFile::parsePosture()
 			parsePostureParameters(posture);
 		} else if (*child == symbolTargetsTagName_) {
 			parsePostureSymbols(posture);
+		} else if (*child == commentTagName_) {
+			posture.setComment(parser_.getText());
 		}
 	}
 }
@@ -176,7 +179,8 @@ XMLConfigFile::parseEquationsGroup()
 		}
 
 		if (parser_.getFirstChild()) {
-			parser_.getNextSibling(); // skip comment
+			eq.comment = parser_.getText();
+			parser_.getNextSibling();
 		}
 	}
 }
@@ -279,7 +283,9 @@ XMLConfigFile::parseTransitionsGroup(bool special)
 					transitionChild = parser_.getNextSibling()) {
 			if (*transitionChild == pointOrSlopesTagName_) {
 				parseTransitionPointOrSlopes(tr);
-			} // else: comment
+			} else if (*transitionChild == commentTagName_) {
+				tr.setComment(parser_.getText());
+			}
 		}
 
 		if (special) {
@@ -376,6 +382,8 @@ XMLConfigFile::parseRule()
 			parseRuleSpecialProfiles(rule);
 		} else if (*child == expressionSymbolsTagName_) {
 			parseRuleExpressionSymbols(rule);
+		} else if (*child == commentTagName_) {
+			rule.setComment(parser_.getText());
 		}
 	}
 
@@ -405,6 +413,7 @@ XMLConfigFile::XMLConfigFile(Model& model, const std::string& filePath)
 		, categoriesTagName_         ("categories")
 		, categoryTagName_           ("category")
 		, categoryRefTagName_        ("category-ref")
+		, commentTagName_            ("comment")
 		, equationTagName_           ("equation")
 		, equationGroupTagName_      ("equation-group")
 		, equationsTagName_          ("equations")

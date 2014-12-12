@@ -177,11 +177,15 @@ public:
 	std::vector<std::string>& booleanExpressionList() { return booleanExpressionList_; }
 	std::vector<std::string>& paramProfileTransitionList() { return paramProfileTransitionList_; }
 	std::vector<std::string>& specialProfileTransitionList() { return specialProfileTransitionList_; }
+
+	const std::string& comment() const { return comment_; }
+	void setComment(const std::string& comment) { comment_ = comment; }
 private:
 	std::vector<std::string> booleanExpressionList_;
 	std::vector<std::string> paramProfileTransitionList_;
 	std::vector<std::string> specialProfileTransitionList_;
 	ExpressionSymbolEquations exprSymbolEquations_;
+	std::string comment_;
 	RuleBooleanNodeList booleanNodeList_;
 };
 

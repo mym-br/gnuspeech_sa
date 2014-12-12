@@ -134,9 +134,10 @@ struct Equation {
 	std::string groupName;
 	std::string name;
 	std::string formula;
+	std::string comment;
 	FormulaNode_ptr formulaRoot;
 
-	Equation() : groupName(), name(), formula(), formulaRoot() {}
+	Equation() : groupName(), name(), formula(), comment(), formulaRoot() {}
 
 	void parseFormula(const FormulaSymbol& formulaSymbol);
 	float evalFormula(const FormulaSymbolList& symbolList) const;
