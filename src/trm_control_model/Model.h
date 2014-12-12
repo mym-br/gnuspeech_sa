@@ -102,7 +102,7 @@ private:
 	void prepareTransitions();
 	void prepareRules();
 
-	friend class XMLConfigFile;
+	friend class XMLConfigFileReader;
 };
 
 } /* namespace TRMControlModel */

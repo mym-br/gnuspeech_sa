@@ -20,8 +20,8 @@
 // This file was created by Marcelo Y. Matuda, and code/information
 // from Gnuspeech was added to it later.
 
-#ifndef TRM_CONTROL_MODEL_XML_CONFIG_FILE_H_
-#define TRM_CONTROL_MODEL_XML_CONFIG_FILE_H_
+#ifndef TRM_CONTROL_MODEL_XML_CONFIG_FILE_READER_H_
+#define TRM_CONTROL_MODEL_XML_CONFIG_FILE_READER_H_
 
 #include <string>
 
@@ -41,10 +41,10 @@ class Model;
 /*******************************************************************************
  * This class supposes that the XML is in the correct format.
  */
-class XMLConfigFile {
+class XMLConfigFileReader {
 public:
-	XMLConfigFile(Model& model, const std::string& filePath);
-	~XMLConfigFile();
+	XMLConfigFileReader(Model& model, const std::string& filePath);
+	~XMLConfigFileReader();
 
 	void loadModel();
 private:
@@ -119,8 +119,8 @@ private:
 
 	SimpleXMLParser parser_;
 
-	XMLConfigFile(const XMLConfigFile&);
-	XMLConfigFile& operator=(const XMLConfigFile&);
+	XMLConfigFileReader(const XMLConfigFileReader&);
+	XMLConfigFileReader& operator=(const XMLConfigFileReader&);
 
 	void parseCategories();
 
@@ -153,4 +153,4 @@ private:
 } /* namespace TRMControlModel */
 } /* namespace GS */
 
-#endif /* TRM_CONTROL_MODEL_XML_CONFIG_FILE_H_ */
+#endif /* TRM_CONTROL_MODEL_XML_CONFIG_FILE_READER_H_ */

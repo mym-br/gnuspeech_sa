@@ -25,7 +25,7 @@
 #include <iostream>
 #include <utility> /* make_pair */
 
-#include "XMLConfigFile.h"
+#include "XMLConfigFileReader.h"
 #include "Log.h"
 
 
@@ -91,7 +91,7 @@ Model::load(const char* configDirPath, const char* configFileName)
 
 		// Load the configuration file.
 		LOG_DEBUG("Loading xml configuration: " << filePath);
-		XMLConfigFile cfg(*this, filePath);
+		XMLConfigFileReader cfg(*this, filePath);
 		cfg.loadModel();
 
 		prepareCategories();

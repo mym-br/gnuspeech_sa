@@ -20,7 +20,7 @@
 // This file was created by Marcelo Y. Matuda, and code/information
 // from Gnuspeech was added to it later.
 
-#include "XMLConfigFile.h"
+#include "XMLConfigFileReader.h"
 
 #include <iostream>
 
@@ -38,7 +38,7 @@ namespace GS {
 namespace TRMControlModel {
 
 void
-XMLConfigFile::parseCategories()
+XMLConfigFileReader::parseCategories()
 {
 	int code = 0;
 	for (const std::string* category = parser_.getFirstChild(categoryTagName_);
@@ -55,7 +55,7 @@ XMLConfigFile::parseCategories()
 }
 
 void
-XMLConfigFile::parseParameters()
+XMLConfigFileReader::parseParameters()
 {
 	for (const std::string* parameter = parser_.getFirstChild(parameterTagName_);
 				parameter;
@@ -71,7 +71,7 @@ XMLConfigFile::parseParameters()
 }
 
 void
-XMLConfigFile::parseSymbols()
+XMLConfigFileReader::parseSymbols()
 {
 	for (const std::string* symbol = parser_.getFirstChild(symbolTagName_);
 				symbol;
@@ -81,7 +81,7 @@ XMLConfigFile::parseSymbols()
 }
 
 void
-XMLConfigFile::parsePostureSymbols(Posture& posture)
+XMLConfigFileReader::parsePostureSymbols(Posture& posture)
 {
 	for (const std::string* target = parser_.getFirstChild(targetTagName_);
 				target;
@@ -101,7 +101,7 @@ XMLConfigFile::parsePostureSymbols(Posture& posture)
 }
 
 void
-XMLConfigFile::parsePostureCategories(Posture& posture)
+XMLConfigFileReader::parsePostureCategories(Posture& posture)
 {
 	for (const std::string* catRef = parser_.getFirstChild(categoryRefTagName_);
 				catRef;
@@ -112,7 +112,7 @@ XMLConfigFile::parsePostureCategories(Posture& posture)
 }
 
 void
-XMLConfigFile::parsePostureParameters(Posture& posture)
+XMLConfigFileReader::parsePostureParameters(Posture& posture)
 {
 	for (const std::string* target = parser_.getFirstChild(targetTagName_);
 				target;
@@ -126,7 +126,7 @@ XMLConfigFile::parsePostureParameters(Posture& posture)
 }
 
 void
-XMLConfigFile::parsePosture()
+XMLConfigFileReader::parsePosture()
 {
 	model_.postureList_.emplace_back(model_.getNumParameters());
 	Posture& posture = model_.postureList_.back();
@@ -148,7 +148,7 @@ XMLConfigFile::parsePosture()
 }
 
 void
-XMLConfigFile::parsePostures()
+XMLConfigFileReader::parsePostures()
 {
 	for (const std::string* posture = parser_.getFirstChild(postureTagName_);
 				posture;
@@ -158,7 +158,7 @@ XMLConfigFile::parsePostures()
 }
 
 void
-XMLConfigFile::parseEquationsGroup()
+XMLConfigFileReader::parseEquationsGroup()
 {
 	const std::string groupName = parser_.getAttribute(nameAttrName_);
 	// Can't be a reference because it is used many times in the loop.
@@ -186,7 +186,7 @@ XMLConfigFile::parseEquationsGroup()
 }
 
 void
-XMLConfigFile::parseEquations()
+XMLConfigFileReader::parseEquations()
 {
 	for (const std::string* group = parser_.getFirstChild(equationGroupTagName_);
 				group;
@@ -196,7 +196,7 @@ XMLConfigFile::parseEquations()
 }
 
 void
-XMLConfigFile::parseSlopeRatio(Transition& transition)
+XMLConfigFileReader::parseSlopeRatio(Transition& transition)
 {
 	std::unique_ptr<Transition::SlopeRatio> p(new Transition::SlopeRatio());
 
@@ -235,7 +235,7 @@ XMLConfigFile::parseSlopeRatio(Transition& transition)
 }
 
 void
-XMLConfigFile::parseTransitionPointOrSlopes(Transition& transition)
+XMLConfigFileReader::parseTransitionPointOrSlopes(Transition& transition)
 {
 	for (const std::string* child = parser_.getFirstChild();
 				child;
@@ -259,7 +259,7 @@ XMLConfigFile::parseTransitionPointOrSlopes(Transition& transition)
 }
 
 void
-XMLConfigFile::parseTransitionsGroup(bool special)
+XMLConfigFileReader::parseTransitionsGroup(bool special)
 {
 	const std::string groupName = parser_.getAttribute(nameAttrName_);
 	// Can't be a reference because it is used many times in the loop.
@@ -297,7 +297,7 @@ XMLConfigFile::parseTransitionsGroup(bool special)
 }
 
 void
-XMLConfigFile::parseTransitions(bool special)
+XMLConfigFileReader::parseTransitions(bool special)
 {
 	for (const std::string* group = parser_.getFirstChild(transitionGroupTagName_);
 				group;
@@ -307,7 +307,7 @@ XMLConfigFile::parseTransitions(bool special)
 }
 
 void
-XMLConfigFile::parseRuleParameterProfiles(Rule& rule)
+XMLConfigFileReader::parseRuleParameterProfiles(Rule& rule)
 {
 	for (const std::string* paramTrans = parser_.getFirstChild(parameterTransitionTagName_);
 				paramTrans;
@@ -321,7 +321,7 @@ XMLConfigFile::parseRuleParameterProfiles(Rule& rule)
 }
 
 void
-XMLConfigFile::parseRuleSpecialProfiles(Rule& rule)
+XMLConfigFileReader::parseRuleSpecialProfiles(Rule& rule)
 {
 	for (const std::string* paramTrans = parser_.getFirstChild(parameterTransitionTagName_);
 				paramTrans;
@@ -335,7 +335,7 @@ XMLConfigFile::parseRuleSpecialProfiles(Rule& rule)
 }
 
 void
-XMLConfigFile::parseRuleExpressionSymbols(Rule& rule)
+XMLConfigFileReader::parseRuleExpressionSymbols(Rule& rule)
 {
 	for (const std::string* symbEqu = parser_.getFirstChild(symbolEquationTagName_);
 				symbEqu;
@@ -357,7 +357,7 @@ XMLConfigFile::parseRuleExpressionSymbols(Rule& rule)
 }
 
 void
-XMLConfigFile::parseRuleBooleanExpressions(Rule& rule)
+XMLConfigFileReader::parseRuleBooleanExpressions(Rule& rule)
 {
 	for (const std::string* boolExpr = parser_.getFirstChild(booleanExpressionTagName_);
 				boolExpr;
@@ -367,7 +367,7 @@ XMLConfigFile::parseRuleBooleanExpressions(Rule& rule)
 }
 
 void
-XMLConfigFile::parseRule()
+XMLConfigFileReader::parseRule()
 {
 	Rule rule(model_.getNumParameters());
 
@@ -391,7 +391,7 @@ XMLConfigFile::parseRule()
 }
 
 void
-XMLConfigFile::parseRules()
+XMLConfigFileReader::parseRules()
 {
 	for (const std::string* rule = parser_.getFirstChild(ruleTagName_);
 				rule;
@@ -405,7 +405,7 @@ XMLConfigFile::parseRules()
 /*******************************************************************************
  * Constructor.
  */
-XMLConfigFile::XMLConfigFile(Model& model, const std::string& filePath)
+XMLConfigFileReader::XMLConfigFileReader(Model& model, const std::string& filePath)
 		: model_(model)
 
 		, booleanExpressionTagName_  ("boolean-expression")
@@ -485,7 +485,7 @@ XMLConfigFile::XMLConfigFile(Model& model, const std::string& filePath)
 /*******************************************************************************
  * Destructor.
  */
-XMLConfigFile::~XMLConfigFile()
+XMLConfigFileReader::~XMLConfigFileReader()
 {
 }
 
@@ -493,7 +493,7 @@ XMLConfigFile::~XMLConfigFile()
  * Precondition: the model is empty.
  */
 void
-XMLConfigFile::loadModel()
+XMLConfigFileReader::loadModel()
 {
 	LOG_DEBUG("categories");
 	if (parser_.getFirstChild(categoriesTagName_) == 0) {
