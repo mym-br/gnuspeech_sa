@@ -60,13 +60,16 @@ public:
 	void addAttribute(const std::string& name, int value) {
 		out_ << ' ' << name << "=\"" << value << '"';
 	}
-	void addAttribute(const std::string& name, float value) {
-		out_ << ' ' << name << "=\"" << value << '"';
-	}
 	void addAttribute(const std::string& name, unsigned int value) {
 		out_ << ' ' << name << "=\"" << value << '"';
 	}
 	void addAttribute(const std::string& name, const std::string& value) {
+		out_ << ' ' << name << "=\"" << value << '"';
+	}
+	void addAttribute(const std::string& name, float value) {
+		out_ << ' ' << name << "=\"" << value << '"';
+	}
+	void addAttribute(const std::string& name, double value) {
 		out_ << ' ' << name << "=\"" << value << '"';
 	}
 
@@ -281,7 +284,67 @@ XMLConfigFileWriter::writeElements()
 		xml.openElementWithAttributes("transition-group");
 		xml.addAttribute("name", groupName);
 		xml.endAttributes();
-
+		for (const Transition& transition : model_.transitionList()) {
+			if (transition.groupName() == groupName) {
+				xml.openElementWithAttributes("transition");
+				xml.addAttribute("name", transition.name());
+				xml.addAttribute("type", Transition::getNameFromType(transition.type()));
+				xml.endAttributes();
+				if (!transition.comment().empty()) {
+					xml.openInlineElement("comment");
+					xml.addText(transition.comment());
+					xml.closeInlineElement("comment");
+				}
+				xml.openElement("point-or-slopes");
+				for (const auto& pointOrSlope : transition.pointOrSlopeList()) {
+					if (pointOrSlope->isSlopeRatio()) {
+						const auto& slopeRatio = dynamic_cast<const Transition::SlopeRatio&>(*pointOrSlope);
+						xml.openElement("slope-ratio");
+						xml.openElement("points");
+						for (const auto& point : slopeRatio.pointList) {
+							xml.openElementWithAttributes("point");
+							xml.addAttribute("type", Transition::Point::getNameFromType(point->type));
+							xml.addAttribute("value", point->value);
+							if (point->timeExpression.empty()) {
+								xml.addAttribute("free-time", point->freeTime);
+							} else {
+								xml.addAttribute("time-expression", point->timeExpression);
+							}
+							if (point->isPhantom) {
+								xml.addAttribute("is-phantom", "yes");
+							}
+							xml.endAttributesAndCloseElement();
+						}
+						xml.closeElement("points");
+						xml.openElement("slopes");
+						for (const auto& slope : slopeRatio.slopeList) {
+							xml.openElementWithAttributes("slope");
+							xml.addAttribute("slope", slope->slope);
+							xml.addAttribute("display-time", slope->displayTime);
+							xml.endAttributesAndCloseElement();
+						}
+						xml.closeElement("slopes");
+						xml.closeElement("slope-ratio");
+					} else {
+						const auto& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
+						xml.openElementWithAttributes("point");
+						xml.addAttribute("type", Transition::Point::getNameFromType(point.type));
+						xml.addAttribute("value", point.value);
+						if (point.timeExpression.empty()) {
+							xml.addAttribute("free-time", point.freeTime);
+						} else {
+							xml.addAttribute("time-expression", point.timeExpression);
+						}
+						if (point.isPhantom) {
+							xml.addAttribute("is-phantom", "yes");
+						}
+						xml.endAttributesAndCloseElement();
+					}
+				}
+				xml.closeElement("point-or-slopes");
+				xml.closeElement("transition");
+			}
+		}
 		xml.closeElement("transition-group");
 	}
 	xml.closeElement("transitions");
@@ -292,7 +355,41 @@ XMLConfigFileWriter::writeElements()
 		xml.openElementWithAttributes("transition-group");
 		xml.addAttribute("name", groupName);
 		xml.endAttributes();
-
+		for (const Transition& transition : model_.specialTransitionList()) {
+			if (transition.groupName() == groupName) {
+				xml.openElementWithAttributes("transition");
+				xml.addAttribute("name", transition.name());
+				xml.addAttribute("type", Transition::getNameFromType(transition.type()));
+				xml.endAttributes();
+				if (!transition.comment().empty()) {
+					xml.openInlineElement("comment");
+					xml.addText(transition.comment());
+					xml.closeInlineElement("comment");
+				}
+				xml.openElement("point-or-slopes");
+				for (const auto& pointOrSlope : transition.pointOrSlopeList()) {
+					if (pointOrSlope->isSlopeRatio()) {
+						THROW_EXCEPTION(InvalidValueException, "Unexpected slope ratio in special transition.");
+					} else {
+						const auto& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
+						xml.openElementWithAttributes("point");
+						xml.addAttribute("type", Transition::Point::getNameFromType(point.type));
+						xml.addAttribute("value", point.value);
+						if (point.timeExpression.empty()) {
+							xml.addAttribute("free-time", point.freeTime);
+						} else {
+							xml.addAttribute("time-expression", point.timeExpression);
+						}
+						if (point.isPhantom) {
+							xml.addAttribute("is-phantom", "yes");
+						}
+						xml.endAttributesAndCloseElement();
+					}
+				}
+				xml.closeElement("point-or-slopes");
+				xml.closeElement("transition");
+			}
+		}
 		xml.closeElement("transition-group");
 	}
 	xml.closeElement("special-transitions");

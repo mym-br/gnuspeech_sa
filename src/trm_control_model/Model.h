@@ -81,10 +81,14 @@ public:
 
 	const std::vector<std::string>& transitionGroupList() const { return transitionGroupList_; }
 	std::vector<std::string>& transitionGroupList() { return transitionGroupList_; }
+	const std::list<Transition>& transitionList() const { return transitionList_; }
+	std::list<Transition>& transitionList() { return transitionList_; }
 	const Transition* findTransition(const std::string& name) const;
 
 	const std::vector<std::string>& specialTransitionGroupList() const { return specialTransitionGroupList_; }
 	std::vector<std::string>& specialTransitionGroupList() { return specialTransitionGroupList_; }
+	const std::list<Transition>& specialTransitionList() const { return specialTransitionList_; }
+	std::list<Transition>& specialTransitionList() { return specialTransitionList_; }
 	const Transition* findSpecialTransition(const std::string& name) const;
 
 	const std::list<Rule>& ruleList() const { return ruleList_; }

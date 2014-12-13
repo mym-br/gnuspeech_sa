@@ -84,6 +84,18 @@ public:
 				THROW_EXCEPTION(TRMControlModelException, "Invalid transition point type: " << typeName << '.');
 			}
 		}
+		static std::string getNameFromType(Transition::Point::Type type) {
+			switch (type) {
+			case Transition::Point::TYPE_INVALID:
+				return "invalid";
+			case Transition::Point::TYPE_DIPHONE:
+				return "diphone";
+			case Transition::Point::TYPE_TRIPHONE:
+				return "triphone";
+			case Transition::Point::TYPE_TETRAPHONE:
+				return "tetraphone";
+			}
+		}
 	private:
 		Point(const Point&);
 		Point& operator=(const Point&);
@@ -153,6 +165,18 @@ public:
 			return Transition::TYPE_TETRAPHONE;
 		} else {
 			THROW_EXCEPTION(TRMControlModelException, "Invalid transition type: " << typeName << '.');
+		}
+	}
+	static std::string getNameFromType(Transition::Type type) {
+		switch (type) {
+		case Transition::TYPE_INVALID:
+			return "invalid";
+		case Transition::TYPE_DIPHONE:
+			return "diphone";
+		case Transition::TYPE_TRIPHONE:
+			return "triphone";
+		case Transition::TYPE_TETRAPHONE:
+			return "tetraphone";
 		}
 	}
 private:
