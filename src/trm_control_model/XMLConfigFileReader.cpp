@@ -43,10 +43,10 @@ XMLConfigFileReader::parseCategories()
 				category;
 				category = parser_.getNextSibling(categoryTagName_)) {
 
-		model_.categoryList_.emplace_back(parser_.getAttribute(nameAttrName_), ++code); // code starts with 1
+		model_.categoryList().emplace_back(parser_.getAttribute(nameAttrName_), ++code); // code starts with 1
 
 		if (parser_.getFirstChild()) {
-			model_.categoryList_.back().setComment(parser_.getText());
+			model_.categoryList().back().setComment(parser_.getText());
 			parser_.getNextSibling();
 		}
 	}
@@ -64,7 +64,7 @@ XMLConfigFileReader::parseParameters()
 		float maximum      = Text::parseString<float>(parser_.getAttribute(maximumAttrName_));
 		float defaultValue = Text::parseString<float>(parser_.getAttribute(defaultAttrName_));
 
-		model_.parameterList_.emplace_back(name, minimum, maximum, defaultValue);
+		model_.parameterList().emplace_back(name, minimum, maximum, defaultValue);
 	}
 }
 
@@ -80,7 +80,7 @@ XMLConfigFileReader::parseSymbols()
 		float maximum      = Text::parseString<float>(parser_.getAttribute(maximumAttrName_));
 		float defaultValue = Text::parseString<float>(parser_.getAttribute(defaultAttrName_));
 
-		model_.symbolList_.emplace_back(name, minimum, maximum, defaultValue);
+		model_.symbolList().emplace_back(name, minimum, maximum, defaultValue);
 	}
 }
 
@@ -132,8 +132,8 @@ XMLConfigFileReader::parsePostureParameters(Posture& posture)
 void
 XMLConfigFileReader::parsePosture()
 {
-	model_.postureList_.emplace_back(model_.getNumParameters());
-	Posture& posture = model_.postureList_.back();
+	model_.postureList().emplace_back(model_.getNumParameters());
+	Posture& posture = model_.postureList().back();
 	posture.setName(parser_.getAttribute(symbolAttrName_));
 
 	for (const std::string* child = parser_.getFirstChild();
@@ -166,7 +166,7 @@ XMLConfigFileReader::parseEquationsGroup()
 {
 	const std::string groupName = parser_.getAttribute(nameAttrName_);
 	// Can't be a reference because it is used many times in the loop.
-	model_.equationGroupList_.push_back(groupName);
+	model_.equationGroupList().push_back(groupName);
 
 	for (const std::string* equation = parser_.getFirstChild(equationTagName_);
 				equation;
@@ -184,7 +184,7 @@ XMLConfigFileReader::parseEquationsGroup()
 		if (eq.formula.empty()) {
 			LOG_ERROR("Equation " << eq.name << " without formula (ignored)."); // should not happen
 		} else {
-			model_.equationList_.push_back(std::move(eq));
+			model_.equationList().push_back(std::move(eq));
 		}
 	}
 }
@@ -268,9 +268,9 @@ XMLConfigFileReader::parseTransitionsGroup(bool special)
 	const std::string groupName = parser_.getAttribute(nameAttrName_);
 	// Can't be a reference because it is used many times in the loop.
 	if (special) {
-		model_.specialTransitionGroupList_.push_back(groupName);
+		model_.specialTransitionGroupList().push_back(groupName);
 	} else {
-		model_.transitionGroupList_.push_back(groupName);
+		model_.transitionGroupList().push_back(groupName);
 	}
 
 	for (const std::string* child = parser_.getFirstChild(transitionTagName_);
@@ -293,9 +293,9 @@ XMLConfigFileReader::parseTransitionsGroup(bool special)
 		}
 
 		if (special) {
-			model_.specialTransitionList_.push_back(std::move(tr));
+			model_.specialTransitionList().push_back(std::move(tr));
 		} else {
-			model_.transitionList_.push_back(std::move(tr));
+			model_.transitionList().push_back(std::move(tr));
 		}
 	}
 }
@@ -391,7 +391,7 @@ XMLConfigFileReader::parseRule()
 		}
 	}
 
-	model_.ruleList_.push_back(std::move(rule));
+	model_.ruleList().push_back(std::move(rule));
 }
 
 void

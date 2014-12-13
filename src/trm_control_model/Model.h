@@ -65,6 +65,8 @@ public:
 	std::vector<std::string>& equationGroupList() { return equationGroupList_; }
 	float evalEquationFormula(const std::string& equationName) const;
 
+	const std::vector<Parameter>& parameterList() const { return parameterList_; }
+	std::vector<Parameter>& parameterList() { return parameterList_; }
 	unsigned int getNumParameters() const { return parameterList_.size(); }
 	unsigned int findParameterIndex(const std::string& name) const;
 	float getParameterMinimum(unsigned int parameterIndex) const;
@@ -133,8 +135,6 @@ private:
 	void prepareEquations();
 	void prepareTransitions();
 	void prepareRules();
-
-	friend class XMLConfigFileReader;
 };
 
 } /* namespace TRMControlModel */
