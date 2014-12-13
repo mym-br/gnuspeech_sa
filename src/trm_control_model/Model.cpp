@@ -25,8 +25,9 @@
 #include <iostream>
 #include <utility> /* make_pair */
 
-#include "XMLConfigFileReader.h"
 #include "Log.h"
+#include "XMLConfigFileReader.h"
+#include "XMLConfigFileWriter.h"
 
 
 
@@ -103,6 +104,20 @@ Model::load(const char* configDirPath, const char* configFileName)
 		clear();
 		throw;
 	}
+}
+
+/*******************************************************************************
+ *
+ */
+void
+Model::save(const char* configDirPath, const char* configFileName)
+{
+	std::string filePath = std::string(configDirPath) + configFileName;
+
+	// Save the configuration file.
+	LOG_DEBUG("Saving xml configuration: " << filePath);
+	XMLConfigFileWriter cfg(*this, filePath);
+	cfg.saveModel();
 }
 
 /*******************************************************************************

@@ -35,6 +35,7 @@
 #include "Parameter.h"
 #include "Posture.h"
 #include "Rule.h"
+#include "Symbol.h"
 #include "Transition.h"
 
 
@@ -52,21 +53,46 @@ public:
 
 	void clear();
 	void load(const char* configDirPath, const char* configFileName);
+	void save(const char* configDirPath, const char* configFileName);
 	void printInfo() const;
 	void clearFormulaSymbolList();
 	void setFormulaSymbolValue(FormulaSymbol::Code symbol, float value);
 	float getFormulaSymbolValue(FormulaSymbol::Code symbol) const;
+
+	const std::list<Equation>& equationList() const { return equationList_; }
+	std::list<Equation>& equationList() { return equationList_; }
+	const std::vector<std::string>& equationGroupList() const { return equationGroupList_; }
+	std::vector<std::string>& equationGroupList() { return equationGroupList_; }
 	float evalEquationFormula(const std::string& equationName) const;
+
 	unsigned int getNumParameters() const { return parameterList_.size(); }
 	unsigned int findParameterIndex(const std::string& name) const;
 	float getParameterMinimum(unsigned int parameterIndex) const;
 	float getParameterMaximum(unsigned int parameterIndex) const;
 	const Parameter& getParameter(unsigned int parameterIndex) const;
+
+	const std::vector<Symbol>& symbolList() const { return symbolList_; }
+	std::vector<Symbol>& symbolList() { return symbolList_; }
+
+	const std::list<Posture>& postureList() const { return postureList_; }
+	std::list<Posture>& postureList() { return postureList_; }
 	const Posture* findPosture(const std::string& name) const;
 	void addPosture(Posture& posture);
+
+	const std::vector<std::string>& transitionGroupList() const { return transitionGroupList_; }
+	std::vector<std::string>& transitionGroupList() { return transitionGroupList_; }
 	const Transition* findTransition(const std::string& name) const;
+
+	const std::vector<std::string>& specialTransitionGroupList() const { return specialTransitionGroupList_; }
+	std::vector<std::string>& specialTransitionGroupList() { return specialTransitionGroupList_; }
 	const Transition* findSpecialTransition(const std::string& name) const;
+
+	const std::list<Rule>& ruleList() const { return ruleList_; }
+	std::list<Rule>& ruleList() { return ruleList_; }
 	const Rule* findFirstMatchingRule(const std::vector<const Posture*>& postureSequence, unsigned int& ruleIndex) const;
+
+	const std::vector<Category>& categoryList() const { return categoryList_; }
+	std::vector<Category>& categoryList() { return categoryList_; }
 	const Category* findCategory(const std::string& name) const;
 	unsigned int getCategoryCode(const std::string& name) const;
 
@@ -75,6 +101,8 @@ private:
 	std::unordered_map<std::string, Category*> categoryMap_; // optimization
 
 	std::vector<Parameter> parameterList_;
+
+	std::vector<Symbol> symbolList_;
 
 	std::list<Posture> postureList_;
 	std::unordered_map<std::string, Posture*> postureMap_; // optimization

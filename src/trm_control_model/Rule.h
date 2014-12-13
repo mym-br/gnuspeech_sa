@@ -174,8 +174,13 @@ public:
 
 	void evaluateExpressionSymbols(const double* tempos, const std::vector<const Posture*>& postures, Model& model, double* ruleSymbols) const;
 
+	const std::vector<std::string>& booleanExpressionList() const { return booleanExpressionList_; }
 	std::vector<std::string>& booleanExpressionList() { return booleanExpressionList_; }
+
+	const std::vector<std::string>& paramProfileTransitionList() const { return paramProfileTransitionList_; }
 	std::vector<std::string>& paramProfileTransitionList() { return paramProfileTransitionList_; }
+
+	const std::vector<std::string>& specialProfileTransitionList() const { return specialProfileTransitionList_; }
 	std::vector<std::string>& specialProfileTransitionList() { return specialProfileTransitionList_; }
 
 	const std::string& comment() const { return comment_; }

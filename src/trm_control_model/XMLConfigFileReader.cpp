@@ -22,8 +22,6 @@
 
 #include "XMLConfigFileReader.h"
 
-#include <iostream>
-
 #include "Category.h"
 #include "Exception.h"
 #include "Log.h"
@@ -76,7 +74,13 @@ XMLConfigFileReader::parseSymbols()
 	for (const std::string* symbol = parser_.getFirstChild(symbolTagName_);
 				symbol;
 				symbol = parser_.getNextSibling(symbolTagName_)) {
-		// Ignore the attributes.
+
+		std::string name   = parser_.getAttribute(nameAttrName_);
+		float minimum      = Text::parseString<float>(parser_.getAttribute(minimumAttrName_));
+		float maximum      = Text::parseString<float>(parser_.getAttribute(maximumAttrName_));
+		float defaultValue = Text::parseString<float>(parser_.getAttribute(defaultAttrName_));
+
+		model_.symbolList_.emplace_back(name, minimum, maximum, defaultValue);
 	}
 }
 
@@ -172,15 +176,15 @@ XMLConfigFileReader::parseEquationsGroup()
 		eq.name = parser_.getAttribute(nameAttrName_);
 		eq.formula = parser_.getAttribute(formulaAttrName_);
 
+		if (parser_.getFirstChild()) {
+			eq.comment = parser_.getText();
+			parser_.getNextSibling();
+		}
+
 		if (eq.formula.empty()) {
 			LOG_ERROR("Equation " << eq.name << " without formula (ignored)."); // should not happen
 		} else {
 			model_.equationList_.push_back(std::move(eq));
-		}
-
-		if (parser_.getFirstChild()) {
-			eq.comment = parser_.getText();
-			parser_.getNextSibling();
 		}
 	}
 }
