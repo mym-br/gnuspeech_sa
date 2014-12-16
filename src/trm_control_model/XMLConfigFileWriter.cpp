@@ -20,6 +20,8 @@
 // This file was created by Marcelo Y. Matuda, and code/information
 // from Gnuspeech was added to it later.
 
+#include <cstring> /* strerror */
+
 #include "XMLConfigFileWriter.h"
 
 #include "Exception.h"
@@ -116,6 +118,7 @@ namespace TRMControlModel {
 XMLConfigFileWriter::XMLConfigFileWriter(const Model& model, const std::string& filePath)
 		: model_(model)
 		, out_(filePath)
+		, filePath_(filePath)
 {
 	if (!out_) {
 		THROW_EXCEPTION(IOException, "The output file " << filePath << " could not be created.");
@@ -135,11 +138,22 @@ XMLConfigFileWriter::~XMLConfigFileWriter()
 void
 XMLConfigFileWriter::saveModel()
 {
+	if (!out_.is_open()) {
+		THROW_EXCEPTION(InvalidStateException, "The file is not open.");
+	}
+
 	out_ << "<?xml version='1.0' encoding='utf-8'?>\n<root version='1'>\n";
-
 	writeElements();
-
 	out_ << "</root>\n";
+
+	out_.flush();
+	if (!out_) {
+		THROW_EXCEPTION(IOException, "Could not write to the file " << filePath_ << ". Reason: " << std::strerror(errno) << '.');
+	}
+	out_.close();
+	if (!out_) {
+		THROW_EXCEPTION(IOException, "Could not close the file " << filePath_ << '.');
+	}
 }
 
 /*******************************************************************************

@@ -43,13 +43,14 @@ public:
 
 	void saveModel();
 private:
-	const Model& model_;
-	std::ofstream out_;
-
 	XMLConfigFileWriter(const XMLConfigFileWriter&);
 	XMLConfigFileWriter& operator=(const XMLConfigFileWriter&);
 
 	void writeElements();
+
+	const Model& model_;
+	std::ofstream out_;
+	std::string filePath_;
 };
 
 } /* namespace TRMControlModel */
