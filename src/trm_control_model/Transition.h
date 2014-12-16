@@ -94,6 +94,8 @@ public:
 				return "triphone";
 			case Transition::Point::TYPE_TETRAPHONE:
 				return "tetraphone";
+			default:
+				return "---";
 			}
 		}
 	private:
@@ -177,6 +179,8 @@ public:
 			return "triphone";
 		case Transition::TYPE_TETRAPHONE:
 			return "tetraphone";
+		default:
+			return "---";
 		}
 	}
 private:
