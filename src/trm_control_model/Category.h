@@ -31,6 +31,7 @@ public:
 		: name_(name), code_(code) {}
 
 	const std::string& name() const { return name_; }
+	void setName(const std::string& name) { name_ = name; }
 
 	const std::string& comment() const { return comment_; }
 	void setComment(const std::string& comment) { comment_ = comment; }
