@@ -406,6 +406,20 @@ Model::getCategoryCode(const std::string& name) const
 }
 
 /*******************************************************************************
+ *
+ */
+bool
+Model::duplicateCategoryName(const std::string& name) const
+{
+	for (const auto& item : categoryList_) {
+		if (item.name() == name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*******************************************************************************
  * Precondition: postureList_ is synchronized with postureMap_.
  */
 void
@@ -506,6 +520,34 @@ Model::getParameter(unsigned int parameterIndex) const
 	}
 
 	return parameterList_[parameterIndex];
+}
+
+/*******************************************************************************
+ *
+ */
+bool
+Model::duplicateParameterName(const std::string& name) const
+{
+	for (const auto& item : parameterList_) {
+		if (item.name() == name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*******************************************************************************
+ *
+ */
+bool
+Model::duplicateSymbolName(const std::string& name) const
+{
+	for (const auto& item : symbolList_) {
+		if (item.name() == name) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /*******************************************************************************

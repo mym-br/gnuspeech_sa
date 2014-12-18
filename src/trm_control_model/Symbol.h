@@ -41,9 +41,16 @@ public:
 	{}
 
 	const std::string& name() const { return name_; }
+	void setName(const std::string& name) { name_ = name; }
+
 	float minimum() const { return minimum_; }
+	void setMinimum(float minimum) { minimum_ = minimum; }
+
 	float maximum() const { return maximum_; }
+	void setMaximum(float maximum) { maximum_ = maximum; }
+
 	float defaultValue() const { return defaultValue_; }
+	void setDefaultValue(float defaultValue) { defaultValue_ = defaultValue; }
 private:
 	std::string name_;
 	float minimum_;
