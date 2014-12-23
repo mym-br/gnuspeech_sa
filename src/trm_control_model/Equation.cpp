@@ -170,7 +170,7 @@ FormulaNodeParser::parseFactor()
 			throwException("Right parenthesis not found");
 		}
 		nextSymbol();
-		return std::move(res);
+		return res;
 	}
 	case SYMBOL_TYPE_ADD: // unary plus
 		nextSymbol();
