@@ -409,7 +409,7 @@ Model::getCategoryCode(const std::string& name) const
  *
  */
 bool
-Model::duplicateCategoryName(const std::string& name) const
+Model::findCategoryName(const std::string& name) const
 {
 	for (const auto& item : categoryList_) {
 		if (item.name() == name) {
@@ -526,7 +526,7 @@ Model::getParameter(unsigned int parameterIndex) const
  *
  */
 bool
-Model::duplicateParameterName(const std::string& name) const
+Model::findParameterName(const std::string& name) const
 {
 	for (const auto& item : parameterList_) {
 		if (item.name() == name) {
@@ -540,7 +540,7 @@ Model::duplicateParameterName(const std::string& name) const
  *
  */
 bool
-Model::duplicateSymbolName(const std::string& name) const
+Model::findSymbolName(const std::string& name) const
 {
 	for (const auto& item : symbolList_) {
 		if (item.name() == name) {

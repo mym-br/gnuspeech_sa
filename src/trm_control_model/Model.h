@@ -72,11 +72,11 @@ public:
 	float getParameterMinimum(unsigned int parameterIndex) const;
 	float getParameterMaximum(unsigned int parameterIndex) const;
 	const Parameter& getParameter(unsigned int parameterIndex) const;
-	bool duplicateParameterName(const std::string& name) const;
+	bool findParameterName(const std::string& name) const;
 
 	const std::vector<Symbol>& symbolList() const { return symbolList_; }
 	std::vector<Symbol>& symbolList() { return symbolList_; }
-	bool duplicateSymbolName(const std::string& name) const;
+	bool findSymbolName(const std::string& name) const;
 
 	const std::list<Posture>& postureList() const { return postureList_; }
 	std::list<Posture>& postureList() { return postureList_; }
@@ -103,7 +103,7 @@ public:
 	std::vector<Category>& categoryList() { return categoryList_; }
 	const Category* findCategory(const std::string& name) const;
 	unsigned int getCategoryCode(const std::string& name) const;
-	bool duplicateCategoryName(const std::string& name) const;
+	bool findCategoryName(const std::string& name) const;
 
 private:
 	std::vector<Category> categoryList_;
