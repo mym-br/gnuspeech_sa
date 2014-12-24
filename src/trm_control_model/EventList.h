@@ -168,6 +168,10 @@ public:
 	void setUpDriftGenerator(float deviation, float sampleRate, float lowpassCutoff);
 
 	const Posture* getPostureAtIndex(unsigned int index) const;
+	const PostureData* getPostureDataAtIndex(unsigned int index) const;
+	int numberOfRules() const { return currentRule_; }
+	const RuleData* getRuleAtIndex(unsigned int index) const;
+
 private:
 	EventList(const EventList&);
 	EventList& operator=(const EventList&);

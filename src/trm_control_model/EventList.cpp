@@ -116,6 +116,26 @@ EventList::getPostureAtIndex(unsigned int index) const
 	}
 }
 
+const PostureData*
+EventList::getPostureDataAtIndex(unsigned int index) const
+{
+	if (index > currentPosture_) {
+		return nullptr;
+	} else {
+		return &postureData_[index];
+	}
+}
+
+const RuleData*
+EventList::getRuleAtIndex(unsigned int index) const
+{
+	if (index > currentRule_) {
+		return nullptr;
+	} else {
+		return &ruleData_[index];
+	}
+}
+
 void
 EventList::parseGroups(int index, int number, FILE* fp)
 {
