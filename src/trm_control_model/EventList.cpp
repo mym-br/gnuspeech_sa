@@ -23,21 +23,16 @@
 //#include <cmath> /* NAN */
 #include <cstdlib> /* random */
 #include <cstring>
-#include <limits> /* std::numeric_limits<double>::infinity() */
 #include <sstream>
 #include <vector>
 
 #include "Log.h"
-
-
 
 #define DIPHONE 2
 #define TRIPHONE 3
 #define TETRAPHONE 4
 
 #define INTONATION_CONFIG_FILE_NAME "/intonation"
-
-#define INVALID_EVENT_VALUE std::numeric_limits<double>::infinity()
 
 
 
@@ -47,7 +42,7 @@ namespace TRMControlModel {
 Event::Event() : time(0), flag(0)
 {
 	for (int i = 0; i < EVENTS_SIZE; ++i) {
-		events[i] = INVALID_EVENT_VALUE;
+		events[i] = GS_EVENTLIST_INVALID_EVENT_VALUE;
 	}
 }
 
@@ -109,6 +104,16 @@ void
 EventList::setUpDriftGenerator(float deviation, float sampleRate, float lowpassCutoff)
 {
 	driftGenerator_.setUp(deviation, sampleRate, lowpassCutoff);
+}
+
+const Posture*
+EventList::getPostureAtIndex(unsigned int index) const
+{
+	if (index > currentPosture_) {
+		return nullptr;
+	} else {
+		return postureData_[index].posture;
+	}
 }
 
 void
@@ -926,7 +931,7 @@ EventList::generateOutput(const char* trmParamFile)
 	currentTime = 0;
 	for (i = 0; i < 16; i++) {
 		j = 1;
-		while ((temp = list_[j]->getValue(i)) == INVALID_EVENT_VALUE) {
+		while ((temp = list_[j]->getValue(i)) == GS_EVENTLIST_INVALID_EVENT_VALUE) {
 			j++;
 			if (j >= list_.size()) break;
 		}
@@ -943,7 +948,7 @@ EventList::generateOutput(const char* trmParamFile)
 
 	if (smoothIntonation_) {
 		j = 0;
-		while ((temp = list_[j]->getValue(32)) == INVALID_EVENT_VALUE) {
+		while ((temp = list_[j]->getValue(32)) == GS_EVENTLIST_INVALID_EVENT_VALUE) {
 			j++;
 			if (j >= list_.size()) break;
 		}
@@ -955,7 +960,7 @@ EventList::generateOutput(const char* trmParamFile)
 		currentDeltas[32] = 0.0;
 	} else {
 		j = 1;
-		while ((temp = list_[j]->getValue(32)) == INVALID_EVENT_VALUE) {
+		while ((temp = list_[j]->getValue(32)) == GS_EVENTLIST_INVALID_EVENT_VALUE) {
 			j++;
 			if (j >= list_.size()) break;
 		}
@@ -1015,23 +1020,23 @@ EventList::generateOutput(const char* trmParamFile)
 			}
 			nextTime = list_[i]->time;
 			for (j = 0; j < 33; j++) { /* 32? 33? */
-				if (list_[i - 1]->getValue(j) != INVALID_EVENT_VALUE) {
+				if (list_[i - 1]->getValue(j) != GS_EVENTLIST_INVALID_EVENT_VALUE) {
 					k = i;
-					while ((temp = list_[k]->getValue(j)) == INVALID_EVENT_VALUE) {
+					while ((temp = list_[k]->getValue(j)) == GS_EVENTLIST_INVALID_EVENT_VALUE) {
 						if (k >= list_.size() - 1) {
 							currentDeltas[j] = 0.0;
 							break;
 						}
 						k++;
 					}
-					if (temp != INVALID_EVENT_VALUE) {
+					if (temp != GS_EVENTLIST_INVALID_EVENT_VALUE) {
 						currentDeltas[j] = (temp - currentValues[j]) /
 									(double) (list_[k]->time - currentTime) * 4.0;
 					}
 				}
 			}
 			if (smoothIntonation_) {
-				if (list_[i - 1]->getValue(33) != INVALID_EVENT_VALUE) {
+				if (list_[i - 1]->getValue(33) != GS_EVENTLIST_INVALID_EVENT_VALUE) {
 					currentValues[32] = list_[i - 1]->getValue(32);
 					currentDeltas[32] = 0.0;
 					currentDeltas[33] = list_[i - 1]->getValue(33);

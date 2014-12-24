@@ -107,6 +107,8 @@ template<typename T>
 void
 Controller::synthesizePhoneticStringChunk(T& phoneticStringParser, const char* phoneticStringChunk, const char* trmParamFile)
 {
+	eventList_.setUp();
+
 	phoneticStringParser.parseString(phoneticStringChunk);
 
 	eventList_.generateEventList();
@@ -115,7 +117,6 @@ Controller::synthesizePhoneticStringChunk(T& phoneticStringParser, const char* p
 	eventList_.applyIntonationSmooth();
 
 	eventList_.generateOutput(trmParamFile);
-	eventList_.setUp();
 }
 
 } /* namespace TRMControlModel */

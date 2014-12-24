@@ -21,6 +21,7 @@
 #ifndef TRM_CONTROL_MODEL_EVENT_LIST_H_
 #define TRM_CONTROL_MODEL_EVENT_LIST_H_
 
+#include <limits> /* std::numeric_limits<double>::infinity() */
 #include <memory>
 #include <vector>
 
@@ -33,6 +34,8 @@
 #define TONE_GROUP_TYPE_QUESTION     2
 #define TONE_GROUP_TYPE_CONTINUATION 3
 #define TONE_GROUP_TYPE_SEMICOLON    4
+
+#define GS_EVENTLIST_INVALID_EVENT_VALUE std::numeric_limits<double>::infinity()
 
 
 
@@ -120,6 +123,8 @@ public:
 	EventList(const char* configDirPath, Model& model);
 	~EventList();
 
+	const std::vector<Event_ptr>& list() const { return list_; }
+
 	void setPitchMean(double newMean) { pitchMean_ = newMean; }
 	double pitchMean() const { return pitchMean_; }
 
@@ -161,6 +166,8 @@ public:
 	void generateOutput(const char* trmParamFile);
 
 	void setUpDriftGenerator(float deviation, float sampleRate, float lowpassCutoff);
+
+	const Posture* getPostureAtIndex(unsigned int index) const;
 private:
 	EventList(const EventList&);
 	EventList& operator=(const EventList&);
@@ -198,7 +205,7 @@ private:
 	/* NOTE postureData and postureTempo are separate for optimization reasons */
 	std::vector<PostureData> postureData_;
 	std::vector<double> postureTempo_;
-	int currentPosture_;
+	unsigned int currentPosture_;
 
 	std::vector<Foot> feet_;
 	int currentFoot_;
