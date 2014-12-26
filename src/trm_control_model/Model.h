@@ -23,8 +23,9 @@
 #ifndef TRM_CONTROL_MODEL_MODEL_H_
 #define TRM_CONTROL_MODEL_MODEL_H_
 
-#include <string>
+#include <list>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -59,11 +60,12 @@ public:
 	void setFormulaSymbolValue(FormulaSymbol::Code symbol, float value);
 	float getFormulaSymbolValue(FormulaSymbol::Code symbol) const;
 
-	const std::list<Equation>& equationList() const { return equationList_; }
-	std::list<Equation>& equationList() { return equationList_; }
-	const std::vector<std::string>& equationGroupList() const { return equationGroupList_; }
-	std::vector<std::string>& equationGroupList() { return equationGroupList_; }
+	const std::vector<EquationGroup>& equationGroupList() const { return equationGroupList_; }
+	std::vector<EquationGroup>& equationGroupList() { return equationGroupList_; }
 	float evalEquationFormula(const std::string& equationName) const;
+	const FormulaSymbol& formulaSymbol() const { return formulaSymbol_; }
+	bool findEquationGroupName(const std::string& name) const;
+	bool findEquationName(const std::string& name) const;
 
 	const std::vector<Parameter>& parameterList() const { return parameterList_; }
 	std::vector<Parameter>& parameterList() { return parameterList_; }
@@ -118,8 +120,7 @@ private:
 
 	std::list<Rule> ruleList_;
 
-	std::vector<std::string> equationGroupList_;
-	std::list<Equation> equationList_;
+	std::vector<EquationGroup> equationGroupList_;
 	std::unordered_map<std::string, Equation*> equationMap_; // optimization
 
 	std::vector<std::string> transitionGroupList_;

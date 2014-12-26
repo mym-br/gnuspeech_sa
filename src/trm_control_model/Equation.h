@@ -22,6 +22,7 @@
 #include <string>
 #include <memory>
 #include <utility> /* move */
+#include <vector>
 
 #include "FormulaSymbol.h"
 
@@ -131,16 +132,18 @@ private:
 std::ostream& operator<<(std::ostream& out, const FormulaNode& node);
 
 struct Equation {
-	std::string groupName;
 	std::string name;
 	std::string formula;
 	std::string comment;
 	FormulaNode_ptr formulaRoot;
 
-	Equation() : groupName(), name(), formula(), comment(), formulaRoot() {}
-
 	void parseFormula(const FormulaSymbol& formulaSymbol);
 	float evalFormula(const FormulaSymbolList& symbolList) const;
+};
+
+struct EquationGroup {
+	std::string name;
+	std::vector<Equation> equationList;
 };
 
 } /* namespace TRMControlModel */

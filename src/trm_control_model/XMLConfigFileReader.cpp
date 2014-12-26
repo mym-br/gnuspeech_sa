@@ -164,15 +164,14 @@ XMLConfigFileReader::parsePostures()
 void
 XMLConfigFileReader::parseEquationsGroup()
 {
-	const std::string groupName = parser_.getAttribute(nameAttrName_);
-	// Can't be a reference because it is used many times in the loop.
-	model_.equationGroupList().push_back(groupName);
+	EquationGroup group;
+	group.name = parser_.getAttribute(nameAttrName_);
+	model_.equationGroupList().push_back(std::move(group));
 
 	for (const std::string* equation = parser_.getFirstChild(equationTagName_);
 				equation;
 				equation = parser_.getNextSibling(equationTagName_)) {
 		Equation eq;
-		eq.groupName = groupName;
 		eq.name = parser_.getAttribute(nameAttrName_);
 		eq.formula = parser_.getAttribute(formulaAttrName_);
 
@@ -184,7 +183,7 @@ XMLConfigFileReader::parseEquationsGroup()
 		if (eq.formula.empty()) {
 			LOG_ERROR("Equation " << eq.name << " without formula (ignored)."); // should not happen
 		} else {
-			model_.equationList().push_back(std::move(eq));
+			model_.equationGroupList().back().equationList.push_back(std::move(eq));
 		}
 	}
 }

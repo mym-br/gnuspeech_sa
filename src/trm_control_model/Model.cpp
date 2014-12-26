@@ -65,7 +65,6 @@ Model::clear()
 	ruleList_.clear();
 
 	equationGroupList_.clear();
-	equationList_.clear();
 	equationMap_.clear();
 
 	transitionGroupList_.clear();
@@ -171,14 +170,16 @@ Model::prepareEquations()
 	LOG_DEBUG("Preparing equations...");
 
 	equationMap_.clear();
-	for (auto& equation : equationList_) {
-		auto res = equationMap_.insert(std::make_pair(equation.name, &equation));
-		if (!res.second) {
-			THROW_EXCEPTION(TRMControlModelException, "Duplicate equation: " << equation.name << '.');
-		}
+	for (auto& group : equationGroupList_) {
+		for (auto& equation : group.equationList) {
+			auto res = equationMap_.insert(std::make_pair(equation.name, &equation));
+			if (!res.second) {
+				THROW_EXCEPTION(TRMControlModelException, "Duplicate equation: " << equation.name << '.');
+			}
 
-		// Convert the formula expression to a tree.
-		equation.parseFormula(formulaSymbol_);
+			// Convert the formula expression to a tree.
+			equation.parseFormula(formulaSymbol_);
+		}
 	}
 }
 
@@ -276,12 +277,14 @@ Model::printInfo() const
 	symbolList[FormulaSymbol::SYMB_MARK1] = 150.5f;
 	symbolList[FormulaSymbol::SYMB_MARK2] = 150.6f;
 	//symbolList[FormulaSymbol::SYMB_NULL] = 1.0f;
-	for (auto iter = equationMap_.begin(); iter != equationMap_.end(); ++iter) {
-		const auto& v = *iter;
-		std::cout << "=== Equation: [" << v.second->name << "] group: " << v.second->groupName << std::endl;
-		std::cout << "    [" << v.second->formula << "]" << std::endl;
-		std::cout << *v.second->formulaRoot << std::endl;
-		std::cout << "*** EVAL=" << v.second->formulaRoot->eval(symbolList) << std::endl;
+	for (const auto& group : equationGroupList_) {
+		std::cout << "=== Equation group: " << group.name << std::endl;
+		for (const auto& equation : group.equationList) {
+			std::cout << "=== Equation: [" << equation.name << "]" << std::endl;
+			std::cout << "    [" << equation.formula << "]" << std::endl;
+			std::cout << *equation.formulaRoot << std::endl;
+			std::cout << "*** EVAL=" << equation.formulaRoot->eval(symbolList) << std::endl;
+		}
 	}
 
 	//---------------------------------------------------------
@@ -481,6 +484,36 @@ Model::evalEquationFormula(const std::string& equationName) const
 	}
 
 	return iter->second->evalFormula(formulaSymbolList_);
+}
+
+/*******************************************************************************
+ *
+ */
+bool
+Model::findEquationGroupName(const std::string& name) const
+{
+	for (const auto& item : equationGroupList_) {
+		if (item.name == name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*******************************************************************************
+ *
+ */
+bool
+Model::findEquationName(const std::string& name) const
+{
+	for (const auto& group : equationGroupList_) {
+		for (const auto& item : group.equationList) {
+			if (item.name == name) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 /*******************************************************************************

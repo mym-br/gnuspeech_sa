@@ -268,24 +268,22 @@ XMLConfigFileWriter::writeElements()
 
 	LOG_DEBUG("equations ==================================================");
 	xml.openElement("equations");
-	for (const std::string groupName : model_.equationGroupList()) {
+	for (const auto& group : model_.equationGroupList()) {
 		xml.openElementWithAttributes("equation-group");
-		xml.addAttribute("name", groupName);
+		xml.addAttribute("name", group.name);
 		xml.endAttributes();
-		for (const Equation& equation : model_.equationList()) {
-			if (equation.groupName == groupName) {
-				xml.openElementWithAttributes("equation");
-				xml.addAttribute("name", equation.name);
-				xml.addAttribute("formula", equation.formula);
-				if (!equation.comment.empty()) {
-					xml.endAttributes();
-					xml.openInlineElement("comment");
-					xml.addText(equation.comment);
-					xml.closeInlineElement("comment");
-					xml.closeElement("equation");
-				} else {
-					xml.endAttributesAndCloseElement();
-				}
+		for (const Equation& equation : group.equationList) {
+			xml.openElementWithAttributes("equation");
+			xml.addAttribute("name", equation.name);
+			xml.addAttribute("formula", equation.formula);
+			if (!equation.comment.empty()) {
+				xml.endAttributes();
+				xml.openInlineElement("comment");
+				xml.addText(equation.comment);
+				xml.closeInlineElement("comment");
+				xml.closeElement("equation");
+			} else {
+				xml.endAttributesAndCloseElement();
 			}
 		}
 		xml.closeElement("equation-group");

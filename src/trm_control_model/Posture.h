@@ -23,7 +23,6 @@
 #ifndef TRM_CONTROL_MODEL_POSTURE_H_
 #define TRM_CONTROL_MODEL_POSTURE_H_
 
-#include <list>
 #include <string>
 #include <vector>
 
@@ -56,8 +55,8 @@ public:
 	const std::string& name() const { return name_; }
 	void setName(const std::string& name) { name_ = name; }
 
-	std::list<Category>& categoryList() { return categoryList_; }
-	const std::list<Category>& categoryList() const { return categoryList_; }
+	std::vector<Category>& categoryList() { return categoryList_; }
+	const std::vector<Category>& categoryList() const { return categoryList_; }
 
 	std::vector<float>& parameterTargetList() { return parameterTargetList_; }
 	float getParameterTarget(unsigned int parameterIndex) const {
@@ -89,7 +88,7 @@ public:
 
 private:
 	std::string name_;
-	std::list<Category> categoryList_;
+	std::vector<Category> categoryList_;
 	std::vector<float> parameterTargetList_;
 	Symbols symbols_;
 	std::string comment_;
