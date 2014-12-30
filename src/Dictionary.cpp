@@ -40,7 +40,7 @@ Dictionary::load(const char* filePath)
 {
 	map_.clear();
 
-	std::ifstream in(filePath);
+	std::ifstream in(filePath, std::ios_base::in | std::ios_base::binary);
 	if (!in) {
 		THROW_EXCEPTION(IOException, "Could not open the file " << filePath << '.');
 	}

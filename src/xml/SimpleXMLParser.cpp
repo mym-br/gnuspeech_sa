@@ -52,7 +52,7 @@ SimpleXMLParser::SimpleXMLParser(const std::string& filePath)
 
 	char buf[BUFFER_SIZE];
 
-	std::ifstream inFile(filePath.c_str());
+	std::ifstream inFile(filePath.c_str(), std::ios_base::in | std::ios_base::binary);
 	if (!inFile) {
 		THROW_EXCEPTION(XMLException, "Could not open the file: " << filePath << '.');
 	}

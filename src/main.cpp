@@ -107,7 +107,7 @@ main(int argc, char* argv[])
 	}
 
 	if (inputFile != nullptr) {
-		std::ifstream in(inputFile);
+		std::ifstream in(inputFile, std::ios_base::in | std::ios_base::binary);
 		if (!in) {
 			std::cerr << "Could not open the file " << inputFile << '.' << std::endl;
 			return 1;

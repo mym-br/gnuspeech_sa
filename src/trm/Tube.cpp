@@ -263,7 +263,7 @@ Tube::parseInputFile(const char* inputFile)
 	char line[128];
 
 	/*  OPEN THE INPUT FILE  */
-	if ((fp = fopen(inputFile, "r")) == NULL) {
+	if ((fp = fopen(inputFile, "rb")) == NULL) {
 		fprintf(stderr, "Can't open input file \"%s\".\n", inputFile);
 		return false;
 	}

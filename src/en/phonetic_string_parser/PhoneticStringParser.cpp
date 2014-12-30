@@ -82,7 +82,7 @@ PhoneticStringParser::initVowelTransitions(const char* configDirPath)
 	memset(vowelTransitions_, 0, 13 * 13 * sizeof(int));
 	std::ostringstream path;
 	path << configDirPath << VOWEL_TRANSITIONS_CONFIG_FILE_NAME;
-	FILE* fp = fopen(path.str().c_str(), "r");
+	FILE* fp = fopen(path.str().c_str(), "rb");
 	if (fp == NULL) {
 		THROW_EXCEPTION(IOException, "Could not open the file " << path.str().c_str() << '.');
 	}

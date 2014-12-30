@@ -159,7 +159,7 @@ EventList::initToneGroups(const char* configDirPath)
 
 	std::ostringstream path;
 	path << configDirPath << INTONATION_CONFIG_FILE_NAME;
-	fp = fopen(path.str().c_str(), "r");
+	fp = fopen(path.str().c_str(), "rb");
 	if (fp == NULL) {
 		THROW_EXCEPTION(IOException, "Could not open the file " << path.str().c_str() << '.');
 	}
@@ -943,7 +943,7 @@ EventList::generateOutput(const char* trmParamFile)
 	if (list_.empty()) {
 		return;
 	}
-	FILE* fp = fopen(trmParamFile, "a");
+	FILE* fp = fopen(trmParamFile, "ab");
 	if (fp == NULL) {
 		THROW_EXCEPTION(IOException, "Could not open the file " << trmParamFile << '.');
 	}

@@ -82,7 +82,7 @@ Controller::initUtterance(const char* trmParamFile)
 	eventList_.setTgUseRandom(trmControlModelConfig_.intonation & Configuration::INTONATION_RANDOMIZE);
 	eventList_.setUpDriftGenerator(trmControlModelConfig_.driftDeviation, trmControlModelConfig_.controlRate, trmControlModelConfig_.driftLowpassCutoff);
 
-	FILE* fp = fopen(trmParamFile, "w");
+	FILE* fp = fopen(trmParamFile, "wb");
 	if (!fp) {
 		THROW_EXCEPTION(TRMControlModelException, "Could not open the file " << trmParamFile << '.');
 	}
@@ -160,7 +160,7 @@ Controller::initVoices(const char* configDirPath)
 	memset(voices_, 0, sizeof(VoiceConfig) * MAX_VOICES);
 	std::ostringstream path;
 	path << configDirPath << VOICES_CONFIG_FILE_NAME;
-	fp = fopen(path.str().c_str(), "r");
+	fp = fopen(path.str().c_str(), "rb");
 	if (fp == NULL) {
 		THROW_EXCEPTION(IOException, "Could not open the file " << path.str().c_str() << '.');
 	}

@@ -117,7 +117,7 @@ namespace TRMControlModel {
  */
 XMLConfigFileWriter::XMLConfigFileWriter(const Model& model, const std::string& filePath)
 		: model_(model)
-		, out_(filePath)
+		, out_(filePath, std::ios_base::out | std::ios_base::binary)
 		, filePath_(filePath)
 {
 	if (!out_) {
