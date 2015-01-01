@@ -68,11 +68,9 @@ Model::clear()
 	equationMap_.clear();
 
 	transitionGroupList_.clear();
-	transitionList_.clear();
 	transitionMap_.clear();
 
 	specialTransitionGroupList_.clear();
-	specialTransitionList_.clear();
 	specialTransitionMap_.clear();
 
 	formulaSymbolList_.fill(0.0f);
@@ -190,20 +188,24 @@ void
 Model::prepareTransitions()
 {
 	transitionMap_.clear();
-	for (auto& transition : transitionList_) {
-		auto res = transitionMap_.insert(std::make_pair(transition.name(), &transition));
-		if (!res.second) {
-			//THROW_EXCEPTION(TRMControlModelException, "Duplicate transition: " << transition.name() << '.');
-			LOG_ERROR("Duplicate transition: " << transition.name() << " (ignored).");
+	for (auto& group : transitionGroupList_) {
+		for (auto& transition : group.transitionList) {
+			auto res = transitionMap_.insert(std::make_pair(transition.name(), &transition));
+			if (!res.second) {
+				//THROW_EXCEPTION(TRMControlModelException, "Duplicate transition: " << transition.name() << '.');
+				LOG_ERROR("Duplicate transition: " << transition.name() << " (ignored).");
+			}
 		}
 	}
 
 	specialTransitionMap_.clear();
-	for (auto& transition : specialTransitionList_) {
-		auto res = specialTransitionMap_.insert(std::make_pair(transition.name(), &transition));
-		if (!res.second) {
-			//THROW_EXCEPTION(TRMControlModelException, "Duplicate transition: " << transition.name() << '.');
-			LOG_ERROR("Duplicate special transition: " << transition.name() << " (ignored).");
+	for (auto& group : specialTransitionGroupList_) {
+		for (auto& transition : group.transitionList) {
+			auto res = specialTransitionMap_.insert(std::make_pair(transition.name(), &transition));
+			if (!res.second) {
+				//THROW_EXCEPTION(TRMControlModelException, "Duplicate transition: " << transition.name() << '.');
+				LOG_ERROR("Duplicate special transition: " << transition.name() << " (ignored).");
+			}
 		}
 	}
 }
@@ -290,26 +292,28 @@ Model::printInfo() const
 	//---------------------------------------------------------
 	// Transitions.
 	std::cout << std::string(40, '-') << "\nTransitions:" << std::endl << std::endl;
-	for (auto& item : transitionMap_) {
-		const Transition& t = *item.second;
-		std::cout << "### Transition: [" << t.name() << "] group: " << t.groupName()  << std::endl;
-		std::cout << "    type=" << t.type() << " special=" << t.special() << std::endl;
+	for (const auto& group : transitionGroupList_) {
+		std::cout << "=== Transition group: " << group.name << std::endl;
+		for (const auto& transition : group.transitionList) {
+			std::cout << "### Transition: [" << transition.name() << "]" << std::endl;
+			std::cout << "    type=" << transition.type() << " special=" << transition.special() << std::endl;
 
-		for (auto& pointOrSlope : t.pointOrSlopeList()) {
-			if (!pointOrSlope->isSlopeRatio()) {
-				const auto& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
-				std::cout << "       point: type=" << point.type << " value=" << point.value
-					<< " freeTime=" << point.freeTime << " timeExpression=" << point.timeExpression
-					<< " isPhantom=" << point.isPhantom << std::endl;
-			} else {
-				const auto& slopeRatio = dynamic_cast<const Transition::SlopeRatio&>(*pointOrSlope);
-				for (auto& point : slopeRatio.pointList) {
-					std::cout << "         point: type=" << point->type << " value=" << point->value
-						<< " freeTime=" << point->freeTime << " timeExpression=" << point->timeExpression
-						<< " isPhantom=" << point->isPhantom << std::endl;
-				}
-				for (auto& slope : slopeRatio.slopeList) {
-					std::cout << "         slope: slope=" << slope->slope << " displayTime=" << slope->displayTime << std::endl;
+			for (auto& pointOrSlope : transition.pointOrSlopeList()) {
+				if (!pointOrSlope->isSlopeRatio()) {
+					const auto& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
+					std::cout << "       point: type=" << point.type << " value=" << point.value
+						<< " freeTime=" << point.freeTime << " timeExpression=" << point.timeExpression
+						<< " isPhantom=" << point.isPhantom << std::endl;
+				} else {
+					const auto& slopeRatio = dynamic_cast<const Transition::SlopeRatio&>(*pointOrSlope);
+					for (auto& point : slopeRatio.pointList) {
+						std::cout << "         point: type=" << point->type << " value=" << point->value
+							<< " freeTime=" << point->freeTime << " timeExpression=" << point->timeExpression
+							<< " isPhantom=" << point->isPhantom << std::endl;
+					}
+					for (auto& slope : slopeRatio.slopeList) {
+						std::cout << "         slope: slope=" << slope->slope << " displayTime=" << slope->displayTime << std::endl;
+					}
 				}
 			}
 		}
@@ -318,17 +322,19 @@ Model::printInfo() const
 	//---------------------------------------------------------
 	// Special transitions.
 	std::cout << std::string(40, '-') << "\nSpecial transitions:" << std::endl << std::endl;
-	for (auto& item : specialTransitionMap_) {
-		const Transition& t = *item.second;
-		std::cout << "### Transition: [" << t.name() << "] group: " << t.groupName()  << std::endl;
-		std::cout << "    type=" << t.type() << " special=" << t.special() << std::endl;
+	for (const auto& group : specialTransitionGroupList_) {
+		std::cout << "=== Special transition group: " << group.name << std::endl;
+		for (const auto& transition : group.transitionList) {
+			std::cout << "### Transition: [" << transition.name() << "]" << std::endl;
+			std::cout << "    type=" << transition.type() << " special=" << transition.special() << std::endl;
 
-		for (const auto& pointOrSlope : t.pointOrSlopeList()) {
-			const auto& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
+			for (const auto& pointOrSlope : transition.pointOrSlopeList()) {
+				const auto& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
 
-			std::cout << "       point: type=" << point.type << " value=" << point.value
-				<< " freeTime=" << point.freeTime << " timeExpression=" << point.timeExpression
-				<< " isPhantom=" << point.isPhantom << std::endl;
+				std::cout << "       point: type=" << point.type << " value=" << point.value
+					<< " freeTime=" << point.freeTime << " timeExpression=" << point.timeExpression
+					<< " isPhantom=" << point.isPhantom << std::endl;
+			}
 		}
 	}
 
@@ -475,6 +481,55 @@ Model::getFormulaSymbolValue(FormulaSymbol::Code symbol) const
 /*******************************************************************************
  *
  */
+void
+Model::setDefaultFormulaSymbols(Transition::Type transitionType)
+{
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION1, 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION2, 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION3, 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION4, 33.3333);
+
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA1      , 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA2      , 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA3      , 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA4      , 33.3333);
+
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB1      , 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB2      , 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB3      , 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB4      , 33.3333);
+
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO1, 1.0);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO2, 1.0);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO3, 1.0);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO4, 1.0);
+
+	setFormulaSymbolValue(FormulaSymbol::SYMB_BEAT ,  33.0);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_MARK1, 100.0);
+	switch (transitionType) {
+	case Transition::TYPE_DIPHONE:
+		setFormulaSymbolValue(FormulaSymbol::SYMB_RD   , 100.0);
+		setFormulaSymbolValue(FormulaSymbol::SYMB_MARK2,   0.0);
+		setFormulaSymbolValue(FormulaSymbol::SYMB_MARK3,   0.0);
+		break;
+	case Transition::TYPE_TRIPHONE:
+		setFormulaSymbolValue(FormulaSymbol::SYMB_RD   , 200.0);
+		setFormulaSymbolValue(FormulaSymbol::SYMB_MARK2, 200.0);
+		setFormulaSymbolValue(FormulaSymbol::SYMB_MARK3,   0.0);
+		break;
+	case Transition::TYPE_TETRAPHONE:
+		setFormulaSymbolValue(FormulaSymbol::SYMB_RD   , 300.0);
+		setFormulaSymbolValue(FormulaSymbol::SYMB_MARK2, 200.0);
+		setFormulaSymbolValue(FormulaSymbol::SYMB_MARK3, 300.0);
+		break;
+	default:
+		THROW_EXCEPTION(TRMControlModelException, "Invalid transition type: " << transitionType << '.');
+	}
+}
+
+/*******************************************************************************
+ *
+ */
 float
 Model::evalEquationFormula(const std::string& equationName) const
 {
@@ -616,6 +671,36 @@ Model::findTransition(const std::string& name) const
 }
 
 /*******************************************************************************
+ *
+ */
+bool
+Model::findTransitionGroupName(const std::string& name) const
+{
+	for (const auto& item : transitionGroupList_) {
+		if (item.name == name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*******************************************************************************
+ *
+ */
+bool
+Model::findTransitionName(const std::string& name) const
+{
+	for (const auto& group : transitionGroupList_) {
+		for (const auto& item : group.transitionList) {
+			if (item.name() == name) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*******************************************************************************
  * Find a Special Transition with the given name.
  *
  * Returns a pointer to the Special Transition, or 0 (zero) if a Special
@@ -629,6 +714,36 @@ Model::findSpecialTransition(const std::string& name) const
 		return nullptr;
 	}
 	return transIter->second;
+}
+
+/*******************************************************************************
+ *
+ */
+bool
+Model::findSpecialTransitionGroupName(const std::string& name) const
+{
+	for (const auto& item : specialTransitionGroupList_) {
+		if (item.name == name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*******************************************************************************
+ *
+ */
+bool
+Model::findSpecialTransitionName(const std::string& name) const
+{
+	for (const auto& group : specialTransitionGroupList_) {
+		for (const auto& item : group.transitionList) {
+			if (item.name() == name) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 /*******************************************************************************

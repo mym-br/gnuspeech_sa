@@ -264,12 +264,12 @@ XMLConfigFileReader::parseTransitionPointOrSlopes(Transition& transition)
 void
 XMLConfigFileReader::parseTransitionsGroup(bool special)
 {
-	const std::string groupName = parser_.getAttribute(nameAttrName_);
-	// Can't be a reference because it is used many times in the loop.
+	TransitionGroup group;
+	group.name = parser_.getAttribute(nameAttrName_);
 	if (special) {
-		model_.specialTransitionGroupList().push_back(groupName);
+		model_.specialTransitionGroupList().push_back(std::move(group));
 	} else {
-		model_.transitionGroupList().push_back(groupName);
+		model_.transitionGroupList().push_back(std::move(group));
 	}
 
 	for (const std::string* child = parser_.getFirstChild(transitionTagName_);
@@ -279,7 +279,7 @@ XMLConfigFileReader::parseTransitionsGroup(bool special)
 		std::string name = parser_.getAttribute(nameAttrName_);
 		Transition::Type type = Transition::getTypeFromName(parser_.getAttribute(typeAttrName_));
 
-		Transition tr(groupName, name, type, special);
+		Transition tr(name, type, special);
 
 		for (const std::string* transitionChild = parser_.getFirstChild();
 					transitionChild;
@@ -292,9 +292,9 @@ XMLConfigFileReader::parseTransitionsGroup(bool special)
 		}
 
 		if (special) {
-			model_.specialTransitionList().push_back(std::move(tr));
+			model_.specialTransitionGroupList().back().transitionList.push_back(std::move(tr));
 		} else {
-			model_.transitionList().push_back(std::move(tr));
+			model_.transitionGroupList().back().transitionList.push_back(std::move(tr));
 		}
 	}
 }

@@ -130,20 +130,21 @@ public:
 	};
 
 	Transition(
-		const std::string& groupName,
 		const std::string& name,
 		Type type,
 		bool special)
-			: groupName_(groupName)
-			, name_(name)
+			: name_(name)
 			, type_(type)
 			, special_(special)
 	{
 	}
 
-	const std::string& groupName() const { return groupName_; }
 	const std::string& name() const { return name_; }
+	void setName(const std::string& name) { name_ = name; }
+
 	Type type() const { return type_; }
+	void setType(Type type) { type_ = type; }
+
 	bool special() const { return special_; }
 
 	const std::string& comment() const { return comment_; }
@@ -184,12 +185,16 @@ public:
 		}
 	}
 private:
-	std::string groupName_;
 	std::string name_;
 	Type type_;
 	bool special_;
 	std::vector<PointOrSlope_ptr> pointOrSlopeList_;
 	std::string comment_;
+};
+
+struct TransitionGroup {
+	std::string name;
+	std::vector<Transition> transitionList;
 };
 
 } /* namespace TRMControlModel */

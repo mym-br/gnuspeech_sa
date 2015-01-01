@@ -59,6 +59,7 @@ public:
 	void clearFormulaSymbolList();
 	void setFormulaSymbolValue(FormulaSymbol::Code symbol, float value);
 	float getFormulaSymbolValue(FormulaSymbol::Code symbol) const;
+	void setDefaultFormulaSymbols(Transition::Type transitionType);
 
 	const std::vector<EquationGroup>& equationGroupList() const { return equationGroupList_; }
 	std::vector<EquationGroup>& equationGroupList() { return equationGroupList_; }
@@ -85,17 +86,17 @@ public:
 	const Posture* findPosture(const std::string& name) const;
 	void addPosture(Posture& posture);
 
-	const std::vector<std::string>& transitionGroupList() const { return transitionGroupList_; }
-	std::vector<std::string>& transitionGroupList() { return transitionGroupList_; }
-	const std::list<Transition>& transitionList() const { return transitionList_; }
-	std::list<Transition>& transitionList() { return transitionList_; }
+	const std::vector<TransitionGroup>& transitionGroupList() const { return transitionGroupList_; }
+	std::vector<TransitionGroup>& transitionGroupList() { return transitionGroupList_; }
 	const Transition* findTransition(const std::string& name) const;
+	bool findTransitionGroupName(const std::string& name) const;
+	bool findTransitionName(const std::string& name) const;
 
-	const std::vector<std::string>& specialTransitionGroupList() const { return specialTransitionGroupList_; }
-	std::vector<std::string>& specialTransitionGroupList() { return specialTransitionGroupList_; }
-	const std::list<Transition>& specialTransitionList() const { return specialTransitionList_; }
-	std::list<Transition>& specialTransitionList() { return specialTransitionList_; }
+	const std::vector<TransitionGroup>& specialTransitionGroupList() const { return specialTransitionGroupList_; }
+	std::vector<TransitionGroup>& specialTransitionGroupList() { return specialTransitionGroupList_; }
 	const Transition* findSpecialTransition(const std::string& name) const;
+	bool findSpecialTransitionGroupName(const std::string& name) const;
+	bool findSpecialTransitionName(const std::string& name) const;
 
 	const std::list<Rule>& ruleList() const { return ruleList_; }
 	std::list<Rule>& ruleList() { return ruleList_; }
@@ -106,6 +107,8 @@ public:
 	const Category* findCategory(const std::string& name) const;
 	unsigned int getCategoryCode(const std::string& name) const;
 	bool findCategoryName(const std::string& name) const;
+
+	void prepareEquations();
 
 private:
 	std::vector<Category> categoryList_;
@@ -123,12 +126,10 @@ private:
 	std::vector<EquationGroup> equationGroupList_;
 	std::unordered_map<std::string, Equation*> equationMap_; // optimization
 
-	std::vector<std::string> transitionGroupList_;
-	std::list<Transition> transitionList_;
+	std::vector<TransitionGroup> transitionGroupList_;
 	std::unordered_map<std::string, Transition*> transitionMap_; // optimization
 
-	std::vector<std::string> specialTransitionGroupList_;
-	std::list<Transition> specialTransitionList_;
+	std::vector<TransitionGroup> specialTransitionGroupList_;
 	std::unordered_map<std::string, Transition*> specialTransitionMap_; // optimization
 
 	FormulaSymbolList formulaSymbolList_;
@@ -136,7 +137,6 @@ private:
 
 	void prepareCategories();
 	void preparePostures();
-	void prepareEquations();
 	void prepareTransitions();
 	void prepareRules();
 };
