@@ -232,7 +232,7 @@ Tube::printInfo(const char* inputFile)
 	printf("\tvelum\n");
 
 	/*  ACTUAL VALUES  */
-	for (int i = 0; i < inputData_.size() - 1; ++i) {
+	for (int i = 0; i < static_cast<int>(inputData_.size()) - 1; ++i) {
 		printf("%.2f"  , inputData_[i]->glotPitch);
 		printf("\t%.2f", inputData_[i]->glotVol);
 		printf("\t%.2f", inputData_[i]->aspVol);
@@ -572,7 +572,7 @@ void
 Tube::synthesizeForInputSequence()
 {
 	/*  CONTROL RATE LOOP  */
-	for (int i = 1; i < inputData_.size(); i++) {
+	for (int i = 1, size = inputData_.size(); i < size; i++) {
 		/*  SET CONTROL RATE PARAMETERS FROM INPUT TABLES  */
 		setControlRateParameters(i);
 

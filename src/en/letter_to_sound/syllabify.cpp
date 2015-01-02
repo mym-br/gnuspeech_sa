@@ -301,7 +301,7 @@ syllabify(char* word)
 	current_type = cv_signature;
 
 	/*  WHILE THERE IS ANOTHER CONSONANT CLUSTER (NOT THE LAST)  */
-	while (temp = next_consonant_cluster(current_type)) {
+	while ( (temp = next_consonant_cluster(current_type)) ) {
 		number_of_syllables++;
 
 		/*  UPDATE CURRENT TYPE POINTER  */

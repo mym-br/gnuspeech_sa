@@ -129,7 +129,7 @@ EventList::getPostureDataAtIndex(unsigned int index) const
 const RuleData*
 EventList::getRuleAtIndex(unsigned int index) const
 {
-	if (index > currentRule_) {
+	if (static_cast<int>(index) > currentRule_) {
 		return nullptr;
 	} else {
 		return &ruleData_[index];
@@ -396,7 +396,6 @@ EventList::createSlopeRatioEvents(
 		const Transition::SlopeRatio& slopeRatio,
 		double baseline, double parameterDelta, double min, double max, int eventIndex)
 {
-	int i, numSlopes;
 	double temp = 0.0, temp1 = 0.0, intervalTime = 0.0, sum = 0.0, factor = 0.0;
 	double baseTime = 0.0, endTime = 0.0, totalTime = 0.0, delta = 0.0;
 	double startValue;
@@ -413,9 +412,9 @@ EventList::createSlopeRatioEvents(
 	temp = slopeRatio.totalSlopeUnits();
 	totalTime = endTime - baseTime;
 
-	numSlopes = slopeRatio.slopeList.size();
+	int numSlopes = slopeRatio.slopeList.size();
 	std::vector<double> newPointValues(numSlopes - 1);
-	for (i = 1; i < numSlopes + 1; i++) {
+	for (int i = 1; i < numSlopes + 1; i++) {
 		temp1 = slopeRatio.slopeList[i - 1]->slope / temp; /* Calculate normal slope */
 
 		/* Calculate time interval */
@@ -437,7 +436,7 @@ EventList::createSlopeRatioEvents(
 	temp = startValue;
 
 	double value = 0.0;
-	for (i = 0; i < slopeRatio.pointList.size(); i++) {
+	for (unsigned int i = 0, size = slopeRatio.pointList.size(); i < size; i++) {
 		const Transition::Point& point = *slopeRatio.pointList[i];
 
 		if (i >= 1 && i < slopeRatio.pointList.size() - 1) {
@@ -650,12 +649,12 @@ EventList::generateEventList()
 		}
 	}
 
-	int basePostureIndex = 0;
+	unsigned int basePostureIndex = 0;
 	std::vector<const Posture*> tempPostureList;
 	while (basePostureIndex < currentPosture_) {
 		tempPostureList.clear();
-		for (int i = 0; i < 4; i++) {
-			int postureIndex = basePostureIndex + i;
+		for (unsigned int i = 0; i < 4; i++) {
+			unsigned int postureIndex = basePostureIndex + i;
 			if (postureIndex <= currentPosture_ && postureData_[postureIndex].posture) {
 				tempPostureList.push_back(postureData_[postureIndex].posture);
 			} else {
@@ -846,13 +845,6 @@ EventList::applyIntonation()
 void
 EventList::applyIntonationSmooth()
 {
-	int j;
-	double a, b, c, d;
-	double x1, y1, m1, x12, x13;
-	double x2, y2, m2, x22, x23;
-	double denominator;
-	double yTemp;
-
 	setFullTimeScale();
 	//tempPoint = [[IntonationPoint alloc] initWithEventList: self];
 	//[tempPoint setSemitone: -20.0];
@@ -862,38 +854,38 @@ EventList::applyIntonationSmooth()
 
 	//[intonationPoints insertObject: tempPoint at:0];
 
-	for (j = 0; j < intonationPoints_.size() - 1; j++) {
+	for (unsigned int j = 0; j < intonationPoints_.size() - 1; j++) {
 		const IntonationPoint& point1 = *intonationPoints_[j];
 		const IntonationPoint& point2 = *intonationPoints_[j + 1];
 
-		x1 = point1.absoluteTime() / 4.0;
-		y1 = point1.semitone() + 20.0;
-		m1 = point1.slope();
+		double x1 = point1.absoluteTime() / 4.0;
+		double y1 = point1.semitone() + 20.0;
+		double m1 = point1.slope();
 
-		x2 = point2.absoluteTime() / 4.0;
-		y2 = point2.semitone() + 20.0;
-		m2 = point2.slope();
+		double x2 = point2.absoluteTime() / 4.0;
+		double y2 = point2.semitone() + 20.0;
+		double m2 = point2.slope();
 
-		x12 = x1 * x1;
-		x13 = x12 * x1;
+		double x12 = x1 * x1;
+		double x13 = x12 * x1;
 
-		x22 = x2 * x2;
-		x23 = x22 * x2;
+		double x22 = x2 * x2;
+		double x23 = x22 * x2;
 
-		denominator = x2 - x1;
+		double denominator = x2 - x1;
 		denominator = denominator * denominator * denominator;
 
-		d = ( -(y2 * x13) + 3 * y2 * x12 * x2 + m2 * x13 * x2 + m1 * x12 * x22 - m2 * x12 * x22 - 3 * x1 * y1 * x22 - m1 * x1 * x23 + y1 * x23 )
+//		double d = ( -(y2 * x13) + 3 * y2 * x12 * x2 + m2 * x13 * x2 + m1 * x12 * x22 - m2 * x12 * x22 - 3 * x1 * y1 * x22 - m1 * x1 * x23 + y1 * x23 )
+//			/ denominator;
+		double c = ( -(m2 * x13) - 6 * y2 * x1 * x2 - 2 * m1 * x12 * x2 - m2 * x12 * x2 + 6 * x1 * y1 * x2 + m1 * x1 * x22 + 2 * m2 * x1 * x22 + m1 * x23 )
 			/ denominator;
-		c = ( -(m2 * x13) - 6 * y2 * x1 * x2 - 2 * m1 * x12 * x2 - m2 * x12 * x2 + 6 * x1 * y1 * x2 + m1 * x1 * x22 + 2 * m2 * x1 * x22 + m1 * x23 )
+		double b = ( 3 * y2 * x1 + m1 * x12 + 2 * m2 * x12 - 3 * x1 * y1 + 3 * x2 * y2 + m1 * x1 * x2 - m2 * x1 * x2 - 3 * y1 * x2 - 2 * m1 * x22 - m2 * x22 )
 			/ denominator;
-		b = ( 3 * y2 * x1 + m1 * x12 + 2 * m2 * x12 - 3 * x1 * y1 + 3 * x2 * y2 + m1 * x1 * x2 - m2 * x1 * x2 - 3 * y1 * x2 - 2 * m1 * x22 - m2 * x22 )
-			/ denominator;
-		a = ( -2 * y2 - m1 * x1 - m2 * x1 + 2 * y1 + m1 * x2 + m2 * x2) / denominator;
+		double a = ( -2 * y2 - m1 * x1 - m2 * x1 + 2 * y1 + m1 * x2 + m2 * x2) / denominator;
 
 		insertEvent(32, point1.absoluteTime(), point1.semitone());
 		//printf("Inserting Point %f\n", [point1 semitone]);
-		yTemp = (3.0 * a * x12) + (2.0 * b * x1) + c;
+		double yTemp = (3.0 * a * x12) + (2.0 * b * x1) + c;
 		insertEvent(33, point1.absoluteTime(), yTemp);
 		yTemp = (6.0 * a * x1) + (2.0 * b);
 		insertEvent(34, point1.absoluteTime(), yTemp);
@@ -920,7 +912,7 @@ EventList::addIntonationPoint(double semitone, double offsetTime, double slope, 
 	iPoint->setSlope(slope);
 
 	double time = iPoint->absoluteTime();
-	for (int i = 0; i < intonationPoints_.size(); i++) {
+	for (unsigned int i = 0; i < intonationPoints_.size(); i++) {
 		if (time < intonationPoints_[i]->absoluteTime()) {
 			intonationPoints_.insert(intonationPoints_.begin() + i, std::move(iPoint));
 			return;
@@ -933,8 +925,6 @@ EventList::addIntonationPoint(double semitone, double offsetTime, double slope, 
 void
 EventList::generateOutput(const char* trmParamFile)
 {
-	int i, j, k;
-	int currentTime, nextTime;
 	double currentValues[36];
 	double currentDeltas[36];
 	double temp;
@@ -948,9 +938,8 @@ EventList::generateOutput(const char* trmParamFile)
 		THROW_EXCEPTION(IOException, "Could not open the file " << trmParamFile << '.');
 	}
 
-	currentTime = 0;
-	for (i = 0; i < 16; i++) {
-		j = 1;
+	for (int i = 0; i < 16; i++) {
+		unsigned int j = 1;
 		while ((temp = list_[j]->getValue(i)) == GS_EVENTLIST_INVALID_EVENT_VALUE) {
 			j++;
 			if (j >= list_.size()) break;
@@ -962,12 +951,12 @@ EventList::generateOutput(const char* trmParamFile)
 			currentDeltas[i] = 0.0;
 		}
 	}
-	for (i = 16; i < 36; i++) {
+	for (int i = 16; i < 36; i++) {
 		currentValues[i] = currentDeltas[i] = 0.0;
 	}
 
 	if (smoothIntonation_) {
-		j = 0;
+		unsigned int j = 0;
 		while ((temp = list_[j]->getValue(32)) == GS_EVENTLIST_INVALID_EVENT_VALUE) {
 			j++;
 			if (j >= list_.size()) break;
@@ -979,7 +968,7 @@ EventList::generateOutput(const char* trmParamFile)
 		}
 		currentDeltas[32] = 0.0;
 	} else {
-		j = 1;
+		unsigned int j = 1;
 		while ((temp = list_[j]->getValue(32)) == GS_EVENTLIST_INVALID_EVENT_VALUE) {
 			j++;
 			if (j >= list_.size()) break;
@@ -993,12 +982,12 @@ EventList::generateOutput(const char* trmParamFile)
 		currentValues[32] = -20.0;
 	}
 
-	i = 1;
-	currentTime = 0;
-	nextTime = list_[1]->time;
+	unsigned int i = 1;
+	int currentTime = 0;
+	int nextTime = list_[1]->time;
 	while (i < list_.size()) {
 
-		for (j = 0; j < 16; j++) {
+		for (int j = 0; j < 16; j++) {
 			table[j] = (float) currentValues[j] + (float) currentValues[j + 16];
 		}
 		if (!microFlag_) table[0] = 0.0;
@@ -1016,7 +1005,7 @@ EventList::generateOutput(const char* trmParamFile)
 				table[12], table[13], table[14], table[15]);
 		}
 
-		for (j = 0; j < 32; j++) {
+		for (int j = 0; j < 32; j++) {
 			if (currentDeltas[j]) {
 				currentValues[j] += currentDeltas[j];
 			}
@@ -1039,11 +1028,11 @@ EventList::generateOutput(const char* trmParamFile)
 				break;
 			}
 			nextTime = list_[i]->time;
-			for (j = 0; j < 33; j++) { /* 32? 33? */
+			for (int j = 0; j < 33; j++) { /* 32? 33? */
 				if (list_[i - 1]->getValue(j) != GS_EVENTLIST_INVALID_EVENT_VALUE) {
-					k = i;
+					unsigned int k = i;
 					while ((temp = list_[k]->getValue(j)) == GS_EVENTLIST_INVALID_EVENT_VALUE) {
-						if (k >= list_.size() - 1) {
+						if (k >= list_.size() - 1U) {
 							currentDeltas[j] = 0.0;
 							break;
 						}
@@ -1090,8 +1079,8 @@ EventList::printDataStructures()
 	}
 
 	printf("\nPostures %d\n", currentPosture_);
-	for (int i = 0; i < currentPosture_; i++) {
-		printf("%d  \"%s\" tempo: %f syllable: %d onset: %f ruleTempo: %f\n",
+	for (unsigned int i = 0; i < currentPosture_; i++) {
+		printf("%u  \"%s\" tempo: %f syllable: %d onset: %f ruleTempo: %f\n",
 			 i, postureData_[i].posture->name().c_str(), postureTempo_[i], postureData_[i].syllable, postureData_[i].onset, postureData_[i].ruleTempo);
 	}
 
@@ -1101,8 +1090,8 @@ EventList::printDataStructures()
 			ruleData_[i].lastPosture, ruleData_[i].duration);
 	}
 #if 0
-	printf("\nEvents %d\n", list_.size());
-	for (int i = 0; i < list_.size(); i++) {
+	printf("\nEvents %lu\n", list_.size());
+	for (unsigned int i = 0; i < list_.size(); i++) {
 		const Event& event = *list_[i];
 		printf("  Event: time=%d flag=%d\n    Values: ", event.time, event.flag);
 

@@ -132,20 +132,20 @@ MainDictionary::augmentedSearch(const char* orthography)
 	clearBuffers();
 
 	/*  RETURN IMMEDIATELY IF WORD FOUND IN DICTIONARY  */
-	if (word = dict_.getEntry(orthography)) {
+	if ( (word = dict_.getEntry(orthography)) ) {
 		return word;
 	}
 
 	/*  LOOP THROUGH SUFFIX LIST  */
 	for (list_ptr = suffix_list; list_ptr->suffix; list_ptr++) {
-		if (pt = word_has_suffix(orthography, list_ptr->suffix)) {
+		if ( (pt = word_has_suffix(orthography, list_ptr->suffix)) ) {
 			/*  TACK ON REPLACEMENT ENDING  */
 			strcpy(&buffer_[0], orthography);
 			*(&buffer_[0] + (pt - orthography)) = '\0';
 			strcat(&buffer_[0], list_ptr->replacement);
 
 			/*  IF WORD FOUND WITH REPLACEMENT ENDING  */
-			if (word = dict_.getEntry(&buffer_[0])) {
+			if ( (word = dict_.getEntry(&buffer_[0])) ) {
 				/*  PUT THE FOUND PRONUNCIATION IN THE BUFFER  */
 				strcpy(&buffer_[0], word);
 

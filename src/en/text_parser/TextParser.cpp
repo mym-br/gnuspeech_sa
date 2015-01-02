@@ -1667,7 +1667,7 @@ is_special_acronym(const char* word)
 	const char* acronym;
 
 	/*  LOOP THROUGH LIST UNTIL MATCH FOUND, RETURN PRONUNCIATION  */
-	for (int i = 0; acronym = special_acronym[i][WORD]; i++) {
+	for (int i = 0; (acronym = special_acronym[i][WORD]); i++) {
 		if (!strcmp(word, acronym)) {
 			return special_acronym[i][PRONUNCIATION];
 		}
