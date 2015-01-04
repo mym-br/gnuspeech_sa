@@ -574,6 +574,25 @@ Model::findEquationName(const std::string& name) const
 /*******************************************************************************
  *
  */
+bool
+Model::findEquationIndex(const std::string& name, unsigned int& groupIndex, unsigned int& index) const
+{
+	for (unsigned int i = 0, groupListSize = equationGroupList_.size(); i < groupListSize; ++i) {
+		const auto& group = equationGroupList_[i];
+		for (unsigned int j = 0, size = group.equationList.size(); j < size; ++j) {
+			if (group.equationList[j].name == name) {
+				groupIndex = i;
+				index = j;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*******************************************************************************
+ *
+ */
 float
 Model::getParameterMinimum(unsigned int parameterIndex) const
 {

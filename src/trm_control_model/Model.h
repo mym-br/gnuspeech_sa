@@ -67,6 +67,7 @@ public:
 	const FormulaSymbol& formulaSymbol() const { return formulaSymbol_; }
 	bool findEquationGroupName(const std::string& name) const;
 	bool findEquationName(const std::string& name) const;
+	bool findEquationIndex(const std::string& name, unsigned int& groupIndex, unsigned int& index) const;
 
 	const std::vector<Parameter>& parameterList() const { return parameterList_; }
 	std::vector<Parameter>& parameterList() { return parameterList_; }
