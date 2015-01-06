@@ -429,29 +429,6 @@ Model::findCategoryName(const std::string& name) const
 }
 
 /*******************************************************************************
- * Precondition: postureList_ is synchronized with postureMap_.
- */
-void
-Model::addPosture(Posture& posture)
-{
-	if (posture.name().empty()) {
-		THROW_EXCEPTION(TRMControlModelException, "Empty posture name.");
-	}
-
-	auto findIter = postureMap_.find(posture.name());
-	if (findIter != postureMap_.end()) {
-		THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture.name() << '.');
-	}
-
-	postureList_.push_back(posture);
-
-	auto res = postureMap_.insert(std::make_pair(posture.name(), &postureList_.back()));
-	if (!res.second) { // should not happen
-		THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture.name() << '.');
-	}
-}
-
-/*******************************************************************************
  *
  */
 void

@@ -85,7 +85,6 @@ public:
 	const std::list<Posture>& postureList() const { return postureList_; }
 	std::list<Posture>& postureList() { return postureList_; }
 	const Posture* findPosture(const std::string& name) const;
-	void addPosture(Posture& posture);
 
 	const std::vector<TransitionGroup>& transitionGroupList() const { return transitionGroupList_; }
 	std::vector<TransitionGroup>& transitionGroupList() { return transitionGroupList_; }
