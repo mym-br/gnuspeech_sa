@@ -22,6 +22,8 @@
 
 #include "XMLConfigFileReader.h"
 
+#include <memory>
+
 #include "Category.h"
 #include "Exception.h"
 #include "Log.h"
@@ -132,23 +134,24 @@ XMLConfigFileReader::parsePostureParameters(Posture& posture)
 void
 XMLConfigFileReader::parsePosture()
 {
-	model_.postureList().emplace_back(model_.getNumParameters());
-	Posture& posture = model_.postureList().back();
-	posture.setName(parser_.getAttribute(symbolAttrName_));
+	std::unique_ptr<Posture> posture(new Posture(model_.getNumParameters()));
+	posture->setName(parser_.getAttribute(symbolAttrName_));
 
 	for (const std::string* child = parser_.getFirstChild();
 				child;
 				child = parser_.getNextSibling()) {
 		if (*child == postureCategoriesTagName_) {
-			parsePostureCategories(posture);
+			parsePostureCategories(*posture);
 		} else if (*child == parameterTargetsTagName_) {
-			parsePostureParameters(posture);
+			parsePostureParameters(*posture);
 		} else if (*child == symbolTargetsTagName_) {
-			parsePostureSymbols(posture);
+			parsePostureSymbols(*posture);
 		} else if (*child == commentTagName_) {
-			posture.setComment(parser_.getText());
+			posture->setComment(parser_.getText());
 		}
 	}
+
+	model_.postureList().push_back(std::move(posture));
 }
 
 void
@@ -372,21 +375,21 @@ XMLConfigFileReader::parseRuleBooleanExpressions(Rule& rule)
 void
 XMLConfigFileReader::parseRule()
 {
-	Rule rule(model_.getNumParameters());
+	std::unique_ptr<Rule> rule(new Rule(model_.getNumParameters()));
 
 	for (const std::string* child = parser_.getFirstChild();
 				child;
 				child = parser_.getNextSibling()) {
 		if (*child == booleanExpressionsTagName_) {
-			parseRuleBooleanExpressions(rule);
+			parseRuleBooleanExpressions(*rule);
 		} else if (*child == parameterProfilesTagName_) {
-			parseRuleParameterProfiles(rule);
+			parseRuleParameterProfiles(*rule);
 		} else if (*child == specialProfilesTagName_) {
-			parseRuleSpecialProfiles(rule);
+			parseRuleSpecialProfiles(*rule);
 		} else if (*child == expressionSymbolsTagName_) {
-			parseRuleExpressionSymbols(rule);
+			parseRuleExpressionSymbols(*rule);
 		} else if (*child == commentTagName_) {
-			rule.setComment(parser_.getText());
+			rule->setComment(parser_.getText());
 		}
 	}
 

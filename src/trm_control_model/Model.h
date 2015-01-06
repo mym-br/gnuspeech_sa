@@ -23,7 +23,6 @@
 #ifndef TRM_CONTROL_MODEL_MODEL_H_
 #define TRM_CONTROL_MODEL_MODEL_H_
 
-#include <list>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -82,8 +81,8 @@ public:
 	std::vector<Symbol>& symbolList() { return symbolList_; }
 	bool findSymbolName(const std::string& name) const;
 
-	const std::list<Posture>& postureList() const { return postureList_; }
-	std::list<Posture>& postureList() { return postureList_; }
+	const std::vector<std::unique_ptr<Posture>>& postureList() const { return postureList_; }
+	std::vector<std::unique_ptr<Posture>>& postureList() { return postureList_; }
 	const Posture* findPosture(const std::string& name) const;
 
 	const std::vector<TransitionGroup>& transitionGroupList() const { return transitionGroupList_; }
@@ -98,8 +97,8 @@ public:
 	bool findSpecialTransitionGroupName(const std::string& name) const;
 	bool findSpecialTransitionName(const std::string& name) const;
 
-	const std::list<Rule>& ruleList() const { return ruleList_; }
-	std::list<Rule>& ruleList() { return ruleList_; }
+	const std::vector<std::unique_ptr<Rule>>& ruleList() const { return ruleList_; }
+	std::vector<std::unique_ptr<Rule>>& ruleList() { return ruleList_; }
 	const Rule* findFirstMatchingRule(const std::vector<const Posture*>& postureSequence, unsigned int& ruleIndex) const;
 
 	const std::vector<Category>& categoryList() const { return categoryList_; }
@@ -118,10 +117,10 @@ private:
 
 	std::vector<Symbol> symbolList_;
 
-	std::list<Posture> postureList_;
+	std::vector<std::unique_ptr<Posture>> postureList_;
 	std::unordered_map<std::string, Posture*> postureMap_; // optimization
 
-	std::list<Rule> ruleList_;
+	std::vector<std::unique_ptr<Rule>> ruleList_;
 
 	std::vector<EquationGroup> equationGroupList_;
 	std::unordered_map<std::string, Equation*> equationMap_; // optimization

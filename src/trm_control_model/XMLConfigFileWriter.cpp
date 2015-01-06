@@ -208,19 +208,19 @@ XMLConfigFileWriter::writeElements()
 
 	LOG_DEBUG("postures ==================================================");
 	xml.openElement("postures");
-	for (const Posture& posture : model_.postureList()) {
+	for (const std::unique_ptr<Posture>& posture : model_.postureList()) {
 		xml.openElementWithAttributes("posture");
-		xml.addAttribute("symbol", posture.name());
+		xml.addAttribute("symbol", posture->name());
 		xml.endAttributes();
 
-		if (!posture.comment().empty()) {
+		if (!posture->comment().empty()) {
 			xml.openInlineElement("comment");
-			xml.addText(posture.comment());
+			xml.addText(posture->comment());
 			xml.closeInlineElement("comment");
 		}
 
 		xml.openElement("posture-categories");
-		for (const auto& category : posture.categoryList()) {
+		for (const auto& category : posture->categoryList()) {
 			xml.openElementWithAttributes("category-ref");
 			xml.addAttribute("name", category.name());
 			xml.endAttributesAndCloseElement();
@@ -230,7 +230,7 @@ XMLConfigFileWriter::writeElements()
 		xml.openElement("parameter-targets");
 		for (unsigned int i = 0, numParam = model_.getNumParameters(); i < numParam; ++i) {
 			const Parameter& param = model_.getParameter(i);
-			const float target = posture.getParameterTarget(i);
+			const float target = posture->getParameterTarget(i);
 			xml.openElementWithAttributes("target");
 			xml.addAttribute("name", param.name());
 			xml.addAttribute("value", target);
@@ -242,22 +242,22 @@ XMLConfigFileWriter::writeElements()
 
 		xml.openElementWithAttributes("target");
 		xml.addAttribute("name", "duration");
-		xml.addAttribute("value", posture.symbols().duration);
+		xml.addAttribute("value", posture->symbols().duration);
 		xml.endAttributesAndCloseElement();
 
 		xml.openElementWithAttributes("target");
 		xml.addAttribute("name", "transition");
-		xml.addAttribute("value", posture.symbols().transition);
+		xml.addAttribute("value", posture->symbols().transition);
 		xml.endAttributesAndCloseElement();
 
 		xml.openElementWithAttributes("target");
 		xml.addAttribute("name", "qssa");
-		xml.addAttribute("value", posture.symbols().qssa);
+		xml.addAttribute("value", posture->symbols().qssa);
 		xml.endAttributesAndCloseElement();
 
 		xml.openElementWithAttributes("target");
 		xml.addAttribute("name", "qssb");
-		xml.addAttribute("value", posture.symbols().qssb);
+		xml.addAttribute("value", posture->symbols().qssb);
 		xml.endAttributesAndCloseElement();
 
 		xml.closeElement("symbol-targets");
@@ -405,23 +405,23 @@ XMLConfigFileWriter::writeElements()
 	LOG_DEBUG("rules ==================================================");
 	xml.openElement("rules");
 	unsigned int ruleNumber = 0;
-	for (const Rule& rule : model_.ruleList()) {
+	for (const std::unique_ptr<Rule>& rule : model_.ruleList()) {
 		++ruleNumber;
 		xml.indent();
 		out_ << "<!-- Rule: " << ruleNumber << " -->\n";
 		xml.openElement("rule");
 
 		xml.openElement("boolean-expressions");
-		for (const std::string& s : rule.booleanExpressionList()) {
+		for (const std::string& s : rule->booleanExpressionList()) {
 			xml.openInlineElement("boolean-expression");
 			xml.addText(s);
 			xml.closeInlineElement("boolean-expression");
 		}
 		xml.closeElement("boolean-expressions");
 
-		if (!rule.comment().empty()) {
+		if (!rule->comment().empty()) {
 			xml.openInlineElement("comment");
-			xml.addText(rule.comment());
+			xml.addText(rule->comment());
 			xml.closeInlineElement("comment");
 		}
 
@@ -429,13 +429,13 @@ XMLConfigFileWriter::writeElements()
 		for (unsigned int i = 0, numParam = model_.getNumParameters(); i < numParam; ++i) {
 			xml.openElementWithAttributes("parameter-transition");
 			xml.addAttribute("name", model_.getParameter(i).name());
-			xml.addAttribute("transition", rule.paramProfileTransitionList()[i]);
+			xml.addAttribute("transition", rule->paramProfileTransitionList()[i]);
 			xml.endAttributesAndCloseElement();
 		}
 		xml.closeElement("parameter-profiles");
 
 		bool hasSpecialTransition = false;
-		for (const std::string& s : rule.specialProfileTransitionList()) {
+		for (const std::string& s : rule->specialProfileTransitionList()) {
 			if (!s.empty()) {
 				hasSpecialTransition = true;
 				break;
@@ -444,7 +444,7 @@ XMLConfigFileWriter::writeElements()
 		if (hasSpecialTransition) {
 			xml.openElement("special-profiles");
 			for (unsigned int i = 0, numParam = model_.getNumParameters(); i < numParam; ++i) {
-				const std::string s = rule.specialProfileTransitionList()[i];
+				const std::string s = rule->specialProfileTransitionList()[i];
 				if (!s.empty()) {
 					xml.openElementWithAttributes("parameter-transition");
 					xml.addAttribute("name", model_.getParameter(i).name());
@@ -459,23 +459,23 @@ XMLConfigFileWriter::writeElements()
 
 		xml.openElementWithAttributes("symbol-equation");
 		xml.addAttribute("name", "rd");
-		xml.addAttribute("equation", rule.exprSymbolEquations().ruleDuration);
+		xml.addAttribute("equation", rule->exprSymbolEquations().ruleDuration);
 		xml.endAttributesAndCloseElement();
 
 		xml.openElementWithAttributes("symbol-equation");
 		xml.addAttribute("name", "beat");
-		xml.addAttribute("equation", rule.exprSymbolEquations().beat);
+		xml.addAttribute("equation", rule->exprSymbolEquations().beat);
 		xml.endAttributesAndCloseElement();
 
 		xml.openElementWithAttributes("symbol-equation");
 		xml.addAttribute("name", "mark1");
-		xml.addAttribute("equation", rule.exprSymbolEquations().mark1);
+		xml.addAttribute("equation", rule->exprSymbolEquations().mark1);
 		xml.endAttributesAndCloseElement();
 
-		if (!rule.exprSymbolEquations().mark2.empty()) {
+		if (!rule->exprSymbolEquations().mark2.empty()) {
 			xml.openElementWithAttributes("symbol-equation");
 			xml.addAttribute("name", "mark2");
-			xml.addAttribute("equation", rule.exprSymbolEquations().mark2);
+			xml.addAttribute("equation", rule->exprSymbolEquations().mark2);
 			xml.endAttributesAndCloseElement();
 		}
 

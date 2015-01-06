@@ -144,13 +144,13 @@ Model::preparePostures()
 
 	postureMap_.clear();
 	for (auto& posture : postureList_) {
-		auto res = postureMap_.insert(std::make_pair(posture.name(), &posture));
+		auto res = postureMap_.insert(std::make_pair(posture->name(), posture.get()));
 		if (!res.second) {
-			THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture.name() << '.');
+			THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture->name() << '.');
 		}
 
 		// Fill the category code in the category list of each Posture.
-		for (auto& postureCategory : posture.categoryList()) {
+		for (auto& postureCategory : posture->categoryList()) {
 			auto catIter = categoryMap_.find(postureCategory.name());
 			if (catIter != categoryMap_.end()) {
 				postureCategory.setCode(catIter->second->code());
@@ -220,7 +220,7 @@ Model::prepareRules()
 
 	// Convert the boolean expression string of each Rule to a tree.
 	for (auto& rule : ruleList_) {
-		rule.parseBooleanExpression(categoryMap_);
+		rule->parseBooleanExpression(categoryMap_);
 	}
 }
 
@@ -347,7 +347,7 @@ Model::printInfo() const
 	for (auto& r : ruleList_) {
 		std::cout << "--------------------------------------" << std::endl;
 		std::cout << "Rule number: " << ++ruleNumber << '\n' << std::endl;
-		r.printBooleanNodeTree();
+		r->printBooleanNodeTree();
 	}
 	std::cout << "--------------------------------------" << std::endl;
 	std::vector<const Posture*> postSeq;
@@ -361,14 +361,14 @@ Model::printInfo() const
 	for (auto& r : ruleList_) {
 		std::cout << "---" << std::endl;
 		std::cout << "Rule number: " << ++ruleNumber << std::endl;
-		std::cout << "bool=" << r.evalBooleanExpression(postSeq) << std::endl;
+		std::cout << "bool=" << r->evalBooleanExpression(postSeq) << std::endl;
 	}
 	std::cout << "--------------------------------------" << std::endl;
 	ruleNumber = 0;
 	for (auto& r : ruleList_) {
 		std::cout << "---" << std::endl;
 		std::cout << "Rule number: " << ++ruleNumber << std::endl;
-		std::cout << "Number of boolean expressions = " << r.numberOfExpressions() << std::endl;
+		std::cout << "Number of boolean expressions = " << r->numberOfExpressions() << std::endl;
 	}
 }
 
@@ -750,15 +750,15 @@ Model::findFirstMatchingRule(const std::vector<const Posture*>& postureSequence,
 {
 	unsigned int i = 0;
 	for (auto& r : ruleList_) {
-		if (r.numberOfExpressions() <= postureSequence.size()) {
-			if (r.evalBooleanExpression(postureSequence)) {
+		if (r->numberOfExpressions() <= postureSequence.size()) {
+			if (r->evalBooleanExpression(postureSequence)) {
 				ruleIndex = i;
-				return &r;
+				return r.get();
 			}
 		}
 		++i;
 	}
-	return &ruleList_.back();
+	return ruleList_.back().get();
 }
 
 } /* namespace TRMControlModel */
