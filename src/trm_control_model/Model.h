@@ -70,7 +70,6 @@ public:
 
 	const std::vector<Parameter>& parameterList() const { return parameterList_; }
 	std::vector<Parameter>& parameterList() { return parameterList_; }
-	unsigned int getNumParameters() const { return parameterList_.size(); }
 	unsigned int findParameterIndex(const std::string& name) const;
 	float getParameterMinimum(unsigned int parameterIndex) const;
 	float getParameterMaximum(unsigned int parameterIndex) const;

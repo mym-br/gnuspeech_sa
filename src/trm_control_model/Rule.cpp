@@ -482,13 +482,13 @@ Rule::evaluateExpressionSymbols(const double* tempos, const std::vector<const Po
 	model.clearFormulaSymbolList();
 	if (postures.size() >= 2) {
 		const Posture& posture = *postures[0];
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION1, posture.symbols().transition);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA1      , posture.symbols().qssa);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB1      , posture.symbols().qssb);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION1, posture.getSymbolTarget(1 /* hardcoded */));
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA1      , posture.getSymbolTarget(2 /* hardcoded */));
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB1      , posture.getSymbolTarget(3 /* hardcoded */));
 		const Posture& posture2 = *postures[1];
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION2, posture2.symbols().transition);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA2      , posture2.symbols().qssa);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB2      , posture2.symbols().qssb);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION2, posture2.getSymbolTarget(1 /* hardcoded */));
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA2      , posture2.getSymbolTarget(2 /* hardcoded */));
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB2      , posture2.getSymbolTarget(3 /* hardcoded */));
 		localTempos[0] = tempos[0];
 		localTempos[1] = tempos[1];
 	} else {
@@ -497,18 +497,18 @@ Rule::evaluateExpressionSymbols(const double* tempos, const std::vector<const Po
 	}
 	if (postures.size() >= 3) {
 		const Posture& posture = *postures[2];
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION3, posture.symbols().transition);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA3      , posture.symbols().qssa);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB3      , posture.symbols().qssb);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION3, posture.getSymbolTarget(1 /* hardcoded */));
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA3      , posture.getSymbolTarget(2 /* hardcoded */));
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB3      , posture.getSymbolTarget(3 /* hardcoded */));
 		localTempos[2] = tempos[2];
 	} else {
 		localTempos[2] = 0.0;
 	}
 	if (postures.size() == 4) {
 		const Posture& posture = *postures[3];
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION4, posture.symbols().transition);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA4      , posture.symbols().qssa);
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB4      , posture.symbols().qssb);
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION4, posture.getSymbolTarget(1 /* hardcoded */));
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA4      , posture.getSymbolTarget(2 /* hardcoded */));
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB4      , posture.getSymbolTarget(3 /* hardcoded */));
 		localTempos[3] = tempos[3];
 	} else {
 		localTempos[3] = 0.0;

@@ -94,14 +94,11 @@ XMLConfigFileReader::parsePostureSymbols(Posture& posture)
 				target = parser_.getNextSibling(targetTagName_)) {
 		const std::string& name = parser_.getAttribute(nameAttrName_);
 		const std::string& value = parser_.getAttribute(valueAttrName_);
-		if (name == durationSymbolName_) {
-			posture.symbols().duration = Text::parseString<float>(value);
-		} else if (name == transitionSymbolName_) {
-			posture.symbols().transition = Text::parseString<float>(value);
-		} else if (name == qssaSymbolName_) {
-			posture.symbols().qssa = Text::parseString<float>(value);
-		} else if (name == qssbSymbolName_) {
-			posture.symbols().qssb = Text::parseString<float>(value);
+		for (unsigned int i = 0, size = model_.symbolList().size(); i < size; ++i) {
+			const Symbol& symbol = model_.symbolList()[i];
+			if (symbol.name() == name) {
+				posture.setSymbolTarget(i, Text::parseString<float>(value));
+			}
 		}
 	}
 }
@@ -134,7 +131,7 @@ XMLConfigFileReader::parsePostureParameters(Posture& posture)
 void
 XMLConfigFileReader::parsePosture()
 {
-	std::unique_ptr<Posture> posture(new Posture(model_.getNumParameters()));
+	std::unique_ptr<Posture> posture(new Posture(model_.parameterList().size(), model_.symbolList().size()));
 	posture->setName(parser_.getAttribute(symbolAttrName_));
 
 	for (const std::string* child = parser_.getFirstChild();
@@ -375,7 +372,7 @@ XMLConfigFileReader::parseRuleBooleanExpressions(Rule& rule)
 void
 XMLConfigFileReader::parseRule()
 {
-	std::unique_ptr<Rule> rule(new Rule(model_.getNumParameters()));
+	std::unique_ptr<Rule> rule(new Rule(model_.parameterList().size()));
 
 	for (const std::string* child = parser_.getFirstChild();
 				child;

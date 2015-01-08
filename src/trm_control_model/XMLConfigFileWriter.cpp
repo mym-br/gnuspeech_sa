@@ -183,7 +183,7 @@ XMLConfigFileWriter::writeElements()
 
 	LOG_DEBUG("parameters ==================================================");
 	xml.openElement("parameters");
-	for (unsigned int i = 0, numParam = model_.getNumParameters(); i < numParam; ++i) {
+	for (unsigned int i = 0, numParam = model_.parameterList().size(); i < numParam; ++i) {
 		const Parameter& param = model_.getParameter(i);
 		xml.openElementWithAttributes("parameter");
 		xml.addAttribute("name", param.name());
@@ -228,7 +228,7 @@ XMLConfigFileWriter::writeElements()
 		xml.closeElement("posture-categories");
 
 		xml.openElement("parameter-targets");
-		for (unsigned int i = 0, numParam = model_.getNumParameters(); i < numParam; ++i) {
+		for (unsigned int i = 0, numParam = model_.parameterList().size(); i < numParam; ++i) {
 			const Parameter& param = model_.getParameter(i);
 			const float target = posture->getParameterTarget(i);
 			xml.openElementWithAttributes("target");
@@ -240,25 +240,13 @@ XMLConfigFileWriter::writeElements()
 
 		xml.openElement("symbol-targets");
 
-		xml.openElementWithAttributes("target");
-		xml.addAttribute("name", "duration");
-		xml.addAttribute("value", posture->symbols().duration);
-		xml.endAttributesAndCloseElement();
-
-		xml.openElementWithAttributes("target");
-		xml.addAttribute("name", "transition");
-		xml.addAttribute("value", posture->symbols().transition);
-		xml.endAttributesAndCloseElement();
-
-		xml.openElementWithAttributes("target");
-		xml.addAttribute("name", "qssa");
-		xml.addAttribute("value", posture->symbols().qssa);
-		xml.endAttributesAndCloseElement();
-
-		xml.openElementWithAttributes("target");
-		xml.addAttribute("name", "qssb");
-		xml.addAttribute("value", posture->symbols().qssb);
-		xml.endAttributesAndCloseElement();
+		for (unsigned int i = 0, size = model_.symbolList().size(); i < size; ++i) {
+			const Symbol& symbol = model_.symbolList()[i];
+			xml.openElementWithAttributes("target");
+			xml.addAttribute("name", symbol.name());
+			xml.addAttribute("value", posture->getSymbolTarget(i));
+			xml.endAttributesAndCloseElement();
+		}
 
 		xml.closeElement("symbol-targets");
 
@@ -426,7 +414,7 @@ XMLConfigFileWriter::writeElements()
 		}
 
 		xml.openElement("parameter-profiles");
-		for (unsigned int i = 0, numParam = model_.getNumParameters(); i < numParam; ++i) {
+		for (unsigned int i = 0, numParam = model_.parameterList().size(); i < numParam; ++i) {
 			xml.openElementWithAttributes("parameter-transition");
 			xml.addAttribute("name", model_.getParameter(i).name());
 			xml.addAttribute("transition", rule->paramProfileTransitionList()[i]);
@@ -443,7 +431,7 @@ XMLConfigFileWriter::writeElements()
 		}
 		if (hasSpecialTransition) {
 			xml.openElement("special-profiles");
-			for (unsigned int i = 0, numParam = model_.getNumParameters(); i < numParam; ++i) {
+			for (unsigned int i = 0, numParam = model_.parameterList().size(); i < numParam; ++i) {
 				const std::string s = rule->specialProfileTransitionList()[i];
 				if (!s.empty()) {
 					xml.openElementWithAttributes("parameter-transition");

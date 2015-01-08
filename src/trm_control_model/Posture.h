@@ -46,9 +46,14 @@ public:
 		Symbols() : duration(0.0), transition(0.0), qssa(0.0), qssb(0.0) {}
 	};
 
-	Posture(unsigned int numParameters) : parameterTargetList_(numParameters) {
+	Posture(unsigned int numParameters, unsigned int numSymbols)
+			: parameterTargetList_(numParameters)
+			, symbolTargetList_(numSymbols) {
 		if (numParameters == 0) {
-			THROW_EXCEPTION(InvalidParameterException, "Invalid number of parameters: " << numParameters << '.');
+			THROW_EXCEPTION(InvalidParameterException, "Invalid number of parameters: 0.");
+		}
+		if (numSymbols == 0) {
+			THROW_EXCEPTION(InvalidParameterException, "Invalid number of symbols: 0.");
 		}
 	}
 
@@ -58,7 +63,7 @@ public:
 	std::vector<Category>& categoryList() { return categoryList_; }
 	const std::vector<Category>& categoryList() const { return categoryList_; }
 
-	std::vector<float>& parameterTargetList() { return parameterTargetList_; }
+	//std::vector<float>& parameterTargetList() { return parameterTargetList_; }
 	float getParameterTarget(unsigned int parameterIndex) const {
 		if (parameterIndex >= parameterTargetList_.size()) {
 			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
@@ -74,8 +79,18 @@ public:
 		parameterTargetList_[parameterIndex] = target;
 	}
 
-	Symbols& symbols() { return symbols_; }
-	const Symbols& symbols() const { return symbols_; }
+	float getSymbolTarget(unsigned int symbolIndex) const {
+		if (symbolIndex >= symbolTargetList_.size()) {
+			THROW_EXCEPTION(InvalidParameterException, "Invalid symbol index: " << symbolIndex << '.');
+		}
+		return symbolTargetList_[symbolIndex];
+	}
+	void setSymbolTarget(unsigned int symbolIndex, float target) {
+		if (symbolIndex >= symbolTargetList_.size()) {
+			THROW_EXCEPTION(InvalidParameterException, "Invalid symbol index: " << symbolIndex << '.');
+		}
+		symbolTargetList_[symbolIndex] = target;
+	}
 
 	const std::string& comment() const { return comment_; }
 	void setComment(const std::string& comment) { comment_ = comment; }
@@ -90,7 +105,7 @@ private:
 	std::string name_;
 	std::vector<Category> categoryList_;
 	std::vector<float> parameterTargetList_;
-	Symbols symbols_;
+	std::vector<float> symbolTargetList_;
 	std::string comment_;
 };
 

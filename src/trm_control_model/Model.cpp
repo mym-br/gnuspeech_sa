@@ -241,18 +241,21 @@ Model::printInfo() const
 	//---------------------------------------------------------
 	// Postures.
 	std::cout << std::string(40, '-') << "\nPostures:\n" << std::endl;
-	for (auto iter = postureMap_.begin(); iter != postureMap_.end(); ++iter) {
-		const auto& v = *iter;
-		std::cout << "posture symbol: " << v.second->name() << " r8: " << v.second->getParameterTarget(14 /* R8 */) << std::endl;
-
-		for (auto it2 = v.second->categoryList().begin();
-				it2 != v.second->categoryList().end(); ++it2) {
-			std::cout << "  categ: " << it2->name() << "_" << it2->code() << std::endl;
+	for (const auto& posture : postureList()) {
+		std::cout << "posture symbol: " << posture->name() << std::endl;
+		for (const auto& category : posture->categoryList()) {
+			std::cout << "  categ: " << category.name() << "_" << category.code() << std::endl;
 		}
-		std::cout << "  symbols.duration: "   << v.second->symbols().duration   << std::endl;
-		std::cout << "  symbols.transition: " << v.second->symbols().transition << std::endl;
-		std::cout << "  symbols.qssa: "       << v.second->symbols().qssa       << std::endl;
-		std::cout << "  symbols.qssb: "       << v.second->symbols().qssb       << std::endl;
+		std::cout << "  parameter targets:" << std::endl;
+		for (unsigned int i = 0, size = parameterList_.size(); i < size; ++i) {
+			const Parameter& param = parameterList_[i];
+			std::cout << "    " << param.name() << ": " << posture->getParameterTarget(i) << std::endl;
+		}
+		std::cout << "  symbol targets:" << std::endl;
+		for (unsigned int i = 0, size = symbolList_.size(); i < size; ++i) {
+			const Symbol& symbol = symbolList_[i];
+			std::cout << "    " << symbol.name() << ": " << posture->getSymbolTarget(i) << std::endl;
+		}
 	}
 
 	//---------------------------------------------------------

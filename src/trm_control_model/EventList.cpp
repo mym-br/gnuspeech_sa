@@ -513,7 +513,7 @@ EventList::applyRule(const Rule& rule, const std::vector<const Posture*>& postur
 	//tempTargets = (List *) [rule parameterList];
 
 	/* Loop through the parameters */
-	for (unsigned int i = 0; i < model_.getNumParameters(); i++) {
+	for (unsigned int i = 0, size = model_.parameterList().size(); i < size; ++i) {
 		/* Get actual parameter target values */
 		targets[0] = postureList[0]->getParameterTarget(i);
 		targets[1] = postureList[1]->getParameterTarget(i);
@@ -590,7 +590,7 @@ EventList::applyRule(const Rule& rule, const std::vector<const Posture*>& postur
 	}
 
 	/* Special Event Profiles */
-	for (unsigned int i = 0; i < model_.getNumParameters(); i++) {
+	for (unsigned int i = 0, size = model_.parameterList().size(); i < size; ++i) {
 		const std::string& specialTransition = rule.getSpecialProfileTransition(i);
 		if (!specialTransition.empty()) {
 			const Transition* trans = model_.findSpecialTransition(specialTransition); //TODO: check not null
