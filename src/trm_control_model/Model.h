@@ -83,6 +83,7 @@ public:
 	const std::vector<std::unique_ptr<Posture>>& postureList() const { return postureList_; }
 	std::vector<std::unique_ptr<Posture>>& postureList() { return postureList_; }
 	const Posture* findPosture(const std::string& name) const;
+	void sortPostures();
 
 	const std::vector<TransitionGroup>& transitionGroupList() const { return transitionGroupList_; }
 	std::vector<TransitionGroup>& transitionGroupList() { return transitionGroupList_; }

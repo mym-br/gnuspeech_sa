@@ -22,6 +22,7 @@
 
 #include "Model.h"
 
+#include <algorithm> /* sort */
 #include <iostream>
 #include <utility> /* make_pair */
 
@@ -651,6 +652,17 @@ Model::findPosture(const std::string& name) const
 		return nullptr;
 	}
 	return postureIter->second;
+}
+
+/*******************************************************************************
+ *
+ */
+void
+Model::sortPostures()
+{
+	std::sort(postureList_.begin(), postureList_.end(), [](const std::unique_ptr<Posture>& p1, const std::unique_ptr<Posture>& p2) -> bool {
+		return p1->name() < p2->name();
+	});
 }
 
 /*******************************************************************************
