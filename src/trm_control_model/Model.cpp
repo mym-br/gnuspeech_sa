@@ -666,6 +666,20 @@ Model::sortPostures()
 }
 
 /*******************************************************************************
+ *
+ */
+bool
+Model::findPostureName(const std::string& name) const
+{
+	for (const auto& item : postureList_) {
+		if (item->name() == name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*******************************************************************************
  * Find a Transition with the given name.
  *
  * Returns a pointer to the Transition, or 0 (zero) if a Transition
