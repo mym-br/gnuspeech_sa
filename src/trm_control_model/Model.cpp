@@ -120,6 +120,9 @@ Model::save(const char* configDirPath, const char* configFileName)
 
 /*******************************************************************************
  *
+ * Needed by Model::preparePostures,
+ *           Model::prepareRules,
+ *             Rule::parseBooleanExpression.
  */
 void
 Model::prepareCategories()
@@ -127,7 +130,10 @@ Model::prepareCategories()
 	LOG_DEBUG("Preparing categories...");
 
 	categoryMap_.clear();
+	unsigned int code = 0;
 	for (auto& category : categoryList_) {
+		category.setCode(++code);
+
 		auto res = categoryMap_.insert(std::make_pair(category.name(), &category));
 		if (!res.second) {
 			THROW_EXCEPTION(TRMControlModelException, "Duplicate category: " << category.name() << '.');
@@ -137,6 +143,9 @@ Model::prepareCategories()
 
 /*******************************************************************************
  *
+ * Needed by Model::findPosture,
+ *           Model::findFirstMatchingRule,
+ *             Rule::evalBooleanExpression.
  */
 void
 Model::preparePostures()
@@ -155,6 +164,8 @@ Model::preparePostures()
 			auto catIter = categoryMap_.find(postureCategory.name());
 			if (catIter != categoryMap_.end()) {
 				postureCategory.setCode(catIter->second->code());
+			} else {
+				postureCategory.setCode(0);
 			}
 		}
 	}
@@ -162,6 +173,8 @@ Model::preparePostures()
 
 /*******************************************************************************
  *
+ * Needed by Rule::evaluateExpressionSymbols,
+ *           Model::evalEquationFormula.
  */
 void
 Model::prepareEquations()
@@ -184,10 +197,14 @@ Model::prepareEquations()
 
 /*******************************************************************************
  *
+ * Needed by Model::findTransition,
+ *           Model::findSpecialTransition.
  */
 void
 Model::prepareTransitions()
 {
+	LOG_DEBUG("Preparing transitions...");
+
 	transitionMap_.clear();
 	for (auto& group : transitionGroupList_) {
 		for (auto& transition : group.transitionList) {
@@ -213,6 +230,8 @@ Model::prepareTransitions()
 
 /*******************************************************************************
  *
+ * Needed by Model::findFirstMatchingRule,
+ *             Rule::evalBooleanExpression.
  */
 void
 Model::prepareRules()
@@ -777,8 +796,13 @@ Model::findSpecialTransitionName(const std::string& name) const
 const Rule*
 Model::findFirstMatchingRule(const std::vector<const Posture*>& postureSequence, unsigned int& ruleIndex) const
 {
+	if (ruleList_.empty()) {
+		ruleIndex = 0;
+		return nullptr;
+	}
+
 	unsigned int i = 0;
-	for (auto& r : ruleList_) {
+	for (const auto& r : ruleList_) {
 		if (r->numberOfExpressions() <= postureSequence.size()) {
 			if (r->evalBooleanExpression(postureSequence)) {
 				ruleIndex = i;
@@ -787,7 +811,9 @@ Model::findFirstMatchingRule(const std::vector<const Posture*>& postureSequence,
 		}
 		++i;
 	}
-	return ruleList_.back().get();
+
+	ruleIndex = 0;
+	return nullptr;
 }
 
 } /* namespace TRMControlModel */

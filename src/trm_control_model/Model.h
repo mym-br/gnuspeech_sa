@@ -108,8 +108,10 @@ public:
 	unsigned int getCategoryCode(const std::string& name) const;
 	bool findCategoryName(const std::string& name) const;
 
+	void prepareCategories();
+	void preparePostures();
 	void prepareEquations();
-
+	void prepareRules();
 private:
 	std::vector<Category> categoryList_;
 	std::unordered_map<std::string, Category*> categoryMap_; // optimization
@@ -135,10 +137,7 @@ private:
 	FormulaSymbolList formulaSymbolList_;
 	const FormulaSymbol formulaSymbol_;
 
-	void prepareCategories();
-	void preparePostures();
 	void prepareTransitions();
-	void prepareRules();
 };
 
 } /* namespace TRMControlModel */

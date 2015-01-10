@@ -136,6 +136,7 @@ public:
 
 	std::size_t numberOfExpressions() const;
 	bool evalBooleanExpression(const std::vector<const Posture*>& postureSequence) const;
+	bool evalBooleanExpression(const Posture& posture, unsigned int expressionIndex) const;
 	void printBooleanNodeTree() const;
 	void parseBooleanExpression(const std::unordered_map<std::string, Category*>& categoryMap);
 

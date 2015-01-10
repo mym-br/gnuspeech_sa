@@ -449,6 +449,17 @@ Rule::evalBooleanExpression(const std::vector<const Posture*>& postureSequence) 
 /*******************************************************************************
  *
  */
+bool
+Rule::evalBooleanExpression(const Posture& posture, unsigned int expressionIndex) const
+{
+	if (expressionIndex >= booleanNodeList_.size()) return false;
+
+	return booleanNodeList_[expressionIndex]->eval(posture);
+}
+
+/*******************************************************************************
+ *
+ */
 std::size_t
 Rule::numberOfExpressions() const
 {
@@ -461,6 +472,8 @@ Rule::numberOfExpressions() const
 void
 Rule::parseBooleanExpression(const std::unordered_map<std::string, Category*>& categoryMap)
 {
+	booleanNodeList_.clear();
+
 	for (std::vector<std::string>::size_type size = booleanExpressionList_.size(), i = 0; i < size; ++i) {
 		Parser p(booleanExpressionList_[i], categoryMap);
 		booleanNodeList_.push_back(p.getBooleanNode());

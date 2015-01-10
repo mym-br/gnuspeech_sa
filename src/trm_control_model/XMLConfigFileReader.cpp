@@ -40,7 +40,7 @@ namespace TRMControlModel {
 void
 XMLConfigFileReader::parseCategories()
 {
-	int code = 0;
+	unsigned int code = 0;
 	for (const std::string* category = parser_.getFirstChild(categoryTagName_);
 				category;
 				category = parser_.getNextSibling(categoryTagName_)) {
