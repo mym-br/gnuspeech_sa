@@ -701,7 +701,10 @@ EventList::applyIntonation()
 
 	intonationPoints_.clear();
 
-	const Category* vocoidCategory = model_.findCategory("vocoid");
+	std::shared_ptr<const Category> vocoidCategory = model_.findCategory("vocoid");
+	if (!vocoidCategory) {
+		THROW_EXCEPTION(UnavailableResourceException, "Could not find the category \"vocoid\".");
+	}
 
 	for (i = 0; i < currentToneGroup_; i++) {
 		firstFoot = toneGroups_[i].startFoot;
@@ -767,7 +770,7 @@ EventList::applyIntonation()
 		/* Set up intonation boundary variables */
 		for (j = firstFoot; j <= endFoot; j++) {
 			postureIndex = feet_[j].start;
-			while (!postureData_[postureIndex].posture->isMemberOfCategory(vocoidCategory->code())) {
+			while (!postureData_[postureIndex].posture->isMemberOfCategory(*vocoidCategory)) {
 				postureIndex++;
 				//printf("Checking posture %s for vocoid\n", [posture[postureIndex].posture symbol]);
 				if (postureIndex > feet_[j].end) {

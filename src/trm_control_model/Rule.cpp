@@ -24,7 +24,6 @@
 
 #include <cassert>
 #include <string>
-#include <unordered_map>
 
 #include "Category.h"
 #include "Exception.h"
@@ -68,8 +67,8 @@ bool isSeparator(char c)
 
 class Parser {
 public:
-	Parser(const std::string& s, const std::unordered_map<std::string, Category*>& categoryMap)
-				: categoryMap_(categoryMap)
+	Parser(const std::string& s, const Model& model)
+				: model_(model)
 				, s_(s)
 				, pos_(0)
 				, symbolType_(SYMBOL_TYPE_INVALID) {
@@ -87,7 +86,7 @@ public:
 	void nextSymbol();
 	RuleBooleanNode_ptr getBooleanNode();
 private:
-	const std::unordered_map<std::string, Category*>& categoryMap_;
+	const Model& model_;
 	const std::string s_;
 	std::string::size_type pos_;
 	std::string symbol_;
@@ -221,25 +220,30 @@ Parser::getBooleanNode()
 			throwException("Could not find the category");
 		}
 
-		const std::string& symbolTmp = symbol_;
 		bool matchAll = false;
-		if (symbolTmp[symbolTmp.size() - 1] == matchAllChar) {
+		if (symbol_.size() >= 2 && symbol_[symbol_.size() - 1] == matchAllChar) {
 			matchAll = true;
 		}
 
-		int categoryCode = 0;
-		if (!matchAll) {
-			// Try to find a code for the category.
-			auto catIter = categoryMap_.find(symbolTmp);
-			if (catIter != categoryMap_.end()) {
-				categoryCode = catIter->second->code();
-			}
+		std::string name;
+		if (matchAll) {
+			name = symbol_.substr(0, symbol_.size() - 1);
+		} else {
+			name = symbol_;
 		}
 
-		return RuleBooleanNode_ptr(new RuleBooleanTerminal(
-						matchAll ? symbolTmp.substr(0, symbolTmp.size() - 1) : symbolTmp,
-						matchAll,
-						categoryCode));
+		std::shared_ptr<Category> category;
+		const Posture* posture = model_.findPosture(name);
+		if (posture != nullptr) {
+			category = posture->findCategory(name);
+		} else {
+			category = model_.findCategory(name);
+		}
+		if (!category) {
+			throwException("Could not find category: ", name);
+		}
+
+		return RuleBooleanNode_ptr(new RuleBooleanTerminal(category, matchAll));
 	}
 	case SYMBOL_TYPE_OR_OP:
 		throwException("Unexpected OR op.");
@@ -396,15 +400,12 @@ RuleBooleanTerminal::~RuleBooleanTerminal()
 bool
 RuleBooleanTerminal::eval(const Posture& posture) const
 {
-	if (matchAll_) {
-		return posture.isMemberOfCategory(text_, Text::MatchWithOptionalCharSuffix('\''));
-	} else {
-		if (categoryCode_ != 0) {
-			return posture.isMemberOfCategory(categoryCode_);
-		} else {
-			return posture.isMemberOfCategory(text_, true);
-		}
+	if (posture.isMemberOfCategory(*category_)) {
+		return true;
+	} else if (matchAll_) {
+		return posture.name() == category_->name() + '\'';
 	}
+	return false;
 }
 
 void
@@ -412,7 +413,7 @@ RuleBooleanTerminal::print(std::ostream& out, int level) const
 {
 	std::string prefix(level * 8, ' ');
 
-	out << prefix << "category [" << text_ << '_' << categoryCode_;
+	out << prefix << "category [" << category_->name();
 	if (matchAll_) out << "[*]";
 	out << "]" << std::endl;
 }
@@ -470,12 +471,12 @@ Rule::numberOfExpressions() const
  *
  */
 void
-Rule::parseBooleanExpression(const std::unordered_map<std::string, Category*>& categoryMap)
+Rule::parseBooleanExpressions(const Model& model)
 {
 	booleanNodeList_.clear();
 
 	for (std::vector<std::string>::size_type size = booleanExpressionList_.size(), i = 0; i < size; ++i) {
-		Parser p(booleanExpressionList_[i], categoryMap);
+		Parser p(booleanExpressionList_[i], model);
 		booleanNodeList_.push_back(p.getBooleanNode());
 	}
 

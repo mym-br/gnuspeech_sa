@@ -102,19 +102,17 @@ public:
 	std::vector<std::unique_ptr<Rule>>& ruleList() { return ruleList_; }
 	const Rule* findFirstMatchingRule(const std::vector<const Posture*>& postureSequence, unsigned int& ruleIndex) const;
 
-	const std::vector<Category>& categoryList() const { return categoryList_; }
-	std::vector<Category>& categoryList() { return categoryList_; }
-	const Category* findCategory(const std::string& name) const;
-	unsigned int getCategoryCode(const std::string& name) const;
+	const std::vector<std::shared_ptr<Category>>& categoryList() const { return categoryList_; }
+	std::vector<std::shared_ptr<Category>>& categoryList() { return categoryList_; }
+	const std::shared_ptr<Category> findCategory(const std::string& name) const;
+	std::shared_ptr<Category> findCategory(const std::string& name);
 	bool findCategoryName(const std::string& name) const;
 
-	void prepareCategories();
 	void preparePostures();
 	void prepareEquations();
 	void prepareRules();
 private:
-	std::vector<Category> categoryList_;
-	std::unordered_map<std::string, Category*> categoryMap_; // optimization
+	std::vector<std::shared_ptr<Category>> categoryList_;
 
 	std::vector<Parameter> parameterList_;
 

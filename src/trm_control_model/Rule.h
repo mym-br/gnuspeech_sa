@@ -26,7 +26,6 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#include <unordered_map>
 #include <utility> /* move */
 #include <vector>
 
@@ -105,16 +104,15 @@ private:
 
 class RuleBooleanTerminal : public RuleBooleanNode {
 public:
-	RuleBooleanTerminal(const std::string& text, bool matchAll, int categoryCode)
-			: RuleBooleanNode(), text_(text), matchAll_(matchAll), categoryCode_(categoryCode) {}
+	RuleBooleanTerminal(const std::shared_ptr<Category>& category, bool matchAll)
+			: RuleBooleanNode(), category_(category), matchAll_(matchAll) {}
 	virtual ~RuleBooleanTerminal();
 
 	virtual bool eval(const Posture& posture) const;
 	virtual void print(std::ostream& out, int level = 0) const;
 private:
-	std::string text_;
+	const std::shared_ptr<Category> category_;
 	bool matchAll_;
-	int categoryCode_;
 };
 
 class Rule {
@@ -138,7 +136,7 @@ public:
 	bool evalBooleanExpression(const std::vector<const Posture*>& postureSequence) const;
 	bool evalBooleanExpression(const Posture& posture, unsigned int expressionIndex) const;
 	void printBooleanNodeTree() const;
-	void parseBooleanExpression(const std::unordered_map<std::string, Category*>& categoryMap);
+	void parseBooleanExpressions(const Model& model);
 
 	ExpressionSymbolEquations& exprSymbolEquations() { return exprSymbolEquations_; }
 	const ExpressionSymbolEquations& exprSymbolEquations() const { return exprSymbolEquations_; }

@@ -40,15 +40,15 @@ namespace TRMControlModel {
 void
 XMLConfigFileReader::parseCategories()
 {
-	unsigned int code = 0;
 	for (const std::string* category = parser_.getFirstChild(categoryTagName_);
 				category;
 				category = parser_.getNextSibling(categoryTagName_)) {
 
-		model_.categoryList().emplace_back(parser_.getAttribute(nameAttrName_), ++code); // code starts with 1
+		std::shared_ptr<Category> newCategory(new Category(parser_.getAttribute(nameAttrName_)));
+		model_.categoryList().push_back(newCategory);
 
 		if (parser_.getFirstChild()) {
-			model_.categoryList().back().setComment(parser_.getText());
+			model_.categoryList().back()->setComment(parser_.getText());
 			parser_.getNextSibling();
 		}
 	}
@@ -110,7 +110,14 @@ XMLConfigFileReader::parsePostureCategories(Posture& posture)
 				catRef;
 				catRef = parser_.getNextSibling(categoryRefTagName_)) {
 
-		posture.categoryList().emplace_back(parser_.getAttribute(nameAttrName_), 0);
+		const std::string name = parser_.getAttribute(nameAttrName_);
+		if (name != posture.name()) {
+			std::shared_ptr<Category> postureCat = model_.findCategory(name);
+			if (!postureCat) {
+				THROW_EXCEPTION(TRMControlModelException, "Posture category not found: " << name << '.');
+			}
+			posture.categoryList().push_back(postureCat);
+		}
 	}
 }
 

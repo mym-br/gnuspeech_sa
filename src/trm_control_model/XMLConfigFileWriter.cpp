@@ -166,16 +166,16 @@ XMLConfigFileWriter::writeElements()
 
 	LOG_DEBUG("categories ==================================================");
 	xml.openElement("categories");
-	for (const Category& category : model_.categoryList()) {
+	for (const auto& category : model_.categoryList()) {
 		xml.openElementWithAttributes("category");
-		xml.addAttribute("name", category.name());
-		if (category.comment().empty()) {
+		xml.addAttribute("name", category->name());
+		if (category->comment().empty()) {
 			xml.endAttributesAndCloseElement();
 			continue;
 		}
 		xml.endAttributes();
 		xml.openInlineElement("comment");
-		xml.addText(category.comment());
+		xml.addText(category->comment());
 		xml.closeInlineElement("comment");
 		xml.closeElement("category");
 	}
@@ -222,7 +222,7 @@ XMLConfigFileWriter::writeElements()
 		xml.openElement("posture-categories");
 		for (const auto& category : posture->categoryList()) {
 			xml.openElementWithAttributes("category-ref");
-			xml.addAttribute("name", category.name());
+			xml.addAttribute("name", category->name());
 			xml.endAttributesAndCloseElement();
 		}
 		xml.closeElement("posture-categories");

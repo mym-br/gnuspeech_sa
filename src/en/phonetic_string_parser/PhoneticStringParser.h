@@ -21,6 +21,8 @@
 #ifndef EN_PHONETIC_STRING_PARSER_H_
 #define EN_PHONETIC_STRING_PARSER_H_
 
+#include <memory>
+
 #include "Controller.h"
 
 
@@ -48,10 +50,12 @@ private:
 	void printVowelTransitions();
 	const TRMControlModel::Posture* rewrite(const TRMControlModel::Posture& nextPosture, int wordMarker, RewriterData& data);
 	const TRMControlModel::Posture* calcVowelTransition(const TRMControlModel::Posture& nextPosture, RewriterData& data);
+	std::shared_ptr<TRMControlModel::Category> getCategory(const char* name);
+	const TRMControlModel::Posture* getPosture(const char* name);
 
 	const TRMControlModel::Model& model_;
 	TRMControlModel::EventList& eventList_;
-	const TRMControlModel::Category* category_[18];
+	std::shared_ptr<const TRMControlModel::Category> category_[18];
 	const TRMControlModel::Posture* returnPhone_[7];
 	int vowelTransitions_[13][13];
 };

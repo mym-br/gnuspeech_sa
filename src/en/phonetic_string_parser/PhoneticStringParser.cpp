@@ -40,37 +40,59 @@ PhoneticStringParser::PhoneticStringParser(const char* configDirPath, TRMControl
 		: model_(controller.model())
 		, eventList_(controller.eventList())
 {
-	category_[0] = model_.findCategory("stopped");
-	category_[1] = model_.findCategory("affricate");
-	category_[2] = model_.findCategory("hlike");
-	category_[3] = model_.findCategory("vocoid");
+	category_[0] = getCategory("stopped");
+	category_[1] = getCategory("affricate");
+	category_[2] = getCategory("hlike");
+	category_[3] = getCategory("vocoid");
 
 	const std::vector<const char*> postureList = {"h", "h'", "hv", "hv'", "ll", "ll'", "s", "s'", "z", "z'"};
 	for (unsigned int i = 0; i < postureList.size(); ++i) {
 		const char* posture = postureList[i];
-		const TRMControlModel::Posture* tempPosture = model_.findPosture(posture);
-		if (!tempPosture) THROW_EXCEPTION(UnavailableResourceException, "Could not find the posture \"" << posture << "\".");
+		const TRMControlModel::Posture* tempPosture = getPosture(posture);
 		category_[i + 4U] = tempPosture->findCategory(posture);
+		if (!category_[i + 4U]) {
+			THROW_EXCEPTION(UnavailableResourceException, "Could not find the category \"" << posture << "\".");
+		}
 	}
 
-	category_[14] = model_.findCategory("whistlehack");
-	category_[15] = model_.findCategory("lhack");
-	category_[16] = model_.findCategory("whistlehack");
-	category_[17] = model_.findCategory("whistlehack");
+	category_[14] = getCategory("whistlehack");
+	category_[15] = getCategory("lhack");
+	category_[16] = getCategory("whistlehack");
+	category_[17] = getCategory("whistlehack");
 
-	returnPhone_[0] = model_.findPosture("qc");
-	returnPhone_[1] = model_.findPosture("qt");
-	returnPhone_[2] = model_.findPosture("qp");
-	returnPhone_[3] = model_.findPosture("qk");
-	returnPhone_[4] = model_.findPosture("gs");
-	returnPhone_[5] = model_.findPosture("qs");
-	returnPhone_[6] = model_.findPosture("qz");
+	returnPhone_[0] = getPosture("qc");
+	returnPhone_[1] = getPosture("qt");
+	returnPhone_[2] = getPosture("qp");
+	returnPhone_[3] = getPosture("qk");
+	returnPhone_[4] = getPosture("gs");
+	returnPhone_[5] = getPosture("qs");
+	returnPhone_[6] = getPosture("qz");
 
 	initVowelTransitions(configDirPath);
 }
 
 PhoneticStringParser::~PhoneticStringParser()
 {
+}
+
+std::shared_ptr<TRMControlModel::Category>
+PhoneticStringParser::getCategory(const char* name)
+{
+	const std::shared_ptr<TRMControlModel::Category> category = model_.findCategory(name);
+	if (!category) {
+		THROW_EXCEPTION(UnavailableResourceException, "Could not find the category \"" << name << "\".");
+	}
+	return category;
+}
+
+const TRMControlModel::Posture*
+PhoneticStringParser::getPosture(const char* name)
+{
+	const TRMControlModel::Posture* posture = model_.findPosture(name);
+	if (!posture) {
+		THROW_EXCEPTION(UnavailableResourceException, "Could not find the posture \"" << name << "\".");
+	}
+	return posture;
 }
 
 void

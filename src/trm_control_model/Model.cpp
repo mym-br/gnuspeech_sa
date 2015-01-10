@@ -56,7 +56,6 @@ void
 Model::clear()
 {
 	categoryList_.clear();
-	categoryMap_.clear();
 
 	parameterList_.clear();
 
@@ -93,7 +92,6 @@ Model::load(const char* configDirPath, const char* configFileName)
 		XMLConfigFileReader cfg(*this, filePath);
 		cfg.loadModel();
 
-		prepareCategories();
 		preparePostures();
 		prepareEquations();
 		prepareTransitions();
@@ -120,29 +118,6 @@ Model::save(const char* configDirPath, const char* configFileName)
 
 /*******************************************************************************
  *
- * Needed by Model::preparePostures,
- *           Model::prepareRules,
- *             Rule::parseBooleanExpression.
- */
-void
-Model::prepareCategories()
-{
-	LOG_DEBUG("Preparing categories...");
-
-	categoryMap_.clear();
-	unsigned int code = 0;
-	for (auto& category : categoryList_) {
-		category.setCode(++code);
-
-		auto res = categoryMap_.insert(std::make_pair(category.name(), &category));
-		if (!res.second) {
-			THROW_EXCEPTION(TRMControlModelException, "Duplicate category: " << category.name() << '.');
-		}
-	}
-}
-
-/*******************************************************************************
- *
  * Needed by Model::findPosture,
  *           Model::findFirstMatchingRule,
  *             Rule::evalBooleanExpression.
@@ -157,16 +132,6 @@ Model::preparePostures()
 		auto res = postureMap_.insert(std::make_pair(posture->name(), posture.get()));
 		if (!res.second) {
 			THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture->name() << '.');
-		}
-
-		// Fill the category code in the category list of each Posture.
-		for (auto& postureCategory : posture->categoryList()) {
-			auto catIter = categoryMap_.find(postureCategory.name());
-			if (catIter != categoryMap_.end()) {
-				postureCategory.setCode(catIter->second->code());
-			} else {
-				postureCategory.setCode(0);
-			}
 		}
 	}
 }
@@ -240,7 +205,7 @@ Model::prepareRules()
 
 	// Convert the boolean expression string of each Rule to a tree.
 	for (auto& rule : ruleList_) {
-		rule->parseBooleanExpression(categoryMap_);
+		rule->parseBooleanExpressions(*this);
 	}
 }
 
@@ -253,9 +218,8 @@ Model::printInfo() const
 	//---------------------------------------------------------
 	// Categories.
 	std::cout << std::string(40, '-') << "\nCategories:\n" << std::endl;
-	for (auto iter = categoryMap_.begin();
-			iter != categoryMap_.end(); ++iter) {
-		std::cout << "category: " << iter->first << " code: " << iter->second->code() << std::endl;
+	for (const auto& category : categoryList_) {
+		std::cout << "category: " << category->name() << std::endl;
 	}
 
 	//---------------------------------------------------------
@@ -264,7 +228,7 @@ Model::printInfo() const
 	for (const auto& posture : postureList()) {
 		std::cout << "posture symbol: " << posture->name() << std::endl;
 		for (const auto& category : posture->categoryList()) {
-			std::cout << "  categ: " << category.name() << "_" << category.code() << std::endl;
+			std::cout << "  categ: " << category->name() << std::endl;
 		}
 		std::cout << "  parameter targets:" << std::endl;
 		for (unsigned int i = 0, size = parameterList_.size(); i < size; ++i) {
@@ -410,31 +374,35 @@ Model::findParameterIndex(const std::string& name) const
 }
 
 /*******************************************************************************
- * Find the Category code.
+ * Find the Category.
  *
- * Returns nullptr if the Category was not found.
+ * Returns an empty shared_ptr if the Category was not found.
  */
-const Category*
+const std::shared_ptr<Category>
 Model::findCategory(const std::string& name) const
 {
-	auto iter = categoryMap_.find(name);
-	if (iter != categoryMap_.end()) {
-		return iter->second;
+	for (auto& category : categoryList_) {
+		if (category->name() == name) {
+			return category;
+		}
 	}
-	return nullptr;
+	return std::shared_ptr<Category>();
 }
 
 /*******************************************************************************
+ * Find the Category.
  *
+ * Returns an empty shared_ptr if the Category was not found.
  */
-unsigned int
-Model::getCategoryCode(const std::string& name) const
+std::shared_ptr<Category>
+Model::findCategory(const std::string& name)
 {
-	auto iter = categoryMap_.find(name);
-	if (iter == categoryMap_.end()) {
-		THROW_EXCEPTION(TRMControlModelException, "Category not found: " << name << '.');
+	for (auto& category : categoryList_) {
+		if (category->name() == name) {
+			return category;
+		}
 	}
-	return iter->second->code();
+	return std::shared_ptr<Category>();
 }
 
 /*******************************************************************************
@@ -444,7 +412,7 @@ bool
 Model::findCategoryName(const std::string& name) const
 {
 	for (const auto& item : categoryList_) {
-		if (item.name() == name) {
+		if (item->name() == name) {
 			return true;
 		}
 	}

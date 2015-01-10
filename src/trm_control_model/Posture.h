@@ -23,6 +23,7 @@
 #ifndef TRM_CONTROL_MODEL_POSTURE_H_
 #define TRM_CONTROL_MODEL_POSTURE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -58,12 +59,10 @@ public:
 	}
 
 	const std::string& name() const { return name_; }
-	void setName(const std::string& name) { name_ = name; }
+	void setName(const std::string& name);
 
-	std::vector<Category>& categoryList() { return categoryList_; }
-	const std::vector<Category>& categoryList() const { return categoryList_; }
+	std::vector<std::shared_ptr<Category>>& categoryList() { return categoryList_; }
 
-	//std::vector<float>& parameterTargetList() { return parameterTargetList_; }
 	float getParameterTarget(unsigned int parameterIndex) const {
 		if (parameterIndex >= parameterTargetList_.size()) {
 			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
@@ -95,15 +94,11 @@ public:
 	const std::string& comment() const { return comment_; }
 	void setComment(const std::string& comment) { comment_ = comment; }
 
-	bool isMemberOfCategory(unsigned int categoryCode) const;
-	bool isMemberOfCategory(const std::string& categoryName, bool postureNameOnly) const;
 	bool isMemberOfCategory(const Category& category) const;
-	template<typename T> bool isMemberOfCategory(const std::string& categoryName, T match) const;
-	const Category* findCategory(const std::string& name) const;
-
+	const std::shared_ptr<Category> findCategory(const std::string& name) const;
 private:
 	std::string name_;
-	std::vector<Category> categoryList_;
+	std::vector<std::shared_ptr<Category>> categoryList_;
 	std::vector<float> parameterTargetList_;
 	std::vector<float> symbolTargetList_;
 	std::string comment_;
@@ -112,67 +107,39 @@ private:
 
 
 /*******************************************************************************
- * Obs.: Considers only the name of the posture.
- */
-template<typename T>
-bool
-Posture::isMemberOfCategory(const std::string& categoryName, T match) const
-{
-	if (match(categoryName, name_)) {
-		return true;
-	}
-
-	return false;
-}
-
-/*******************************************************************************
  *
  */
 inline
-const Category*
+const std::shared_ptr<Category>
 Posture::findCategory(const std::string& name) const
 {
-	for (const auto& category : categoryList_) {
-		if (category.name() == name) {
-			return &category;
+	for (auto& category : categoryList_) {
+		if (category->name() == name) {
+			return category;
 		}
 	}
-	return nullptr;
+	return std::shared_ptr<Category>();
 }
 
 /*******************************************************************************
  *
  */
 inline
-bool
-Posture::isMemberOfCategory(unsigned int categoryCode) const
+void
+Posture::setName(const std::string& name)
 {
-	for (const auto& category : categoryList_) {
-		if (category.code() == categoryCode) {
-			return true;
-		}
-	}
-	return false;
-}
+	name_ = name;
 
-/*******************************************************************************
- * If postureNameOnly = true, considers only the name of the posture.
- */
-inline
-bool
-Posture::isMemberOfCategory(const std::string& categoryName, bool postureNameOnly) const
-{
-	if (name_ == categoryName) return true;
-
-	if (!postureNameOnly) {
-		for (const auto& category : categoryList_) {
-			if (category.name() == categoryName) {
-				return true;
-			}
+	for (auto& category : categoryList_) {
+		if (category->native()) {
+			category->setName(name);
+			return;
 		}
 	}
 
-	return false;
+	std::shared_ptr<Category> newCategory(new Category(name));
+	newCategory->setNative();
+	categoryList_.push_back(newCategory);
 }
 
 /*******************************************************************************
@@ -182,14 +149,10 @@ inline
 bool
 Posture::isMemberOfCategory(const Category& category) const
 {
-	if (category.code() != 0) {
-		for (const auto& c : categoryList_) {
-			if (c.code() == category.code()) {
-				return true;
-			}
+	for (const auto& postureCat : categoryList_) {
+		if (postureCat.get() == &category) {
+			return true;
 		}
-	} else if (name_ == category.name()) {
-		return true;
 	}
 	return false;
 }
