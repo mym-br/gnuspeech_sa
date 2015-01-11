@@ -651,6 +651,25 @@ Model::findTransitionName(const std::string& name) const
 }
 
 /*******************************************************************************
+ *
+ */
+bool
+Model::findTransitionIndex(const std::string& name, unsigned int& groupIndex, unsigned int& index) const
+{
+	for (unsigned int i = 0, groupListSize = transitionGroupList_.size(); i < groupListSize; ++i) {
+		const auto& group = transitionGroupList_[i];
+		for (unsigned int j = 0, size = group.transitionList.size(); j < size; ++j) {
+			if (group.transitionList[j]->name() == name) {
+				groupIndex = i;
+				index = j;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*******************************************************************************
  * Find a Special Transition with the given name.
  *
  * Returns an empty shared_ptr if the Transition was not found.
@@ -691,6 +710,25 @@ Model::findSpecialTransitionName(const std::string& name) const
 	for (const auto& group : specialTransitionGroupList_) {
 		for (const auto& item : group.transitionList) {
 			if (item->name() == name) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*******************************************************************************
+ *
+ */
+bool
+Model::findSpecialTransitionIndex(const std::string& name, unsigned int& groupIndex, unsigned int& index) const
+{
+	for (unsigned int i = 0, groupListSize = specialTransitionGroupList_.size(); i < groupListSize; ++i) {
+		const auto& group = specialTransitionGroupList_[i];
+		for (unsigned int j = 0, size = group.transitionList.size(); j < size; ++j) {
+			if (group.transitionList[j]->name() == name) {
+				groupIndex = i;
+				index = j;
 				return true;
 			}
 		}

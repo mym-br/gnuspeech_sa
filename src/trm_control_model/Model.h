@@ -91,12 +91,14 @@ public:
 	const std::shared_ptr<Transition> findTransition(const std::string& name) const;
 	bool findTransitionGroupName(const std::string& name) const;
 	bool findTransitionName(const std::string& name) const;
+	bool findTransitionIndex(const std::string& name, unsigned int& groupIndex, unsigned int& index) const;
 
 	const std::vector<TransitionGroup>& specialTransitionGroupList() const { return specialTransitionGroupList_; }
 	std::vector<TransitionGroup>& specialTransitionGroupList() { return specialTransitionGroupList_; }
 	const std::shared_ptr<Transition> findSpecialTransition(const std::string& name) const;
 	bool findSpecialTransitionGroupName(const std::string& name) const;
 	bool findSpecialTransitionName(const std::string& name) const;
+	bool findSpecialTransitionIndex(const std::string& name, unsigned int& groupIndex, unsigned int& index) const;
 
 	const std::vector<std::unique_ptr<Rule>>& ruleList() const { return ruleList_; }
 	std::vector<std::unique_ptr<Rule>>& ruleList() { return ruleList_; }
