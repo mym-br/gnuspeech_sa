@@ -61,6 +61,7 @@ public:
 	const std::string& name() const { return name_; }
 	void setName(const std::string& name);
 
+	const std::vector<std::shared_ptr<Category>>& categoryList() const { return categoryList_; }
 	std::vector<std::shared_ptr<Category>>& categoryList() { return categoryList_; }
 
 	float getParameterTarget(unsigned int parameterIndex) const {
