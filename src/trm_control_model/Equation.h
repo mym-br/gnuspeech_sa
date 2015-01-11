@@ -21,7 +21,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#include <utility> /* move */
+#include <utility> /* swap, move */
 #include <vector>
 
 #include "FormulaSymbol.h"
@@ -129,21 +129,35 @@ private:
 	FormulaSymbol::Code symbol_;
 };
 
-std::ostream& operator<<(std::ostream& out, const FormulaNode& node);
+class Equation;
+std::ostream& operator<<(std::ostream& out, const Equation& equation);
 
-struct Equation {
-	std::string name;
-	std::string formula;
-	std::string comment;
-	FormulaNode_ptr formulaRoot;
+class Equation {
+public:
+	explicit Equation(const std::string& name) : name_(name) {}
 
-	void parseFormula(const FormulaSymbol& formulaSymbol);
+	void setName(const std::string& name) { name_ = name; }
+	const std::string& name() const { return name_; }
+
+	const std::string& formula() const { return formula_; }
+	void setFormula(const std::string& formula);
+
+	void setComment(const std::string& comment) { comment_ = comment; }
+	const std::string& comment() const { return comment_; }
+
 	float evalFormula(const FormulaSymbolList& symbolList) const;
+
+	friend std::ostream& operator<<(std::ostream& out, const Equation& equation);
+private:
+	std::string name_;
+	std::string formula_;
+	std::string comment_;
+	FormulaNode_ptr formulaRoot_;
 };
 
 struct EquationGroup {
 	std::string name;
-	std::vector<Equation> equationList;
+	std::vector<std::shared_ptr<Equation>> equationList;
 };
 
 } /* namespace TRMControlModel */

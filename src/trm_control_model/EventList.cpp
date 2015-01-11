@@ -548,12 +548,14 @@ EventList::applyRule(const Rule& rule, const std::vector<const Posture*>& postur
 			lastValue = targets[0];
 			//lastValue = 0.0;
 
-			const std::string& paramTransition = rule.getParamProfileTransition(i);
-			const Transition* trans = model_.findTransition(paramTransition); //TODO: check not null
+			const std::shared_ptr<Transition> transition = rule.getParamProfileTransition(i);
+			if (!transition) {
+				THROW_EXCEPTION(UnavailableResourceException, "Rule transition not found: " << i << '.');
+			}
 
 			/* Apply lists to parameter */
-			for (unsigned int j = 0; j < trans->pointOrSlopeList().size(); ++j) {
-				const Transition::PointOrSlope& pointOrSlope = *trans->pointOrSlopeList()[j];
+			for (unsigned int j = 0; j < transition->pointOrSlopeList().size(); ++j) {
+				const Transition::PointOrSlope& pointOrSlope = *transition->pointOrSlopeList()[j];
 				if (pointOrSlope.isSlopeRatio()) {
 					const auto& slopeRatio = dynamic_cast<const Transition::SlopeRatio&>(pointOrSlope);
 
@@ -591,11 +593,10 @@ EventList::applyRule(const Rule& rule, const std::vector<const Posture*>& postur
 
 	/* Special Event Profiles */
 	for (unsigned int i = 0, size = model_.parameterList().size(); i < size; ++i) {
-		const std::string& specialTransition = rule.getSpecialProfileTransition(i);
-		if (!specialTransition.empty()) {
-			const Transition* trans = model_.findSpecialTransition(specialTransition); //TODO: check not null
-			for (unsigned int j = 0; j < trans->pointOrSlopeList().size(); ++j) {
-				const Transition::PointOrSlope& pointOrSlope = *trans->pointOrSlopeList()[j];
+		const std::shared_ptr<Transition> specialTransition = rule.getSpecialProfileTransition(i);
+		if (specialTransition) {
+			for (unsigned int j = 0; j < specialTransition->pointOrSlopeList().size(); ++j) {
+				const Transition::PointOrSlope& pointOrSlope = *specialTransition->pointOrSlopeList()[j];
 				const auto& point = dynamic_cast<const Transition::Point&>(pointOrSlope);
 
 				/* calculate time of event */

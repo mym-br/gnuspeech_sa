@@ -17,10 +17,6 @@
 
 #include "Equation.h"
 
-#include <iostream>
-#include <cassert>
-#include <string>
-
 #include "Exception.h"
 #include "Log.h"
 #include "Text.h"
@@ -38,11 +34,11 @@ const char DIV_CHAR         = '/';
 const char RIGHT_PAREN_CHAR = ')';
 const char LEFT_PAREN_CHAR  = '(';
 
-
+FormulaSymbol formulaSymbol;
 
 class FormulaNodeParser {
 public:
-	FormulaNodeParser(const std::string& s, const FormulaSymbol& formulaSymbol)
+	FormulaNodeParser(const std::string& s)
 				: formulaSymbolMap_(formulaSymbol.codeMap)
 				, s_(s)
 				, pos_(0)
@@ -378,25 +374,22 @@ FormulaSymbolValue::print(std::ostream& out, int level) const
 	out << std::string(level * 8, ' ') << "symbol=" << symbol_ << std::endl;
 }
 
-std::ostream&
-operator<<(std::ostream& out, const FormulaNode& node)
-{
-	node.print(out);
-	return out;
-}
-
 /*******************************************************************************
  *
  */
 void
-Equation::parseFormula(const FormulaSymbol& formulaSymbol)
+Equation::setFormula(const std::string& formula)
 {
 	if (formula.empty()) {
-		formulaRoot.reset(nullptr);
-	} else {
-		FormulaNodeParser p(formula, formulaSymbol);
-		formulaRoot = p.parseExpression();
+		//THROW_EXCEPTION(InvalidParameterException, "Empty formula.");
+		return;
 	}
+
+	FormulaNodeParser p(formula);
+	FormulaNode_ptr testFormulaRoot = p.parseExpression();
+
+	formula_ = formula;
+	std::swap(testFormulaRoot, formulaRoot_);
 }
 
 /*******************************************************************************
@@ -405,10 +398,23 @@ Equation::parseFormula(const FormulaSymbol& formulaSymbol)
 float
 Equation::evalFormula(const FormulaSymbolList& symbolList) const
 {
-	//if (formulaRoot.get() == 0) throw ControllerException("Equation::evalFormula: Formula tree not found.");
-	assert(formulaRoot.get() != nullptr);
+	if (!formulaRoot_) {
+		THROW_EXCEPTION(InvalidStateException, "Empty formula.");
+	}
 
-	return formulaRoot->eval(symbolList);
+	return formulaRoot_->eval(symbolList);
+}
+
+/*******************************************************************************
+ *
+ */
+std::ostream&
+operator<<(std::ostream& out, const Equation& equation)
+{
+	if (equation.formulaRoot_) {
+		equation.formulaRoot_->print(out);
+	}
+	return out;
 }
 
 } /* namespace TRMControlModel */

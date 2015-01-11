@@ -65,13 +65,10 @@ Model::clear()
 	ruleList_.clear();
 
 	equationGroupList_.clear();
-	equationMap_.clear();
 
 	transitionGroupList_.clear();
-	transitionMap_.clear();
 
 	specialTransitionGroupList_.clear();
-	specialTransitionMap_.clear();
 
 	formulaSymbolList_.fill(0.0f);
 }
@@ -93,9 +90,6 @@ Model::load(const char* configDirPath, const char* configFileName)
 		cfg.loadModel();
 
 		preparePostures();
-		prepareEquations();
-		prepareTransitions();
-		prepareRules();
 	} catch (...) {
 		clear();
 		throw;
@@ -119,8 +113,9 @@ Model::save(const char* configDirPath, const char* configFileName)
 /*******************************************************************************
  *
  * Needed by Model::findPosture,
- *           Model::findFirstMatchingRule,
- *             Rule::evalBooleanExpression.
+ *           Rule::setBooleanExpressionList
+ *           Controller::validPosture
+ *           PhoneticStringParser
  */
 void
 Model::preparePostures()
@@ -133,79 +128,6 @@ Model::preparePostures()
 		if (!res.second) {
 			THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture->name() << '.');
 		}
-	}
-}
-
-/*******************************************************************************
- *
- * Needed by Rule::evaluateExpressionSymbols,
- *           Model::evalEquationFormula.
- */
-void
-Model::prepareEquations()
-{
-	LOG_DEBUG("Preparing equations...");
-
-	equationMap_.clear();
-	for (auto& group : equationGroupList_) {
-		for (auto& equation : group.equationList) {
-			auto res = equationMap_.insert(std::make_pair(equation.name, &equation));
-			if (!res.second) {
-				THROW_EXCEPTION(TRMControlModelException, "Duplicate equation: " << equation.name << '.');
-			}
-
-			// Convert the formula expression to a tree.
-			equation.parseFormula(formulaSymbol_);
-		}
-	}
-}
-
-/*******************************************************************************
- *
- * Needed by Model::findTransition,
- *           Model::findSpecialTransition.
- */
-void
-Model::prepareTransitions()
-{
-	LOG_DEBUG("Preparing transitions...");
-
-	transitionMap_.clear();
-	for (auto& group : transitionGroupList_) {
-		for (auto& transition : group.transitionList) {
-			auto res = transitionMap_.insert(std::make_pair(transition.name(), &transition));
-			if (!res.second) {
-				//THROW_EXCEPTION(TRMControlModelException, "Duplicate transition: " << transition.name() << '.');
-				LOG_ERROR("Duplicate transition: " << transition.name() << " (ignored).");
-			}
-		}
-	}
-
-	specialTransitionMap_.clear();
-	for (auto& group : specialTransitionGroupList_) {
-		for (auto& transition : group.transitionList) {
-			auto res = specialTransitionMap_.insert(std::make_pair(transition.name(), &transition));
-			if (!res.second) {
-				//THROW_EXCEPTION(TRMControlModelException, "Duplicate transition: " << transition.name() << '.');
-				LOG_ERROR("Duplicate special transition: " << transition.name() << " (ignored).");
-			}
-		}
-	}
-}
-
-/*******************************************************************************
- *
- * Needed by Model::findFirstMatchingRule,
- *             Rule::evalBooleanExpression.
- */
-void
-Model::prepareRules()
-{
-	LOG_DEBUG("Preparing rules...");
-
-	// Convert the boolean expression string of each Rule to a tree.
-	for (auto& rule : ruleList_) {
-		rule->parseBooleanExpressions(*this);
 	}
 }
 
@@ -269,10 +191,10 @@ Model::printInfo() const
 	for (const auto& group : equationGroupList_) {
 		std::cout << "=== Equation group: " << group.name << std::endl;
 		for (const auto& equation : group.equationList) {
-			std::cout << "=== Equation: [" << equation.name << "]" << std::endl;
-			std::cout << "    [" << equation.formula << "]" << std::endl;
-			std::cout << *equation.formulaRoot << std::endl;
-			std::cout << "*** EVAL=" << equation.formulaRoot->eval(symbolList) << std::endl;
+			std::cout << "=== Equation: [" << equation->name() << "]" << std::endl;
+			std::cout << "    [" << equation->formula() << "]" << std::endl;
+			std::cout << *equation << std::endl;
+			std::cout << "*** EVAL=" << equation->evalFormula(symbolList) << std::endl;
 		}
 	}
 
@@ -282,20 +204,22 @@ Model::printInfo() const
 	for (const auto& group : transitionGroupList_) {
 		std::cout << "=== Transition group: " << group.name << std::endl;
 		for (const auto& transition : group.transitionList) {
-			std::cout << "### Transition: [" << transition.name() << "]" << std::endl;
-			std::cout << "    type=" << transition.type() << " special=" << transition.special() << std::endl;
+			std::cout << "### Transition: [" << transition->name() << "]" << std::endl;
+			std::cout << "    type=" << transition->type() << " special=" << transition->special() << std::endl;
 
-			for (auto& pointOrSlope : transition.pointOrSlopeList()) {
+			for (auto& pointOrSlope : transition->pointOrSlopeList()) {
 				if (!pointOrSlope->isSlopeRatio()) {
 					const auto& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
 					std::cout << "       point: type=" << point.type << " value=" << point.value
-						<< " freeTime=" << point.freeTime << " timeExpression=" << point.timeExpression
+						<< " freeTime=" << point.freeTime
+						<< " timeExpression=" << (point.timeExpression ? point.timeExpression->name() : "")
 						<< " isPhantom=" << point.isPhantom << std::endl;
 				} else {
 					const auto& slopeRatio = dynamic_cast<const Transition::SlopeRatio&>(*pointOrSlope);
 					for (auto& point : slopeRatio.pointList) {
 						std::cout << "         point: type=" << point->type << " value=" << point->value
-							<< " freeTime=" << point->freeTime << " timeExpression=" << point->timeExpression
+							<< " freeTime=" << point->freeTime
+							<< " timeExpression=" << (point->timeExpression ? point->timeExpression->name() : "")
 							<< " isPhantom=" << point->isPhantom << std::endl;
 					}
 					for (auto& slope : slopeRatio.slopeList) {
@@ -312,14 +236,15 @@ Model::printInfo() const
 	for (const auto& group : specialTransitionGroupList_) {
 		std::cout << "=== Special transition group: " << group.name << std::endl;
 		for (const auto& transition : group.transitionList) {
-			std::cout << "### Transition: [" << transition.name() << "]" << std::endl;
-			std::cout << "    type=" << transition.type() << " special=" << transition.special() << std::endl;
+			std::cout << "### Transition: [" << transition->name() << "]" << std::endl;
+			std::cout << "    type=" << transition->type() << " special=" << transition->special() << std::endl;
 
-			for (const auto& pointOrSlope : transition.pointOrSlopeList()) {
+			for (const auto& pointOrSlope : transition->pointOrSlopeList()) {
 				const auto& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
 
 				std::cout << "       point: type=" << point.type << " value=" << point.value
-					<< " freeTime=" << point.freeTime << " timeExpression=" << point.timeExpression
+					<< " freeTime=" << point.freeTime
+					<< " timeExpression=" << (point.timeExpression ? point.timeExpression->name() : "")
 					<< " isPhantom=" << point.isPhantom << std::endl;
 			}
 		}
@@ -499,14 +424,9 @@ Model::setDefaultFormulaSymbols(Transition::Type transitionType)
  *
  */
 float
-Model::evalEquationFormula(const std::string& equationName) const
+Model::evalEquationFormula(const Equation& equation) const
 {
-	auto iter = equationMap_.find(equationName);
-	if (iter == equationMap_.end()) {
-		THROW_EXCEPTION(TRMControlModelException, "Equation not found: " << equationName << '.');
-	}
-
-	return iter->second->evalFormula(formulaSymbolList_);
+	return equation.evalFormula(formulaSymbolList_);
 }
 
 /*******************************************************************************
@@ -531,7 +451,7 @@ Model::findEquationName(const std::string& name) const
 {
 	for (const auto& group : equationGroupList_) {
 		for (const auto& item : group.equationList) {
-			if (item.name == name) {
+			if (item->name() == name) {
 				return true;
 			}
 		}
@@ -548,7 +468,7 @@ Model::findEquationIndex(const std::string& name, unsigned int& groupIndex, unsi
 	for (unsigned int i = 0, groupListSize = equationGroupList_.size(); i < groupListSize; ++i) {
 		const auto& group = equationGroupList_[i];
 		for (unsigned int j = 0, size = group.equationList.size(); j < size; ++j) {
-			if (group.equationList[j].name == name) {
+			if (group.equationList[j]->name() == name) {
 				groupIndex = i;
 				index = j;
 				return true;
@@ -556,6 +476,22 @@ Model::findEquationIndex(const std::string& name, unsigned int& groupIndex, unsi
 		}
 	}
 	return false;
+}
+
+/*******************************************************************************
+ *
+ */
+std::shared_ptr<Equation>
+Model::findEquation(const std::string& name)
+{
+	for (const auto& group : equationGroupList_) {
+		for (const auto& equation : group.equationList) {
+			if (equation->name() == name) {
+				return equation;
+			}
+		}
+	}
+	return std::shared_ptr<Equation>();
 }
 
 /*******************************************************************************
@@ -669,17 +605,19 @@ Model::findPostureName(const std::string& name) const
 /*******************************************************************************
  * Find a Transition with the given name.
  *
- * Returns a pointer to the Transition, or 0 (zero) if a Transition
- * was not found.
+ * Returns an empty shared_ptr if the Transition was not found.
  */
-const Transition*
+const std::shared_ptr<Transition>
 Model::findTransition(const std::string& name) const
 {
-	auto transIter = transitionMap_.find(name);
-	if (transIter == transitionMap_.end()) {
-		return nullptr;
+	for (const auto& group : transitionGroupList_) {
+		for (const auto& transition : group.transitionList) {
+			if (transition->name() == name) {
+				return transition;
+			}
+		}
 	}
-	return transIter->second;
+	return std::shared_ptr<Transition>();
 }
 
 /*******************************************************************************
@@ -704,7 +642,7 @@ Model::findTransitionName(const std::string& name) const
 {
 	for (const auto& group : transitionGroupList_) {
 		for (const auto& item : group.transitionList) {
-			if (item.name() == name) {
+			if (item->name() == name) {
 				return true;
 			}
 		}
@@ -715,17 +653,19 @@ Model::findTransitionName(const std::string& name) const
 /*******************************************************************************
  * Find a Special Transition with the given name.
  *
- * Returns a pointer to the Special Transition, or 0 (zero) if a Special
- * Transition was not found.
+ * Returns an empty shared_ptr if the Transition was not found.
  */
-const Transition*
+const std::shared_ptr<Transition>
 Model::findSpecialTransition(const std::string& name) const
 {
-	auto transIter = specialTransitionMap_.find(name);
-	if (transIter == specialTransitionMap_.end()) {
-		return nullptr;
+	for (const auto& group : specialTransitionGroupList_) {
+		for (const auto& transition : group.transitionList) {
+			if (transition->name() == name) {
+				return transition;
+			}
+		}
 	}
-	return transIter->second;
+	return std::shared_ptr<Transition>();
 }
 
 /*******************************************************************************
@@ -750,7 +690,7 @@ Model::findSpecialTransitionName(const std::string& name) const
 {
 	for (const auto& group : specialTransitionGroupList_) {
 		for (const auto& item : group.transitionList) {
-			if (item.name() == name) {
+			if (item->name() == name) {
 				return true;
 			}
 		}

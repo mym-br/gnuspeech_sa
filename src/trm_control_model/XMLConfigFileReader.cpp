@@ -173,26 +173,26 @@ XMLConfigFileReader::parseEquationsGroup()
 {
 	EquationGroup group;
 	group.name = parser_.getAttribute(nameAttrName_);
-	model_.equationGroupList().push_back(std::move(group));
 
 	for (const std::string* equation = parser_.getFirstChild(equationTagName_);
 				equation;
 				equation = parser_.getNextSibling(equationTagName_)) {
-		Equation eq;
-		eq.name = parser_.getAttribute(nameAttrName_);
-		eq.formula = parser_.getAttribute(formulaAttrName_);
+		std::shared_ptr<Equation> eq(new Equation(parser_.getAttribute(nameAttrName_)));
+		eq->setFormula(parser_.getAttribute(formulaAttrName_));
 
 		if (parser_.getFirstChild()) {
-			eq.comment = parser_.getText();
+			eq->setComment(parser_.getText());
 			parser_.getNextSibling();
 		}
 
-		if (eq.formula.empty()) {
-			LOG_ERROR("Equation " << eq.name << " without formula (ignored)."); // should not happen
+		if (eq->formula().empty()) {
+			LOG_ERROR("Equation " << eq->name() << " without formula (ignored)."); // should not happen
 		} else {
-			model_.equationGroupList().back().equationList.push_back(std::move(eq));
+			group.equationList.push_back(eq);
 		}
 	}
+
+	model_.equationGroupList().push_back(std::move(group));
 }
 
 void
@@ -220,10 +220,18 @@ XMLConfigFileReader::parseSlopeRatio(Transition& transition)
 				std::unique_ptr<Transition::Point> p2(new Transition::Point());
 				p2->type = Transition::Point::getTypeFromName(parser_.getAttribute(typeAttrName_));
 				p2->value = Text::parseString<float>(parser_.getAttribute(valueAttrName_));
-				p2->timeExpression = parser_.getAttribute(timeExpressionAttrName_);
-				if (p2->timeExpression.empty()) {
+
+				const std::string timeExpr = parser_.getAttribute(timeExpressionAttrName_);
+				if (timeExpr.empty()) {
 					p2->freeTime = Text::parseString<float>(parser_.getAttribute(freeTimeAttrName_));
+				} else {
+					std::shared_ptr<Equation> equation = model_.findEquation(timeExpr);
+					if (!equation) {
+						THROW_EXCEPTION(UnavailableResourceException, "Equation not found: " << timeExpr << '.');
+					}
+					p2->timeExpression = equation;
 				}
+
 				if (parser_.getAttribute(isPhantomAttrName_) == "yes") {
 					p2->isPhantom = true;
 				}
@@ -254,10 +262,18 @@ XMLConfigFileReader::parseTransitionPointOrSlopes(Transition& transition)
 			std::unique_ptr<Transition::Point> p(new Transition::Point());
 			p->type = Transition::Point::getTypeFromName(parser_.getAttribute(typeAttrName_));
 			p->value = Text::parseString<float>(parser_.getAttribute(valueAttrName_));
-			p->timeExpression = parser_.getAttribute(timeExpressionAttrName_);
-			if (p->timeExpression.empty()) {
+
+			const std::string timeExpr = parser_.getAttribute(timeExpressionAttrName_);
+			if (timeExpr.empty()) {
 				p->freeTime = Text::parseString<float>(parser_.getAttribute(freeTimeAttrName_));
+			} else {
+				std::shared_ptr<Equation> equation = model_.findEquation(timeExpr);
+				if (!equation) {
+					THROW_EXCEPTION(UnavailableResourceException, "Equation not found: " << timeExpr << '.');
+				}
+				p->timeExpression = equation;
 			}
+
 			if (parser_.getAttribute(isPhantomAttrName_) == "yes") {
 				p->isPhantom = true;
 			}
@@ -273,11 +289,6 @@ XMLConfigFileReader::parseTransitionsGroup(bool special)
 {
 	TransitionGroup group;
 	group.name = parser_.getAttribute(nameAttrName_);
-	if (special) {
-		model_.specialTransitionGroupList().push_back(std::move(group));
-	} else {
-		model_.transitionGroupList().push_back(std::move(group));
-	}
 
 	for (const std::string* child = parser_.getFirstChild(transitionTagName_);
 				child;
@@ -286,23 +297,25 @@ XMLConfigFileReader::parseTransitionsGroup(bool special)
 		std::string name = parser_.getAttribute(nameAttrName_);
 		Transition::Type type = Transition::getTypeFromName(parser_.getAttribute(typeAttrName_));
 
-		Transition tr(name, type, special);
+		std::shared_ptr<Transition> tr(new Transition(name, type, special));
 
 		for (const std::string* transitionChild = parser_.getFirstChild();
 					transitionChild;
 					transitionChild = parser_.getNextSibling()) {
 			if (*transitionChild == pointOrSlopesTagName_) {
-				parseTransitionPointOrSlopes(tr);
+				parseTransitionPointOrSlopes(*tr);
 			} else if (*transitionChild == commentTagName_) {
-				tr.setComment(parser_.getText());
+				tr->setComment(parser_.getText());
 			}
 		}
 
-		if (special) {
-			model_.specialTransitionGroupList().back().transitionList.push_back(std::move(tr));
-		} else {
-			model_.transitionGroupList().back().transitionList.push_back(std::move(tr));
-		}
+		group.transitionList.push_back(tr);
+	}
+
+	if (special) {
+		model_.specialTransitionGroupList().push_back(std::move(group));
+	} else {
+		model_.transitionGroupList().push_back(std::move(group));
 	}
 }
 
@@ -326,7 +339,13 @@ XMLConfigFileReader::parseRuleParameterProfiles(Rule& rule)
 		std::string parameterName = parser_.getAttribute(nameAttrName_);
 		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
 
-		rule.setParamProfileTransition(parameterIndex, parser_.getAttribute(transitionAttrName_));
+		const std::string& transitionName = parser_.getAttribute(transitionAttrName_);
+		std::shared_ptr<Transition> transition = model_.findTransition(transitionName);
+		if (!transition) {
+			THROW_EXCEPTION(UnavailableResourceException, "Transition not found: " << transitionName << '.');
+		}
+
+		rule.setParamProfileTransition(parameterIndex, transition);
 	}
 }
 
@@ -340,7 +359,13 @@ XMLConfigFileReader::parseRuleSpecialProfiles(Rule& rule)
 		std::string parameterName = parser_.getAttribute(nameAttrName_);
 		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
 
-		rule.setSpecialProfileTransition(parameterIndex, parser_.getAttribute(transitionAttrName_));
+		const std::string& transitionName = parser_.getAttribute(transitionAttrName_);
+		std::shared_ptr<Transition> transition = model_.findSpecialTransition(transitionName);
+		if (!transition) {
+			THROW_EXCEPTION(UnavailableResourceException, "Special transition not found: " << transitionName << '.');
+		}
+
+		rule.setSpecialProfileTransition(parameterIndex, transition);
 	}
 }
 
@@ -351,7 +376,13 @@ XMLConfigFileReader::parseRuleExpressionSymbols(Rule& rule)
 				symbEqu;
 				symbEqu = parser_.getNextSibling(symbolEquationTagName_)) {
 		const std::string& name = parser_.getAttribute(nameAttrName_);
-		const std::string& equation = parser_.getAttribute(equationAttrName_);
+		const std::string& equationName = parser_.getAttribute(equationAttrName_);
+
+		std::shared_ptr<Equation> equation = model_.findEquation(equationName);
+		if (!equation) {
+			THROW_EXCEPTION(UnavailableResourceException, "Equation not found: " << equationName << '.');
+		}
+
 		if (name == rdSymbolName_) {
 			rule.exprSymbolEquations().ruleDuration = equation;
 		} else if (name == beatSymbolName_) {
@@ -369,11 +400,13 @@ XMLConfigFileReader::parseRuleExpressionSymbols(Rule& rule)
 void
 XMLConfigFileReader::parseRuleBooleanExpressions(Rule& rule)
 {
+	std::vector<std::string> exprList;
 	for (const std::string* boolExpr = parser_.getFirstChild(booleanExpressionTagName_);
 				boolExpr;
 				boolExpr = parser_.getNextSibling(booleanExpressionTagName_)) {
-		rule.booleanExpressionList().push_back(parser_.getText());
+		exprList.push_back(parser_.getText());
 	}
+	rule.setBooleanExpressionList(exprList, model_);
 }
 
 void
@@ -528,6 +561,8 @@ XMLConfigFileReader::loadModel()
 		THROW_EXCEPTION(TRMControlModelException, "Postures element not found.");
 	}
 	parsePostures();
+
+	model_.preparePostures(); // needed by Rule::setBooleanExpressionList
 
 	LOG_DEBUG("equations");
 	if (parser_.getNextSibling(equationsTagName_) == 0) {

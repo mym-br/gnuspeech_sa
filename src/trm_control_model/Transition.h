@@ -65,7 +65,7 @@ public:
 		bool isPhantom;
 
 		// If timeExpression is not empty, time = timeExpression, otherwise time = freeTime.
-		std::string timeExpression;
+		std::shared_ptr<Equation> timeExpression;
 		float freeTime; // milliseconds
 
 		Point() : type(TYPE_INVALID), value(0.0), isPhantom(false), timeExpression(), freeTime(0.0) {}
@@ -194,7 +194,7 @@ private:
 
 struct TransitionGroup {
 	std::string name;
-	std::vector<Transition> transitionList;
+	std::vector<std::shared_ptr<Transition>> transitionList;
 };
 
 } /* namespace TRMControlModel */

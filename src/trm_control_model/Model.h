@@ -62,11 +62,11 @@ public:
 
 	const std::vector<EquationGroup>& equationGroupList() const { return equationGroupList_; }
 	std::vector<EquationGroup>& equationGroupList() { return equationGroupList_; }
-	float evalEquationFormula(const std::string& equationName) const;
-	const FormulaSymbol& formulaSymbol() const { return formulaSymbol_; }
+	float evalEquationFormula(const Equation& equation) const;
 	bool findEquationGroupName(const std::string& name) const;
 	bool findEquationName(const std::string& name) const;
 	bool findEquationIndex(const std::string& name, unsigned int& groupIndex, unsigned int& index) const;
+	std::shared_ptr<Equation> findEquation(const std::string& name);
 
 	const std::vector<Parameter>& parameterList() const { return parameterList_; }
 	std::vector<Parameter>& parameterList() { return parameterList_; }
@@ -88,13 +88,13 @@ public:
 
 	const std::vector<TransitionGroup>& transitionGroupList() const { return transitionGroupList_; }
 	std::vector<TransitionGroup>& transitionGroupList() { return transitionGroupList_; }
-	const Transition* findTransition(const std::string& name) const;
+	const std::shared_ptr<Transition> findTransition(const std::string& name) const;
 	bool findTransitionGroupName(const std::string& name) const;
 	bool findTransitionName(const std::string& name) const;
 
 	const std::vector<TransitionGroup>& specialTransitionGroupList() const { return specialTransitionGroupList_; }
 	std::vector<TransitionGroup>& specialTransitionGroupList() { return specialTransitionGroupList_; }
-	const Transition* findSpecialTransition(const std::string& name) const;
+	const std::shared_ptr<Transition> findSpecialTransition(const std::string& name) const;
 	bool findSpecialTransitionGroupName(const std::string& name) const;
 	bool findSpecialTransitionName(const std::string& name) const;
 
@@ -109,8 +109,6 @@ public:
 	bool findCategoryName(const std::string& name) const;
 
 	void preparePostures();
-	void prepareEquations();
-	void prepareRules();
 private:
 	std::vector<std::shared_ptr<Category>> categoryList_;
 
@@ -124,18 +122,12 @@ private:
 	std::vector<std::unique_ptr<Rule>> ruleList_;
 
 	std::vector<EquationGroup> equationGroupList_;
-	std::unordered_map<std::string, Equation*> equationMap_; // optimization
 
 	std::vector<TransitionGroup> transitionGroupList_;
-	std::unordered_map<std::string, Transition*> transitionMap_; // optimization
 
 	std::vector<TransitionGroup> specialTransitionGroupList_;
-	std::unordered_map<std::string, Transition*> specialTransitionMap_; // optimization
 
 	FormulaSymbolList formulaSymbolList_;
-	const FormulaSymbol formulaSymbol_;
-
-	void prepareTransitions();
 };
 
 } /* namespace TRMControlModel */

@@ -42,10 +42,10 @@ Transition::SlopeRatio::totalSlopeUnits() const
 double
 Transition::getPointTime(const Transition::Point& point, const Model& model)
 {
-	if (point.timeExpression.empty()) {
+	if (!point.timeExpression) {
 		return point.freeTime;
 	} else {
-		return model.evalEquationFormula(point.timeExpression);
+		return model.evalEquationFormula(*point.timeExpression);
 	}
 }
 
@@ -53,10 +53,10 @@ void
 Transition::getPointData(const Transition::Point& point, const Model& model,
 				double& time, double& value)
 {
-	if (point.timeExpression.empty()) {
+	if (!point.timeExpression) {
 		time = point.freeTime;
 	} else {
-		time = model.evalEquationFormula(point.timeExpression);
+		time = model.evalEquationFormula(*point.timeExpression);
 	}
 
 	value = point.value;
@@ -67,10 +67,10 @@ Transition::getPointData(const Transition::Point& point, const Model& model,
 				double baseline, double delta, double min, double max,
 				double& time, double& value)
 {
-	if (point.timeExpression.empty()) {
+	if (!point.timeExpression) {
 		time = point.freeTime;
 	} else {
-		time = model.evalEquationFormula(point.timeExpression);
+		time = model.evalEquationFormula(*point.timeExpression);
 	}
 
 	value = baseline + ((point.value / 100.0) * delta);

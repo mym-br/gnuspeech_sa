@@ -26,11 +26,13 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#include <utility> /* move */
+#include <utility> /* move, swap */
 #include <vector>
 
 #include "Category.h"
+#include "Equation.h"
 #include "Posture.h"
+#include "Transition.h"
 
 
 
@@ -118,12 +120,11 @@ private:
 class Rule {
 public:
 	struct ExpressionSymbolEquations {
-		std::string ruleDuration;
-		std::string beat;
-		std::string mark1;
-		std::string mark2;
-		std::string mark3;
-		ExpressionSymbolEquations() {}
+		std::shared_ptr<Equation> ruleDuration;
+		std::shared_ptr<Equation> beat;
+		std::shared_ptr<Equation> mark1;
+		std::shared_ptr<Equation> mark2;
+		std::shared_ptr<Equation> mark3;
 	};
 
 	Rule(unsigned int numParameters)
@@ -136,19 +137,18 @@ public:
 	bool evalBooleanExpression(const std::vector<const Posture*>& postureSequence) const;
 	bool evalBooleanExpression(const Posture& posture, unsigned int expressionIndex) const;
 	void printBooleanNodeTree() const;
-	void parseBooleanExpressions(const Model& model);
 
 	ExpressionSymbolEquations& exprSymbolEquations() { return exprSymbolEquations_; }
 	const ExpressionSymbolEquations& exprSymbolEquations() const { return exprSymbolEquations_; }
 
-	const std::string& getParamProfileTransition(unsigned int parameterIndex) const {
+	const std::shared_ptr<Transition>& getParamProfileTransition(unsigned int parameterIndex) const {
 		if (parameterIndex >= paramProfileTransitionList_.size()) {
 			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
 		}
 
 		return paramProfileTransitionList_[parameterIndex];
 	}
-	void setParamProfileTransition(unsigned int parameterIndex, const std::string& transition) {
+	void setParamProfileTransition(unsigned int parameterIndex, const std::shared_ptr<Transition>& transition) {
 		if (parameterIndex >= paramProfileTransitionList_.size()) {
 			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
 		}
@@ -156,14 +156,14 @@ public:
 		paramProfileTransitionList_[parameterIndex] = transition;
 	}
 
-	const std::string& getSpecialProfileTransition(unsigned int parameterIndex) const {
+	const std::shared_ptr<Transition>& getSpecialProfileTransition(unsigned int parameterIndex) const {
 		if (parameterIndex >= specialProfileTransitionList_.size()) {
 			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
 		}
 
 		return specialProfileTransitionList_[parameterIndex]; // may return an empty string
 	}
-	void setSpecialProfileTransition(unsigned int parameterIndex, const std::string& transition) {
+	void setSpecialProfileTransition(unsigned int parameterIndex, const std::shared_ptr<Transition>& transition) {
 		if (parameterIndex >= specialProfileTransitionList_.size()) {
 			THROW_EXCEPTION(InvalidParameterException, "Invalid parameter index: " << parameterIndex << '.');
 		}
@@ -174,20 +174,20 @@ public:
 	void evaluateExpressionSymbols(const double* tempos, const std::vector<const Posture*>& postures, Model& model, double* ruleSymbols) const;
 
 	const std::vector<std::string>& booleanExpressionList() const { return booleanExpressionList_; }
-	std::vector<std::string>& booleanExpressionList() { return booleanExpressionList_; }
+	void setBooleanExpressionList(const std::vector<std::string>& exprList, const Model& model);
 
-	const std::vector<std::string>& paramProfileTransitionList() const { return paramProfileTransitionList_; }
-	std::vector<std::string>& paramProfileTransitionList() { return paramProfileTransitionList_; }
+	const std::vector<std::shared_ptr<Transition>>& paramProfileTransitionList() const { return paramProfileTransitionList_; }
+	std::vector<std::shared_ptr<Transition>>& paramProfileTransitionList() { return paramProfileTransitionList_; }
 
-	const std::vector<std::string>& specialProfileTransitionList() const { return specialProfileTransitionList_; }
-	std::vector<std::string>& specialProfileTransitionList() { return specialProfileTransitionList_; }
+	const std::vector<std::shared_ptr<Transition>>& specialProfileTransitionList() const { return specialProfileTransitionList_; }
+	std::vector<std::shared_ptr<Transition>>& specialProfileTransitionList() { return specialProfileTransitionList_; }
 
 	const std::string& comment() const { return comment_; }
 	void setComment(const std::string& comment) { comment_ = comment; }
 private:
 	std::vector<std::string> booleanExpressionList_;
-	std::vector<std::string> paramProfileTransitionList_;
-	std::vector<std::string> specialProfileTransitionList_;
+	std::vector<std::shared_ptr<Transition>> paramProfileTransitionList_;
+	std::vector<std::shared_ptr<Transition>> specialProfileTransitionList_;
 	ExpressionSymbolEquations exprSymbolEquations_;
 	std::string comment_;
 	RuleBooleanNodeList booleanNodeList_;

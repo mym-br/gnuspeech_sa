@@ -260,14 +260,14 @@ XMLConfigFileWriter::writeElements()
 		xml.openElementWithAttributes("equation-group");
 		xml.addAttribute("name", group.name);
 		xml.endAttributes();
-		for (const Equation& equation : group.equationList) {
+		for (const auto& equation : group.equationList) {
 			xml.openElementWithAttributes("equation");
-			xml.addAttribute("name", equation.name);
-			xml.addAttribute("formula", equation.formula);
-			if (!equation.comment.empty()) {
+			xml.addAttribute("name", equation->name());
+			xml.addAttribute("formula", equation->formula());
+			if (!equation->comment().empty()) {
 				xml.endAttributes();
 				xml.openInlineElement("comment");
-				xml.addText(equation.comment);
+				xml.addText(equation->comment());
 				xml.closeInlineElement("comment");
 				xml.closeElement("equation");
 			} else {
@@ -284,18 +284,18 @@ XMLConfigFileWriter::writeElements()
 		xml.openElementWithAttributes("transition-group");
 		xml.addAttribute("name", group.name);
 		xml.endAttributes();
-		for (const Transition& transition : group.transitionList) {
+		for (const auto& transition : group.transitionList) {
 			xml.openElementWithAttributes("transition");
-			xml.addAttribute("name", transition.name());
-			xml.addAttribute("type", Transition::getNameFromType(transition.type()));
+			xml.addAttribute("name", transition->name());
+			xml.addAttribute("type", Transition::getNameFromType(transition->type()));
 			xml.endAttributes();
-			if (!transition.comment().empty()) {
+			if (!transition->comment().empty()) {
 				xml.openInlineElement("comment");
-				xml.addText(transition.comment());
+				xml.addText(transition->comment());
 				xml.closeInlineElement("comment");
 			}
 			xml.openElement("point-or-slopes");
-			for (const auto& pointOrSlope : transition.pointOrSlopeList()) {
+			for (const auto& pointOrSlope : transition->pointOrSlopeList()) {
 				if (pointOrSlope->isSlopeRatio()) {
 					const auto& slopeRatio = dynamic_cast<const Transition::SlopeRatio&>(*pointOrSlope);
 					xml.openElement("slope-ratio");
@@ -304,10 +304,10 @@ XMLConfigFileWriter::writeElements()
 						xml.openElementWithAttributes("point");
 						xml.addAttribute("type", Transition::Point::getNameFromType(point->type));
 						xml.addAttribute("value", point->value);
-						if (point->timeExpression.empty()) {
+						if (!point->timeExpression) {
 							xml.addAttribute("free-time", point->freeTime);
 						} else {
-							xml.addAttribute("time-expression", point->timeExpression);
+							xml.addAttribute("time-expression", point->timeExpression->name());
 						}
 						if (point->isPhantom) {
 							xml.addAttribute("is-phantom", "yes");
@@ -329,10 +329,10 @@ XMLConfigFileWriter::writeElements()
 					xml.openElementWithAttributes("point");
 					xml.addAttribute("type", Transition::Point::getNameFromType(point.type));
 					xml.addAttribute("value", point.value);
-					if (point.timeExpression.empty()) {
+					if (!point.timeExpression) {
 						xml.addAttribute("free-time", point.freeTime);
 					} else {
-						xml.addAttribute("time-expression", point.timeExpression);
+						xml.addAttribute("time-expression", point.timeExpression->name());
 					}
 					if (point.isPhantom) {
 						xml.addAttribute("is-phantom", "yes");
@@ -353,18 +353,18 @@ XMLConfigFileWriter::writeElements()
 		xml.openElementWithAttributes("transition-group");
 		xml.addAttribute("name", group.name);
 		xml.endAttributes();
-		for (const Transition& transition : group.transitionList) {
+		for (const auto& transition : group.transitionList) {
 			xml.openElementWithAttributes("transition");
-			xml.addAttribute("name", transition.name());
-			xml.addAttribute("type", Transition::getNameFromType(transition.type()));
+			xml.addAttribute("name", transition->name());
+			xml.addAttribute("type", Transition::getNameFromType(transition->type()));
 			xml.endAttributes();
-			if (!transition.comment().empty()) {
+			if (!transition->comment().empty()) {
 				xml.openInlineElement("comment");
-				xml.addText(transition.comment());
+				xml.addText(transition->comment());
 				xml.closeInlineElement("comment");
 			}
 			xml.openElement("point-or-slopes");
-			for (const auto& pointOrSlope : transition.pointOrSlopeList()) {
+			for (const auto& pointOrSlope : transition->pointOrSlopeList()) {
 				if (pointOrSlope->isSlopeRatio()) {
 					THROW_EXCEPTION(InvalidValueException, "Unexpected slope ratio in special transition.");
 				} else {
@@ -372,10 +372,10 @@ XMLConfigFileWriter::writeElements()
 					xml.openElementWithAttributes("point");
 					xml.addAttribute("type", Transition::Point::getNameFromType(point.type));
 					xml.addAttribute("value", point.value);
-					if (point.timeExpression.empty()) {
+					if (!point.timeExpression) {
 						xml.addAttribute("free-time", point.freeTime);
 					} else {
-						xml.addAttribute("time-expression", point.timeExpression);
+						xml.addAttribute("time-expression", point.timeExpression->name());
 					}
 					if (point.isPhantom) {
 						xml.addAttribute("is-phantom", "yes");
@@ -417,14 +417,14 @@ XMLConfigFileWriter::writeElements()
 		for (unsigned int i = 0, numParam = model_.parameterList().size(); i < numParam; ++i) {
 			xml.openElementWithAttributes("parameter-transition");
 			xml.addAttribute("name", model_.getParameter(i).name());
-			xml.addAttribute("transition", rule->paramProfileTransitionList()[i]);
+			xml.addAttribute("transition", rule->paramProfileTransitionList()[i]->name());
 			xml.endAttributesAndCloseElement();
 		}
 		xml.closeElement("parameter-profiles");
 
 		bool hasSpecialTransition = false;
-		for (const std::string& s : rule->specialProfileTransitionList()) {
-			if (!s.empty()) {
+		for (const auto& s : rule->specialProfileTransitionList()) {
+			if (s) {
 				hasSpecialTransition = true;
 				break;
 			}
@@ -432,11 +432,11 @@ XMLConfigFileWriter::writeElements()
 		if (hasSpecialTransition) {
 			xml.openElement("special-profiles");
 			for (unsigned int i = 0, numParam = model_.parameterList().size(); i < numParam; ++i) {
-				const std::string s = rule->specialProfileTransitionList()[i];
-				if (!s.empty()) {
+				const auto& s = rule->specialProfileTransitionList()[i];
+				if (s) {
 					xml.openElementWithAttributes("parameter-transition");
 					xml.addAttribute("name", model_.getParameter(i).name());
-					xml.addAttribute("transition", s);
+					xml.addAttribute("transition", s->name());
 					xml.endAttributesAndCloseElement();
 				}
 			}
@@ -447,23 +447,23 @@ XMLConfigFileWriter::writeElements()
 
 		xml.openElementWithAttributes("symbol-equation");
 		xml.addAttribute("name", "rd");
-		xml.addAttribute("equation", rule->exprSymbolEquations().ruleDuration);
+		xml.addAttribute("equation", rule->exprSymbolEquations().ruleDuration->name());
 		xml.endAttributesAndCloseElement();
 
 		xml.openElementWithAttributes("symbol-equation");
 		xml.addAttribute("name", "beat");
-		xml.addAttribute("equation", rule->exprSymbolEquations().beat);
+		xml.addAttribute("equation", rule->exprSymbolEquations().beat->name());
 		xml.endAttributesAndCloseElement();
 
 		xml.openElementWithAttributes("symbol-equation");
 		xml.addAttribute("name", "mark1");
-		xml.addAttribute("equation", rule->exprSymbolEquations().mark1);
+		xml.addAttribute("equation", rule->exprSymbolEquations().mark1->name());
 		xml.endAttributesAndCloseElement();
 
-		if (!rule->exprSymbolEquations().mark2.empty()) {
+		if (rule->exprSymbolEquations().mark2) {
 			xml.openElementWithAttributes("symbol-equation");
 			xml.addAttribute("name", "mark2");
-			xml.addAttribute("equation", rule->exprSymbolEquations().mark2);
+			xml.addAttribute("equation", rule->exprSymbolEquations().mark2->name());
 			xml.endAttributesAndCloseElement();
 		}
 

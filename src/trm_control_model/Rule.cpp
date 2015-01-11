@@ -467,25 +467,6 @@ Rule::numberOfExpressions() const
 	return booleanNodeList_.size();
 }
 
-/*******************************************************************************
- *
- */
-void
-Rule::parseBooleanExpressions(const Model& model)
-{
-	booleanNodeList_.clear();
-
-	for (std::vector<std::string>::size_type size = booleanExpressionList_.size(), i = 0; i < size; ++i) {
-		Parser p(booleanExpressionList_[i], model);
-		booleanNodeList_.push_back(p.getBooleanNode());
-	}
-
-	RuleBooleanNodeList::size_type size = booleanNodeList_.size();
-	if (size < 2 || size > 4) {
-		THROW_EXCEPTION(TRMControlModelException, "Invalid number of boolean expressions: " << size << '.');
-	}
-}
-
 // ruleSymbols: {rd, beat, mark1, mark2, mark3}
 // tempos[4]
 void
@@ -538,20 +519,20 @@ Rule::evaluateExpressionSymbols(const double* tempos, const std::vector<const Po
 	model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK3, ruleSymbols[4]);
 
 	// Execute in this order.
-	if (!exprSymbolEquations_.ruleDuration.empty()) {
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_RD   , model.evalEquationFormula(exprSymbolEquations_.ruleDuration));
+	if (exprSymbolEquations_.ruleDuration) {
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_RD   , model.evalEquationFormula(*exprSymbolEquations_.ruleDuration));
 	}
-	if (!exprSymbolEquations_.mark1.empty()) {
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK1, model.evalEquationFormula(exprSymbolEquations_.mark1));
+	if (exprSymbolEquations_.mark1) {
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK1, model.evalEquationFormula(*exprSymbolEquations_.mark1));
 	}
-	if (!exprSymbolEquations_.mark2.empty()) {
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK2, model.evalEquationFormula(exprSymbolEquations_.mark2));
+	if (exprSymbolEquations_.mark2) {
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK2, model.evalEquationFormula(*exprSymbolEquations_.mark2));
 	}
-	if (!exprSymbolEquations_.mark3.empty()) {
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK3, model.evalEquationFormula(exprSymbolEquations_.mark3));
+	if (exprSymbolEquations_.mark3) {
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK3, model.evalEquationFormula(*exprSymbolEquations_.mark3));
 	}
-	if (!exprSymbolEquations_.beat.empty()) {
-		model.setFormulaSymbolValue(FormulaSymbol::SYMB_BEAT , model.evalEquationFormula(exprSymbolEquations_.beat));
+	if (exprSymbolEquations_.beat) {
+		model.setFormulaSymbolValue(FormulaSymbol::SYMB_BEAT , model.evalEquationFormula(*exprSymbolEquations_.beat));
 	}
 
 	ruleSymbols[0] = model.getFormulaSymbolValue(FormulaSymbol::SYMB_RD);
@@ -559,6 +540,25 @@ Rule::evaluateExpressionSymbols(const double* tempos, const std::vector<const Po
 	ruleSymbols[2] = model.getFormulaSymbolValue(FormulaSymbol::SYMB_MARK1);
 	ruleSymbols[3] = model.getFormulaSymbolValue(FormulaSymbol::SYMB_MARK2);
 	ruleSymbols[4] = model.getFormulaSymbolValue(FormulaSymbol::SYMB_MARK3);
+}
+
+void
+Rule::setBooleanExpressionList(const std::vector<std::string>& exprList, const Model& model)
+{
+	unsigned int size = exprList.size();
+	if (size < 2U || size > 4U) {
+		THROW_EXCEPTION(InvalidParameterException, "Invalid number of boolean expressions: " << size << '.');
+	}
+
+	RuleBooleanNodeList testBooleanNodeList;
+
+	for (unsigned int i = 0; i < size; ++i) {
+		Parser p(exprList[i], model);
+		testBooleanNodeList.push_back(p.getBooleanNode());
+	}
+
+	booleanExpressionList_ = exprList;
+	std::swap(booleanNodeList_, testBooleanNodeList);
 }
 
 } /* namespace TRMControlModel */
