@@ -447,23 +447,30 @@ XMLConfigFileWriter::writeElements()
 
 		xml.openElementWithAttributes("symbol-equation");
 		xml.addAttribute("name", "rd");
-		xml.addAttribute("equation", rule->exprSymbolEquations().ruleDuration->name());
+		xml.addAttribute("equation", rule->exprSymbolEquations().ruleDuration ? rule->exprSymbolEquations().ruleDuration->name() : "");
 		xml.endAttributesAndCloseElement();
 
 		xml.openElementWithAttributes("symbol-equation");
 		xml.addAttribute("name", "beat");
-		xml.addAttribute("equation", rule->exprSymbolEquations().beat->name());
+		xml.addAttribute("equation", rule->exprSymbolEquations().beat ? rule->exprSymbolEquations().beat->name() : "");
 		xml.endAttributesAndCloseElement();
 
 		xml.openElementWithAttributes("symbol-equation");
 		xml.addAttribute("name", "mark1");
-		xml.addAttribute("equation", rule->exprSymbolEquations().mark1->name());
+		xml.addAttribute("equation", rule->exprSymbolEquations().mark1 ? rule->exprSymbolEquations().mark1->name() : "");
 		xml.endAttributesAndCloseElement();
 
 		if (rule->exprSymbolEquations().mark2) {
 			xml.openElementWithAttributes("symbol-equation");
 			xml.addAttribute("name", "mark2");
 			xml.addAttribute("equation", rule->exprSymbolEquations().mark2->name());
+			xml.endAttributesAndCloseElement();
+		}
+
+		if (rule->exprSymbolEquations().mark3) {
+			xml.openElementWithAttributes("symbol-equation");
+			xml.addAttribute("name", "mark3");
+			xml.addAttribute("equation", rule->exprSymbolEquations().mark3->name());
 			xml.endAttributesAndCloseElement();
 		}
 
