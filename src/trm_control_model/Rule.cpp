@@ -233,7 +233,7 @@ Parser::getBooleanNode()
 		}
 
 		std::shared_ptr<Category> category;
-		const Posture* posture = model_.findPosture(name);
+		const Posture* posture = model_.postureList().find(name);
 		if (posture != nullptr) {
 			category = posture->findCategory(name);
 		} else {

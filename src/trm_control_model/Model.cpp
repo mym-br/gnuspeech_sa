@@ -56,20 +56,12 @@ void
 Model::clear()
 {
 	categoryList_.clear();
-
 	parameterList_.clear();
-
 	postureList_.clear();
-	postureMap_.clear();
-
 	ruleList_.clear();
-
 	equationGroupList_.clear();
-
 	transitionGroupList_.clear();
-
 	specialTransitionGroupList_.clear();
-
 	formulaSymbolList_.fill(0.0f);
 }
 
@@ -88,8 +80,6 @@ Model::load(const char* configDirPath, const char* configFileName)
 		LOG_DEBUG("Loading xml configuration: " << filePath);
 		XMLConfigFileReader cfg(*this, filePath);
 		cfg.loadModel();
-
-		preparePostures();
 	} catch (...) {
 		clear();
 		throw;
@@ -112,27 +102,6 @@ Model::save(const char* configDirPath, const char* configFileName)
 
 /*******************************************************************************
  *
- * Needed by Model::findPosture,
- *           Rule::setBooleanExpressionList
- *           Controller::validPosture
- *           PhoneticStringParser
- */
-void
-Model::preparePostures()
-{
-	LOG_DEBUG("Preparing postures...");
-
-	postureMap_.clear();
-	for (auto& posture : postureList_) {
-		auto res = postureMap_.insert(std::make_pair(posture->name(), posture.get()));
-		if (!res.second) {
-			THROW_EXCEPTION(TRMControlModelException, "Duplicate posture name: " << posture->name() << '.');
-		}
-	}
-}
-
-/*******************************************************************************
- *
  */
 void
 Model::printInfo() const
@@ -147,20 +116,21 @@ Model::printInfo() const
 	//---------------------------------------------------------
 	// Postures.
 	std::cout << std::string(40, '-') << "\nPostures:\n" << std::endl;
-	for (const auto& posture : postureList()) {
-		std::cout << "posture symbol: " << posture->name() << std::endl;
-		for (const auto& category : posture->categoryList()) {
+	for (unsigned int i = 0, size = postureList_.size(); i < size; ++i) {
+		const auto& posture = postureList_[i];
+		std::cout << "posture symbol: " << posture.name() << std::endl;
+		for (const auto& category : posture.categoryList()) {
 			std::cout << "  categ: " << category->name() << std::endl;
 		}
 		std::cout << "  parameter targets:" << std::endl;
 		for (unsigned int i = 0, size = parameterList_.size(); i < size; ++i) {
 			const Parameter& param = parameterList_[i];
-			std::cout << "    " << param.name() << ": " << posture->getParameterTarget(i) << std::endl;
+			std::cout << "    " << param.name() << ": " << posture.getParameterTarget(i) << std::endl;
 		}
 		std::cout << "  symbol targets:" << std::endl;
 		for (unsigned int i = 0, size = symbolList_.size(); i < size; ++i) {
 			const Symbol& symbol = symbolList_[i];
-			std::cout << "    " << symbol.name() << ": " << posture->getSymbolTarget(i) << std::endl;
+			std::cout << "    " << symbol.name() << ": " << posture.getSymbolTarget(i) << std::endl;
 		}
 	}
 
@@ -263,11 +233,11 @@ Model::printInfo() const
 	}
 	std::cout << "--------------------------------------" << std::endl;
 	std::vector<const Posture*> postSeq;
-	const Posture* pp = findPosture("m");
+	const Posture* pp = postureList_.find("m");
 	if (pp) postSeq.push_back(pp);
-	pp = findPosture("ah");
+	pp = postureList_.find("ah");
 	if (pp) postSeq.push_back(pp);
-	pp = findPosture("s");
+	pp = postureList_.find("s");
 	if (pp) postSeq.push_back(pp);
 	ruleNumber = 0;
 	for (auto& r : ruleList_) {
@@ -555,47 +525,6 @@ Model::findSymbolName(const std::string& name) const
 {
 	for (const auto& item : symbolList_) {
 		if (item.name() == name) {
-			return true;
-		}
-	}
-	return false;
-}
-
-/*******************************************************************************
- * Find a Posture with the given name.
- *
- * Returns a pointer to the Posture, or 0 (zero) if a Posture
- * was not found.
- */
-const Posture*
-Model::findPosture(const std::string& name) const
-{
-	auto postureIter = postureMap_.find(name);
-	if (postureIter == postureMap_.end()) {
-		return nullptr;
-	}
-	return postureIter->second;
-}
-
-/*******************************************************************************
- *
- */
-void
-Model::sortPostures()
-{
-	std::sort(postureList_.begin(), postureList_.end(), [](const std::unique_ptr<Posture>& p1, const std::unique_ptr<Posture>& p2) -> bool {
-		return p1->name() < p2->name();
-	});
-}
-
-/*******************************************************************************
- *
- */
-bool
-Model::findPostureName(const std::string& name) const
-{
-	for (const auto& item : postureList_) {
-		if (item->name() == name) {
 			return true;
 		}
 	}

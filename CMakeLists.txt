@@ -82,6 +82,7 @@ add_library(gnuspeechsa STATIC
     src/trm_control_model/Model.cpp src/trm_control_model/Model.h
     src/trm_control_model/Parameter.h
     src/trm_control_model/Posture.h
+    src/trm_control_model/PostureList.cpp src/trm_control_model/PostureList.h
     src/trm_control_model/Rule.cpp src/trm_control_model/Rule.h
     src/trm_control_model/Symbol.h
     src/trm_control_model/Transition.cpp src/trm_control_model/Transition.h

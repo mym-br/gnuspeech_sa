@@ -138,8 +138,10 @@ XMLConfigFileReader::parsePostureParameters(Posture& posture)
 void
 XMLConfigFileReader::parsePosture()
 {
-	std::unique_ptr<Posture> posture(new Posture(model_.parameterList().size(), model_.symbolList().size()));
-	posture->setName(parser_.getAttribute(symbolAttrName_));
+	std::unique_ptr<Posture> posture(new Posture(
+						 parser_.getAttribute(symbolAttrName_),
+						 model_.parameterList().size(),
+						 model_.symbolList().size()));
 
 	for (const std::string* child = parser_.getFirstChild();
 				child;
@@ -155,7 +157,7 @@ XMLConfigFileReader::parsePosture()
 		}
 	}
 
-	model_.postureList().push_back(std::move(posture));
+	model_.postureList().add(std::move(posture));
 }
 
 void
@@ -561,8 +563,6 @@ XMLConfigFileReader::loadModel()
 		THROW_EXCEPTION(TRMControlModelException, "Postures element not found.");
 	}
 	parsePostures();
-
-	model_.preparePostures(); // needed by Rule::setBooleanExpressionList
 
 	LOG_DEBUG("equations");
 	if (parser_.getNextSibling(equationsTagName_) == 0) {

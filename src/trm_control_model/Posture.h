@@ -47,8 +47,9 @@ public:
 		Symbols() : duration(0.0), transition(0.0), qssa(0.0), qssb(0.0) {}
 	};
 
-	Posture(unsigned int numParameters, unsigned int numSymbols)
-			: parameterTargetList_(numParameters)
+	Posture(const std::string& name, unsigned int numParameters, unsigned int numSymbols)
+			: name_(name)
+			, parameterTargetList_(numParameters)
 			, symbolTargetList_(numSymbols) {
 		if (numParameters == 0) {
 			THROW_EXCEPTION(InvalidParameterException, "Invalid number of parameters: 0.");
@@ -56,10 +57,13 @@ public:
 		if (numSymbols == 0) {
 			THROW_EXCEPTION(InvalidParameterException, "Invalid number of symbols: 0.");
 		}
+
+		std::shared_ptr<Category> newCategory(new Category(name));
+		newCategory->setNative();
+		categoryList_.push_back(newCategory);
 	}
 
 	const std::string& name() const { return name_; }
-	void setName(const std::string& name);
 
 	const std::vector<std::shared_ptr<Category>>& categoryList() const { return categoryList_; }
 	std::vector<std::shared_ptr<Category>>& categoryList() { return categoryList_; }
@@ -97,8 +101,10 @@ public:
 
 	bool isMemberOfCategory(const Category& category) const;
 	const std::shared_ptr<Category> findCategory(const std::string& name) const;
+
+	std::unique_ptr<Posture> copy(const std::string& newName) const;
 private:
-	std::string name_;
+	std::string name_; // must be immutable
 	std::vector<std::shared_ptr<Category>> categoryList_;
 	std::vector<float> parameterTargetList_;
 	std::vector<float> symbolTargetList_;
@@ -126,27 +132,6 @@ Posture::findCategory(const std::string& name) const
  *
  */
 inline
-void
-Posture::setName(const std::string& name)
-{
-	name_ = name;
-
-	for (auto& category : categoryList_) {
-		if (category->native()) {
-			category->setName(name);
-			return;
-		}
-	}
-
-	std::shared_ptr<Category> newCategory(new Category(name));
-	newCategory->setNative();
-	categoryList_.push_back(newCategory);
-}
-
-/*******************************************************************************
- *
- */
-inline
 bool
 Posture::isMemberOfCategory(const Category& category) const
 {
@@ -156,6 +141,27 @@ Posture::isMemberOfCategory(const Category& category) const
 		}
 	}
 	return false;
+}
+
+/*******************************************************************************
+ *
+ */
+inline
+std::unique_ptr<Posture>
+Posture::copy(const std::string& newName) const
+{
+	std::unique_ptr<Posture> newPosture(new Posture(newName, parameterTargetList_.size(), symbolTargetList_.size()));
+
+	for (const auto& category : categoryList_) {
+		if (!category->native()) {
+			newPosture->categoryList_.push_back(category);
+		}
+	}
+	newPosture->parameterTargetList_ = parameterTargetList_;
+	newPosture->symbolTargetList_ = symbolTargetList_;
+	newPosture->comment_ = comment_;
+
+	return newPosture;
 }
 
 } /* namespace TRMControlModel */

@@ -34,6 +34,7 @@
 #include "FormulaSymbol.h"
 #include "Parameter.h"
 #include "Posture.h"
+#include "PostureList.h"
 #include "Rule.h"
 #include "Symbol.h"
 #include "Transition.h"
@@ -80,11 +81,8 @@ public:
 	std::vector<Symbol>& symbolList() { return symbolList_; }
 	bool findSymbolName(const std::string& name) const;
 
-	const std::vector<std::unique_ptr<Posture>>& postureList() const { return postureList_; }
-	std::vector<std::unique_ptr<Posture>>& postureList() { return postureList_; }
-	const Posture* findPosture(const std::string& name) const;
-	void sortPostures();
-	bool findPostureName(const std::string& name) const;
+	const PostureList& postureList() const { return postureList_; }
+	PostureList& postureList() { return postureList_; }
 
 	const std::vector<TransitionGroup>& transitionGroupList() const { return transitionGroupList_; }
 	std::vector<TransitionGroup>& transitionGroupList() { return transitionGroupList_; }
@@ -109,26 +107,15 @@ public:
 	const std::shared_ptr<Category> findCategory(const std::string& name) const;
 	std::shared_ptr<Category> findCategory(const std::string& name);
 	bool findCategoryName(const std::string& name) const;
-
-	void preparePostures();
 private:
 	std::vector<std::shared_ptr<Category>> categoryList_;
-
 	std::vector<Parameter> parameterList_;
-
 	std::vector<Symbol> symbolList_;
-
-	std::vector<std::unique_ptr<Posture>> postureList_;
-	std::unordered_map<std::string, Posture*> postureMap_; // optimization
-
+	PostureList postureList_;
 	std::vector<std::unique_ptr<Rule>> ruleList_;
-
 	std::vector<EquationGroup> equationGroupList_;
-
 	std::vector<TransitionGroup> transitionGroupList_;
-
 	std::vector<TransitionGroup> specialTransitionGroupList_;
-
 	FormulaSymbolList formulaSymbolList_;
 };
 

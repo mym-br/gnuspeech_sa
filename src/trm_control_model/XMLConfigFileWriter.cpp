@@ -208,19 +208,22 @@ XMLConfigFileWriter::writeElements()
 
 	LOG_DEBUG("postures ==================================================");
 	xml.openElement("postures");
-	for (const std::unique_ptr<Posture>& posture : model_.postureList()) {
+
+	for (unsigned int i = 0, size = model_.postureList().size(); i < size; ++i) {
+		const auto& posture = model_.postureList()[i];
+
 		xml.openElementWithAttributes("posture");
-		xml.addAttribute("symbol", posture->name());
+		xml.addAttribute("symbol", posture.name());
 		xml.endAttributes();
 
-		if (!posture->comment().empty()) {
+		if (!posture.comment().empty()) {
 			xml.openInlineElement("comment");
-			xml.addText(posture->comment());
+			xml.addText(posture.comment());
 			xml.closeInlineElement("comment");
 		}
 
 		xml.openElement("posture-categories");
-		for (const auto& category : posture->categoryList()) {
+		for (const auto& category : posture.categoryList()) {
 			xml.openElementWithAttributes("category-ref");
 			xml.addAttribute("name", category->name());
 			xml.endAttributesAndCloseElement();
@@ -230,7 +233,7 @@ XMLConfigFileWriter::writeElements()
 		xml.openElement("parameter-targets");
 		for (unsigned int i = 0, numParam = model_.parameterList().size(); i < numParam; ++i) {
 			const Parameter& param = model_.getParameter(i);
-			const float target = posture->getParameterTarget(i);
+			const float target = posture.getParameterTarget(i);
 			xml.openElementWithAttributes("target");
 			xml.addAttribute("name", param.name());
 			xml.addAttribute("value", target);
@@ -244,7 +247,7 @@ XMLConfigFileWriter::writeElements()
 			const Symbol& symbol = model_.symbolList()[i];
 			xml.openElementWithAttributes("target");
 			xml.addAttribute("name", symbol.name());
-			xml.addAttribute("value", posture->getSymbolTarget(i));
+			xml.addAttribute("value", posture.getSymbolTarget(i));
 			xml.endAttributesAndCloseElement();
 		}
 

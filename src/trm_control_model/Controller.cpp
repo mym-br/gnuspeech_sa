@@ -219,7 +219,7 @@ Controller::validPosture(const char* token)
 	case '9':
 		return 1;
 	default:
-		return (model_.findPosture(token) != nullptr);
+		return (model_.postureList().find(token) != nullptr);
 	}
 }
 

@@ -88,7 +88,7 @@ PhoneticStringParser::getCategory(const char* name)
 const TRMControlModel::Posture*
 PhoneticStringParser::getPosture(const char* name)
 {
-	const TRMControlModel::Posture* posture = model_.findPosture(name);
+	const TRMControlModel::Posture* posture = model_.postureList().find(name);
 	if (!posture) {
 		THROW_EXCEPTION(UnavailableResourceException, "Could not find the posture \"" << name << "\".");
 	}
@@ -218,9 +218,9 @@ PhoneticStringParser::rewrite(const TRMControlModel::Posture& nextPosture, int w
 				break;
 			case 6:
 				if (strchr(nextPosture.name().c_str(), '\'')) {
-					tempPosture = model_.findPosture("l'");
+					tempPosture = model_.postureList().find("l'");
 				} else {
-					tempPosture = model_.findPosture("l");
+					tempPosture = model_.postureList().find("l");
 				}
 
 				eventList_.replaceCurrentPostureWith(*tempPosture);
@@ -251,9 +251,9 @@ PhoneticStringParser::rewrite(const TRMControlModel::Posture& nextPosture, int w
 				}
 
 				if (strchr(nextPosture.name().c_str(), '\'')) {
-					tempPosture = model_.findPosture("ll'");
+					tempPosture = model_.postureList().find("ll'");
 				} else {
-					tempPosture = model_.findPosture("ll");
+					tempPosture = model_.postureList().find("ll");
 				}
 
 				//printf("Replacing with ll\n");
@@ -286,7 +286,7 @@ PhoneticStringParser::parseString(const char* string)
 
 	length = strlen(string);
 
-	tempPosture = model_.findPosture("^");
+	tempPosture = model_.postureList().find("^");
 	eventList_.newPostureWithObject(*tempPosture);
 
 	while (index < length) {
@@ -348,9 +348,9 @@ PhoneticStringParser::parseString(const char* string)
 				break;
 			case 'c': /* New Chunk */
 				if (chunk) {
-					tempPosture = model_.findPosture("#");
+					tempPosture = model_.postureList().find("#");
 					eventList_.newPostureWithObject(*tempPosture);
-					tempPosture = model_.findPosture("^");
+					tempPosture = model_.postureList().find("^");
 					eventList_.newPostureWithObject(*tempPosture);
 					index--;
 					return index;
@@ -431,7 +431,7 @@ PhoneticStringParser::parseString(const char* string)
 				if (markedFoot) {
 					strcat(buffer,"'");
 				}
-				tempPosture = model_.findPosture(buffer);
+				tempPosture = model_.postureList().find(buffer);
 				if (tempPosture) {
 					tempPosture1 = rewrite(*tempPosture, wordMarker, rewriterData);
 					if (tempPosture1) {
@@ -498,8 +498,8 @@ PhoneticStringParser::calcVowelTransition(const TRMControlModel::Posture& nextPo
 	default:
 	case 0:
 		return nullptr;
-	case 1: return model_.findPosture("gs");
-	case 2: return model_.findPosture("r");
+	case 1: return model_.postureList().find("gs");
+	case 2: return model_.postureList().find("r");
 	}
 }
 
