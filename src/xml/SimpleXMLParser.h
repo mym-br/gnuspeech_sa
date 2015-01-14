@@ -66,7 +66,7 @@ private:
 	char nextChar();
 	bool isInvalidPosition(std::string::size_type p) const;
 	void getTagInfo(std::string::size_type size);
-	void closePreviousSiblingTag();
+	void closeTag();
 	void closeParentTag();
 	void fillAttributeMap();
 };

@@ -193,7 +193,7 @@ SimpleXMLParser::fillAttributeMap()
  *
  */
 void
-SimpleXMLParser::closePreviousSiblingTag()
+SimpleXMLParser::closeTag()
 {
 	tag_.clear();
 	tagExtra_.clear();
@@ -268,8 +268,7 @@ SimpleXMLParser::getFirstChild()
 			break;
 		case '/':
 			{
-				closeParentTag();
-
+				nextChar();
 				std::string::size_type endPos = find('>');
 				if (isInvalidPosition(endPos)) {
 					THROW_EXCEPTION(XMLException, "End of closing tag not found.");
@@ -279,6 +278,8 @@ SimpleXMLParser::getFirstChild()
 					THROW_EXCEPTION(XMLException, "Invalid closing tag (expected: "
 									<< tag_ << " found: " << tagText_ << ").");
 				}
+
+				closeTag();
 
 				// Go to the next char.
 				pos_ = endPos; nextChar();
@@ -369,7 +370,7 @@ SimpleXMLParser::getNextSibling()
 										<< tag_ << " found: " << tagText_ << ").");
 					}
 
-					closePreviousSiblingTag();
+					closeTag();
 
 					// Go to the next char.
 					pos_ = endPos; nextChar();
