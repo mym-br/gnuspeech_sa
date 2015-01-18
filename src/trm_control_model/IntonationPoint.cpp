@@ -21,23 +21,36 @@
 #include "IntonationPoint.h"
 
 #include "EventList.h"
+#include "Exception.h"
 
 
 
 namespace GS {
 namespace TRMControlModel {
 
+IntonationPoint::IntonationPoint(EventList* eventList)
+	: semitone_(0.0)
+	, offsetTime_(0.0)
+	, slope_(0.0)
+	, ruleIndex_(0)
+	, eventList_(eventList) {
+
+	if (eventList_ == nullptr) {
+		THROW_EXCEPTION(InvalidParameterException, "The pointer to event list is null.");
+	}
+}
+
 double
 IntonationPoint::absoluteTime() const
 {
-	double time = eventList_.getBeatAtIndex(ruleIndex_);
+	double time = eventList_->getBeatAtIndex(ruleIndex_);
 	return time + offsetTime_;
 }
 
 double
 IntonationPoint::beatTime() const
 {
-	return eventList_.getBeatAtIndex(ruleIndex_);
+	return eventList_->getBeatAtIndex(ruleIndex_);
 }
 
 } /* namespace TRMControlModel */

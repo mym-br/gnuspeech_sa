@@ -124,6 +124,7 @@ public:
 	~EventList();
 
 	const std::vector<Event_ptr>& list() const { return list_; }
+	std::vector<IntonationPoint>& intonationPoints() { return intonationPoints_; }
 
 	void setPitchMean(double newMean) { pitchMean_ = newMean; }
 	double pitchMean() const { return pitchMean_; }
@@ -223,7 +224,7 @@ private:
 	double min_[16];
 	double max_[16];
 
-	std::vector<IntonationPoint_ptr> intonationPoints_;
+	std::vector<IntonationPoint> intonationPoints_;
 	std::vector<Event_ptr> list_;
 	DriftGenerator driftGenerator_;
 

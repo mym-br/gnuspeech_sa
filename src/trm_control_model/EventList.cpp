@@ -859,8 +859,8 @@ EventList::applyIntonationSmooth()
 	//[intonationPoints insertObject: tempPoint at:0];
 
 	for (unsigned int j = 0; j < intonationPoints_.size() - 1; j++) {
-		const IntonationPoint& point1 = *intonationPoints_[j];
-		const IntonationPoint& point2 = *intonationPoints_[j + 1];
+		const IntonationPoint& point1 = intonationPoints_[j];
+		const IntonationPoint& point2 = intonationPoints_[j + 1];
 
 		double x1 = point1.absoluteTime() / 4.0;
 		double y1 = point1.semitone() + 20.0;
@@ -909,21 +909,21 @@ EventList::addIntonationPoint(double semitone, double offsetTime, double slope, 
 		return;
 	}
 
-	IntonationPoint_ptr iPoint(new IntonationPoint(*this));
-	iPoint->setRuleIndex(ruleIndex);
-	iPoint->setOffsetTime(offsetTime);
-	iPoint->setSemitone(semitone);
-	iPoint->setSlope(slope);
+	IntonationPoint iPoint(this);
+	iPoint.setRuleIndex(ruleIndex);
+	iPoint.setOffsetTime(offsetTime);
+	iPoint.setSemitone(semitone);
+	iPoint.setSlope(slope);
 
-	double time = iPoint->absoluteTime();
+	double time = iPoint.absoluteTime();
 	for (unsigned int i = 0; i < intonationPoints_.size(); i++) {
-		if (time < intonationPoints_[i]->absoluteTime()) {
-			intonationPoints_.insert(intonationPoints_.begin() + i, std::move(iPoint));
+		if (time < intonationPoints_[i].absoluteTime()) {
+			intonationPoints_.insert(intonationPoints_.begin() + i, iPoint);
 			return;
 		}
 	}
 
-	intonationPoints_.push_back(std::move(iPoint));
+	intonationPoints_.push_back(iPoint);
 }
 
 void

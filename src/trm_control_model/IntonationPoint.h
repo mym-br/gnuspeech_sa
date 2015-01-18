@@ -21,8 +21,6 @@
 #ifndef TRM_CONTROL_MODEL_INTONATION_POINT_H_
 #define TRM_CONTROL_MODEL_INTONATION_POINT_H_
 
-#include <memory>
-
 
 
 namespace GS {
@@ -32,12 +30,7 @@ class EventList;
 
 class IntonationPoint {
 public:
-	IntonationPoint(EventList& eventList)
-		: semitone_(0.0)
-		, offsetTime_(0.0)
-		, slope_(0.0)
-		, ruleIndex_(0)
-		, eventList_(eventList) {}
+	IntonationPoint(EventList* eventList);
 	~IntonationPoint() {}
 
 	void setSemitone(double newValue) { semitone_ = newValue; }
@@ -60,10 +53,8 @@ private:
 	double offsetTime_;    /* Points are timed wrt a beat + this offset */
 	double slope_;         /* Slope of point */
 	int ruleIndex_;        /* Index of posture which is the focus of this point */
-	EventList& eventList_; /* Current EventList */
+	EventList* eventList_; /* Current EventList */
 };
-
-typedef std::unique_ptr<IntonationPoint> IntonationPoint_ptr;
 
 } /* namespace TRMControlModel */
 } /* namespace GS */
