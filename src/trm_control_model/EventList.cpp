@@ -54,6 +54,7 @@ EventList::EventList(const char* configDirPath, Model& model)
 		, smoothIntonation_(1)
 		, globalTempo_(1.0)
 		, tgParameters_(5)
+		, useFixedIntonationParameters_(false)
 {
 	setUp();
 
@@ -62,6 +63,10 @@ EventList::EventList(const char* configDirPath, Model& model)
 	list_.reserve(128);
 
 	initToneGroups(configDirPath);
+
+	for (int i = 0; i < 10; ++i) {
+		fixedIntonationParameters_[i] = 0.0;
+	}
 }
 
 EventList::~EventList()
@@ -134,6 +139,16 @@ EventList::getRuleAtIndex(unsigned int index) const
 	} else {
 		return &ruleData_[index];
 	}
+}
+
+void
+EventList::setFixedIntonationParameters(float notionalPitch, float pretonicRange, float pretonicLift, float tonicRange, float tonicMovement)
+{
+	fixedIntonationParameters_[1] = notionalPitch;
+	fixedIntonationParameters_[2] = pretonicRange;
+	fixedIntonationParameters_[3] = pretonicLift;
+	fixedIntonationParameters_[5] = tonicRange;
+	fixedIntonationParameters_[6] = tonicMovement;
 }
 
 void
@@ -716,48 +731,52 @@ EventList::applyIntonation()
 
 		//printf("Tg: %d First: %d  end: %d  StartTime: %f  endTime: %f\n", i, firstFoot, endFoot, startTime, endTime);
 
-		switch (toneGroups_[i].type) {
-		default:
-		case TONE_GROUP_TYPE_STATEMENT:
-			if (tgUseRandom_) {
-				tgRandom = rand() % tgCount_[0];
-			} else {
-				tgRandom = 0;
+		if (useFixedIntonationParameters_) {
+			intonParms_ = fixedIntonationParameters_;
+		} else {
+			switch (toneGroups_[i].type) {
+			default:
+			case TONE_GROUP_TYPE_STATEMENT:
+				if (tgUseRandom_) {
+					tgRandom = rand() % tgCount_[0];
+				} else {
+					tgRandom = 0;
+				}
+				intonParms_ = &tgParameters_[0][tgRandom * 10];
+				break;
+			case TONE_GROUP_TYPE_EXCLAMATION:
+				if (tgUseRandom_) {
+					tgRandom = rand() % tgCount_[0];
+				} else {
+					tgRandom = 0;
+				}
+				intonParms_ = &tgParameters_[0][tgRandom * 10];
+				break;
+			case TONE_GROUP_TYPE_QUESTION:
+				if (tgUseRandom_) {
+					tgRandom = rand() % tgCount_[1];
+				} else {
+					tgRandom = 0;
+				}
+				intonParms_ = &tgParameters_[1][tgRandom * 10];
+				break;
+			case TONE_GROUP_TYPE_CONTINUATION:
+				if (tgUseRandom_) {
+					tgRandom = rand() % tgCount_[2];
+				} else {
+					tgRandom = 0;
+				}
+				intonParms_ = &tgParameters_[2][tgRandom * 10];
+				break;
+			case TONE_GROUP_TYPE_SEMICOLON:
+				if (tgUseRandom_) {
+					tgRandom = rand() % tgCount_[3];
+				} else {
+					tgRandom = 0;
+				}
+				intonParms_ = &tgParameters_[3][tgRandom * 10];
+				break;
 			}
-			intonParms_ = &tgParameters_[0][tgRandom * 10];
-			break;
-		case TONE_GROUP_TYPE_EXCLAMATION:
-			if (tgUseRandom_) {
-				tgRandom = rand() % tgCount_[0];
-			} else {
-				tgRandom = 0;
-			}
-			intonParms_ = &tgParameters_[0][tgRandom * 10];
-			break;
-		case TONE_GROUP_TYPE_QUESTION:
-			if (tgUseRandom_) {
-				tgRandom = rand() % tgCount_[1];
-			} else {
-				tgRandom = 0;
-			}
-			intonParms_ = &tgParameters_[1][tgRandom * 10];
-			break;
-		case TONE_GROUP_TYPE_CONTINUATION:
-			if (tgUseRandom_) {
-				tgRandom = rand() % tgCount_[2];
-			} else {
-				tgRandom = 0;
-			}
-			intonParms_ = &tgParameters_[2][tgRandom * 10];
-			break;
-		case TONE_GROUP_TYPE_SEMICOLON:
-			if (tgUseRandom_) {
-				tgRandom = rand() % tgCount_[3];
-			} else {
-				tgRandom = 0;
-			}
-			intonParms_ = &tgParameters_[3][tgRandom * 10];
-			break;
 		}
 
 		//printf("Intonation Parameters: Type : %d  random: %d\n", toneGroups[i].type, tgRandom);
@@ -1064,6 +1083,17 @@ EventList::generateOutput(const char* trmParamFile)
 
 	if (Log::debugEnabled) {
 		printDataStructures();
+	}
+}
+
+void
+EventList::clearMacroIntonation()
+{
+	for (unsigned int i = 0, size = list_.size(); i < size; ++i) {
+		auto& event = list_[i];
+		for (unsigned int j = 32; j < 36; ++j) {
+			event->setValue(GS_EVENTLIST_INVALID_EVENT_VALUE, j);
+		}
 	}
 }
 

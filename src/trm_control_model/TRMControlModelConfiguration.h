@@ -33,8 +33,8 @@ struct Configuration {
 		INTONATION_NONE      = 0x00,
 		INTONATION_MICRO     = 0x01,
 		INTONATION_MACRO     = 0x02,
-		INTONATION_DECLIN    = 0x04, // unused
-		INTONATION_CREAK     = 0x08, // unused
+		INTONATION_SMOOTH    = 0x04,
+		INTONATION_DRIFT     = 0x08,
 		INTONATION_RANDOMIZE = 0x10
 	};
 
@@ -49,6 +49,13 @@ struct Configuration {
 	double driftDeviation;
 	double driftLowpassCutoff;
 	int    intonation;
+
+	// Intonation parameters.
+	double notionalPitch;
+	double pretonicRange;
+	double pretonicLift;
+	double tonicRange;
+	double tonicMovement;
 };
 
 } /* namespace TRMControlModel */

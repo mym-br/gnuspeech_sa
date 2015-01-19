@@ -57,15 +57,21 @@ Configuration::load(const std::string& configFilePath)
 	if (reader.value<int>("macro_intonation") != 0) {
 		intonation += INTONATION_MACRO;
 	}
-	if (reader.value<int>("declin_intonation") != 0) {
-		intonation += INTONATION_DECLIN;
-	}
-	if (reader.value<int>("creak_intonation") != 0) {
-		intonation += INTONATION_CREAK;
+//	if (reader.value<int>("smooth_intonation") != 0) {
+//		intonation += INTONATION_SMOOTH;
+//	}
+	if (reader.value<int>("intonation_drift") != 0) {
+		intonation += INTONATION_DRIFT;
 	}
 	if (reader.value<int>("random_intonation") != 0) {
 		intonation += INTONATION_RANDOMIZE;
 	}
+
+	notionalPitch = reader.value<double>("notional_pitch");
+	pretonicRange = reader.value<double>("pretonic_range");
+	pretonicLift  = reader.value<double>("pretonic_lift");
+	tonicRange    = reader.value<double>("tonic_range");
+	tonicMovement = reader.value<double>("tonic_movement");
 }
 
 } /* namespace TRMControlModel */

@@ -165,6 +165,7 @@ public:
 	void applyIntonation();
 	void applyIntonationSmooth();
 	void generateOutput(const char* trmParamFile);
+	void clearMacroIntonation();
 
 	void setUpDriftGenerator(float deviation, float sampleRate, float lowpassCutoff);
 
@@ -173,6 +174,8 @@ public:
 	int numberOfRules() const { return currentRule_; }
 	const RuleData* getRuleAtIndex(unsigned int index) const;
 
+	void setUseFixedIntonationParameters(bool value) { useFixedIntonationParameters_ = value; }
+	void setFixedIntonationParameters(float notionalPitch, float pretonicRange, float pretonicLift, float tonicRange, float tonicMovement);
 private:
 	EventList(const EventList&);
 	EventList& operator=(const EventList&);
@@ -232,6 +235,9 @@ private:
 	float intonationRandom_;
 	std::vector<std::vector<float>> tgParameters_;
 	int tgCount_[5];
+
+	bool useFixedIntonationParameters_;
+	float fixedIntonationParameters_[10];
 };
 
 } /* namespace TRMControlModel */

@@ -39,19 +39,43 @@ Controller::Controller(const char* configDirPath, Model& model)
 		: model_(model)
 		, eventList_(configDirPath, model_)
 {
-	std::ostringstream trmControlModelConfigFilePath;
-	trmControlModelConfigFilePath << configDirPath << TRM_CONTROL_MODEL_CONFIG_FILE_NAME;
-	trmControlModelConfig_.load(trmControlModelConfigFilePath.str());
-
-	std::ostringstream trmConfigFilePath;
-	trmConfigFilePath << configDirPath << TRM_CONFIG_FILE_NAME;
-	trmConfig_.load(trmConfigFilePath.str());
-
+	loadTRMControlModelConfig(configDirPath);
+	loadTRMConfig(configDirPath);
 	initVoices(configDirPath);
 }
 
 Controller::~Controller()
 {
+}
+
+void
+Controller::loadTRMControlModelConfig(const char* configDirPath)
+{
+	std::ostringstream trmControlModelConfigFilePath;
+	trmControlModelConfigFilePath << configDirPath << TRM_CONTROL_MODEL_CONFIG_FILE_NAME;
+	trmControlModelConfig_.load(trmControlModelConfigFilePath.str());
+}
+
+void
+Controller::loadTRMConfig(const char* configDirPath)
+{
+	std::ostringstream trmConfigFilePath;
+	trmConfigFilePath << configDirPath << TRM_CONFIG_FILE_NAME;
+	trmConfig_.load(trmConfigFilePath.str());
+}
+
+/*******************************************************************************
+ * This function synthesizes speech from data contained in the event list.
+ */
+void
+Controller::synthesizeFromEventList(const char* trmParamFile, const char* outputFile)
+{
+	initUtterance(trmParamFile);
+
+	eventList_.generateOutput(trmParamFile);
+
+	TRM::Tube trm;
+	trm.synthesizeToFile(trmParamFile, outputFile);
 }
 
 void
@@ -79,7 +103,6 @@ Controller::initUtterance(const char* trmParamFile)
 	eventList_.setPitchMean(trmControlModelConfig_.pitchOffset + voices_[trmControlModelConfig_.voiceType].glotPitchMean);
 	eventList_.setGlobalTempo(trmControlModelConfig_.speed);
 	setIntonation(trmControlModelConfig_.intonation);
-	eventList_.setTgUseRandom(trmControlModelConfig_.intonation & Configuration::INTONATION_RANDOMIZE);
 	eventList_.setUpDriftGenerator(trmControlModelConfig_.driftDeviation, trmControlModelConfig_.controlRate, trmControlModelConfig_.driftLowpassCutoff);
 
 	FILE* fp = fopen(trmParamFile, "wb");
@@ -226,14 +249,6 @@ Controller::validPosture(const char* token)
 void
 Controller::setIntonation(int intonation)
 {
-	if (!intonation) {
-		eventList_.setMicroIntonation(0);
-		eventList_.setMacroIntonation(0);
-		eventList_.setDrift(0);
-		eventList_.setSmoothIntonation(0);
-		return;
-	}
-
 	if (intonation & Configuration::INTONATION_MICRO) {
 		eventList_.setMicroIntonation(1);
 	} else {
@@ -242,13 +257,30 @@ Controller::setIntonation(int intonation)
 
 	if (intonation & Configuration::INTONATION_MACRO) {
 		eventList_.setMacroIntonation(1);
-		eventList_.setSmoothIntonation(1);
+		eventList_.setSmoothIntonation(1); // Macro and not smooth is not working.
 	} else {
 		eventList_.setMacroIntonation(0);
-		eventList_.setSmoothIntonation(0);
+		eventList_.setSmoothIntonation(0); // Macro and not smooth is not working.
 	}
 
-	eventList_.setDrift(1);
+	// Macro and not smooth is not working.
+//	if (intonation & Configuration::INTONATION_SMOOTH) {
+//		eventList_.setSmoothIntonation(1);
+//	} else {
+//		eventList_.setSmoothIntonation(0);
+//	}
+
+	if (intonation & Configuration::INTONATION_DRIFT) {
+		eventList_.setDrift(1);
+	} else {
+		eventList_.setDrift(0);
+	}
+
+	if (intonation & Configuration::INTONATION_RANDOMIZE) {
+		eventList_.setTgUseRandom(true);
+	} else {
+		eventList_.setTgUseRandom(false);
+	}
 }
 
 } /* namespace TRMControlModel */

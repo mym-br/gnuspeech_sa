@@ -28,6 +28,7 @@
 #include "Model.h"
 #include "TRMConfiguration.h"
 #include "TRMControlModelConfiguration.h"
+#include "Tube.h"
 
 
 
@@ -48,9 +49,15 @@ public:
 	~Controller();
 
 	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, const char* outputFile);
+	void synthesizeFromEventList(const char* trmParamFile, const char* outputFile);
+	void loadTRMControlModelConfig(const char* configDirPath);
+	void loadTRMConfig(const char* configDirPath);
+	void initVoices(const char* configDirPath);
 
 	Model& model() { return model_; }
 	EventList& eventList() { return eventList_; }
+	Configuration& trmControlModelConfig() { return trmControlModelConfig_; }
+	TRM::Configuration& trmConfig() { return trmConfig_; }
 private:
 	enum {
 		MAX_VOICES = 5
@@ -63,7 +70,6 @@ private:
 	int calcChunks(const char* string);
 	int nextChunk(const char* string);
 	void printVowelTransitions();
-	void initVoices(const char* configDirPath);
 
 	int validPosture(const char* token);
 	void setIntonation(int intonation);
