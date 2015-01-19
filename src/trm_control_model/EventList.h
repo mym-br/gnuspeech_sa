@@ -204,7 +204,6 @@ private:
 	int driftFlag_;
 	int smoothIntonation_;
 
-	double radiusMultiply_;
 	double pitchMean_;
 	double globalTempo_;
 	double multiplier_;

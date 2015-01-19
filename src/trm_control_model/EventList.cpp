@@ -58,8 +58,6 @@ EventList::EventList(const char* configDirPath, Model& model)
 {
 	setUp();
 
-	radiusMultiply_ = 1.0;
-
 	list_.reserve(128);
 
 	initToneGroups(configDirPath);
