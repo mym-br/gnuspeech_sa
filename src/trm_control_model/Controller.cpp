@@ -101,7 +101,7 @@ Controller::initUtterance(const char* trmParamFile)
 	}
 
 	eventList_.setPitchMean(trmControlModelConfig_.pitchOffset + voices_[trmControlModelConfig_.voiceType].glotPitchMean);
-	eventList_.setGlobalTempo(trmControlModelConfig_.speed);
+	eventList_.setGlobalTempo(trmControlModelConfig_.tempo);
 	setIntonation(trmControlModelConfig_.intonation);
 	eventList_.setUpDriftGenerator(trmControlModelConfig_.driftDeviation, trmControlModelConfig_.controlRate, trmControlModelConfig_.driftLowpassCutoff);
 

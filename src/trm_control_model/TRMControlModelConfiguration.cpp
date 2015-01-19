@@ -30,7 +30,7 @@ namespace TRMControlModel {
 Configuration::Configuration()
 		: controlRate(0.0)
 		, voiceType(0)
-		, speed(0.0)
+		, tempo(0.0)
 		, pitchOffset(0.0)
 		, driftDeviation(0.0)
 		, driftLowpassCutoff(0.0)
@@ -45,7 +45,7 @@ Configuration::load(const std::string& configFilePath)
 
 	controlRate        = reader.value<double>("control_rate");
 	voiceType          = reader.value<int>("voice_type");
-	speed              = reader.value<double>("speed");
+	tempo              = reader.value<double>("tempo");
 	pitchOffset        = reader.value<double>("pitch_offset");
 	driftDeviation     = reader.value<double>("drift_deviation");
 	driftLowpassCutoff = reader.value<double>("drift_lowpass_cutoff");

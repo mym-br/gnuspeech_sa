@@ -44,7 +44,7 @@ struct Configuration {
 
 	double controlRate;                 /*  1.0-1000.0 input tables/second (Hz)  */
 	int    voiceType;
-	double speed;
+	double tempo;
 	double pitchOffset;
 	double driftDeviation;
 	double driftLowpassCutoff;
