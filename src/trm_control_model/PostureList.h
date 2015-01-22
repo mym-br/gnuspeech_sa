@@ -20,7 +20,6 @@
 
 #include <string>
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 
@@ -49,8 +48,7 @@ public:
 	const Posture* find(const std::string& name) const;
 	Posture* find(const std::string& name);
 private:
-	std::vector<std::unique_ptr<Posture>> postureList_;
-	std::unordered_map<std::string, Posture*> postureMap_;
+	std::vector<std::unique_ptr<Posture>> postureList_; // always sorted, by name
 };
 
 } /* namespace TRMControlModel */

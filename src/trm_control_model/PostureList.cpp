@@ -17,13 +17,23 @@
 
 #include "PostureList.h"
 
-#include <algorithm> /* find_if */
-#include <utility> /* make_pair, move */
+#include <algorithm> /* lower_bound */
+#include <utility> /* move */
 
 #include "Exception.h"
 #include "Posture.h"
 
 
+
+namespace {
+
+struct NameLessThan {
+	bool operator()(const std::unique_ptr<GS::TRMControlModel::Posture>& posture, const std::string& name) {
+		return posture->name() < name;
+	}
+};
+
+} // namespace
 
 namespace GS {
 namespace TRMControlModel {
@@ -40,25 +50,21 @@ void
 PostureList::clear()
 {
 	postureList_.clear();
-	postureMap_.clear();
 }
 
 void
 PostureList::add(std::unique_ptr<Posture> posture)
 {
-	auto checkIter = postureMap_.find(posture->name());
-	if (checkIter != postureMap_.end()) {
+	auto iter = std::lower_bound(
+			postureList_.begin(), postureList_.end(),
+			posture->name(), NameLessThan());
+	if (iter == postureList_.end()) {
+		postureList_.push_back(std::move(posture));
+	} else if ((*iter)->name() == posture->name()) {
 		THROW_EXCEPTION(InvalidParameterException, "Can't add posture: duplicate posture name: " << posture->name() << '.');
+	} else {
+		postureList_.insert(iter, std::move(posture));
 	}
-
-	// postureList_ is always sorted.
-	auto findIter = std::find_if(postureList_.begin(), postureList_.end(),
-				[&](const std::unique_ptr<Posture>& p) {
-					return p->name() > posture->name();
-				});
-	auto newIter = postureList_.insert(findIter, std::move(posture));
-
-	postureMap_.insert(std::make_pair((*newIter)->name(), (*newIter).get()));
 }
 
 /*******************************************************************************
@@ -68,7 +74,6 @@ PostureList::add(std::unique_ptr<Posture> posture)
 void
 PostureList::remove(size_type index)
 {
-	postureMap_.erase(postureList_[index]->name());
 	postureList_.erase(postureList_.begin() + index);
 }
 
@@ -81,11 +86,6 @@ PostureList::operator[](size_type index) const
 {
 	return *postureList_[index];
 }
-
-/*******************************************************************************
- *
- * The index is not checked.
- */
 Posture&
 PostureList::operator[](size_type index)
 {
@@ -101,27 +101,20 @@ PostureList::operator[](size_type index)
 const Posture*
 PostureList::find(const std::string& name) const
 {
-	auto findIter = postureMap_.find(name);
-	if (findIter == postureMap_.end()) {
+	const auto iter = std::lower_bound(postureList_.begin(), postureList_.end(), name, NameLessThan());
+	if (iter == postureList_.end() || (*iter)->name() != name) {
 		return nullptr;
 	}
-	return findIter->second;
+	return iter->get();
 }
-
-/*******************************************************************************
- * Finds a Posture with the given name.
- *
- * Returns a pointer to the Posture, or nullptr if a Posture
- * was not found.
- */
 Posture*
 PostureList::find(const std::string& name)
 {
-	auto findIter = postureMap_.find(name);
-	if (findIter == postureMap_.end()) {
+	auto iter = std::lower_bound(postureList_.begin(), postureList_.end(), name, NameLessThan());
+	if (iter == postureList_.end() || (*iter)->name() != name) {
 		return nullptr;
 	}
-	return findIter->second;
+	return iter->get();
 }
 
 } /* namespace TRMControlModel */
