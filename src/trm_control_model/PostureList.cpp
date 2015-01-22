@@ -55,9 +55,7 @@ PostureList::clear()
 void
 PostureList::add(std::unique_ptr<Posture> posture)
 {
-	auto iter = std::lower_bound(
-			postureList_.begin(), postureList_.end(),
-			posture->name(), NameLessThan());
+	auto iter = std::lower_bound(postureList_.begin(), postureList_.end(), posture->name(), NameLessThan());
 	if (iter == postureList_.end()) {
 		postureList_.push_back(std::move(posture));
 	} else if ((*iter)->name() == posture->name()) {
