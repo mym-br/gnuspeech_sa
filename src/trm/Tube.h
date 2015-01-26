@@ -22,6 +22,7 @@
 #define TRM_TUBE_H_
 
 #include <algorithm> /* max, min */
+#include <istream>
 #include <memory>
 #include <vector>
 
@@ -68,7 +69,8 @@ public:
 	Tube();
 	~Tube();
 
-	void synthesizeToFile(const char* inputFile, const char* outputFile);
+	void synthesizeToFile(std::istream& inputStream, const char* outputFile);
+	void synthesizeToBuffer(std::istream& inputStream, std::vector<float>& outputBuffer);
 
 	template<typename T> void loadConfiguration(const T& config);
 	void initializeSynthesizer();
@@ -85,6 +87,8 @@ public:
 		outputDataPos_ = 0;
 	}
 	double maximumOutputSampleValue() const { return srConv_->maximumSampleValue(); }
+	float outputRate() const { return outputRate_; }
+	unsigned int numChannels() const { return channels_; }
 private:
 	enum {
 		VELUM = N1
@@ -231,16 +235,20 @@ private:
 	Tube(const Tube&);
 	Tube& operator=(const Tube&);
 
+	void reset();
 	void calculateTubeCoefficients();
 	void initializeNasalCavity();
 	void printInfo(const char* inputFile);
-	bool parseInputFile(const char* inputFile);
+	void parseInputStream(std::istream& in);
 	void sampleRateInterpolation();
 	void setControlRateParameters(int pos);
 	void setFricationTaps();
 	double vocalTract(double input, double frication);
 	void writeOutputToFile(const char* outputFile);
+	void writeOutputToBuffer(std::vector<float>& outputBuffer);
 	void synthesize();
+	float calculateMonoScale();
+	void calculateStereoScale(float& leftScale, float& rightScale);
 
 	static double amplitude(double decibelLevel);
 	static double frequency(double pitch);

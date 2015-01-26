@@ -23,6 +23,7 @@
 
 #include <limits> /* std::numeric_limits<double>::infinity() */
 #include <memory>
+#include <ostream>
 #include <vector>
 
 #include "DriftGenerator.h"
@@ -164,7 +165,7 @@ public:
 	void generateEventList();
 	void applyIntonation();
 	void applyIntonationSmooth();
-	void generateOutput(const char* trmParamFile);
+	void generateOutput(std::ostream& trmParamStream);
 	void clearMacroIntonation();
 
 	void setUpDriftGenerator(float deviation, float sampleRate, float lowpassCutoff);

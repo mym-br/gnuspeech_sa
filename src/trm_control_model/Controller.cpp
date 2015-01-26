@@ -70,16 +70,28 @@ Controller::loadTRMConfig(const char* configDirPath)
 void
 Controller::synthesizeFromEventList(const char* trmParamFile, const char* outputFile)
 {
-	initUtterance(trmParamFile);
+	std::fstream trmParamStream(trmParamFile, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+	if (!trmParamStream) {
+		THROW_EXCEPTION(IOException, "Could not open the file " << trmParamFile << '.');
+	}
 
-	eventList_.generateOutput(trmParamFile);
+	initUtterance(trmParamStream);
+
+	eventList_.generateOutput(trmParamStream);
+
+	trmParamStream.seekg(0);
+
+	std::ofstream outputStream(outputFile, std::ios_base::out | std::ios_base::binary);
+	if (!outputStream) {
+		THROW_EXCEPTION(IOException, "The output file " << outputFile << " could not be created.");
+	}
 
 	TRM::Tube trm;
-	trm.synthesizeToFile(trmParamFile, outputFile);
+	trm.synthesizeToFile(trmParamStream, outputFile);
 }
 
 void
-Controller::initUtterance(const char* trmParamFile)
+Controller::initUtterance(std::ostream& trmParamStream)
 {
 	if (trmControlModelConfig_.voiceType < 0 || trmControlModelConfig_.voiceType >= MAX_VOICES) {
 		THROW_EXCEPTION(InvalidParameterException, "Invalid voice type: " << trmControlModelConfig_.voiceType << '.');
@@ -105,38 +117,32 @@ Controller::initUtterance(const char* trmParamFile)
 	setIntonation(trmControlModelConfig_.intonation);
 	eventList_.setUpDriftGenerator(trmControlModelConfig_.driftDeviation, trmControlModelConfig_.controlRate, trmControlModelConfig_.driftLowpassCutoff);
 
-	FILE* fp = fopen(trmParamFile, "wb");
-	if (!fp) {
-		THROW_EXCEPTION(TRMControlModelException, "Could not open the file " << trmParamFile << '.');
-	}
-	fprintf(fp, "%f\n%f\n%f\n%d\n%f\n%d\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%d\n%f\n",
-		trmConfig_.outputRate,
-		trmControlModelConfig_.controlRate,
-		trmConfig_.volume,
-		trmConfig_.channels,
-		trmConfig_.balance,
-		trmConfig_.waveform,
-		trmConfig_.tp,
-		trmConfig_.tnMin,
-		trmConfig_.tnMax,
-		trmConfig_.breathiness,
-		trmConfig_.vtlOffset + voices_[trmControlModelConfig_.voiceType].meanLength, // tube length
-		trmConfig_.temperature,
-		trmConfig_.lossFactor,
-		trmConfig_.apScale,
-		trmConfig_.mouthCoef,
-		trmConfig_.noseCoef,
-		trmConfig_.noseRadius[1],
-		trmConfig_.noseRadius[2],
-		trmConfig_.noseRadius[3],
-		trmConfig_.noseRadius[4],
-		trmConfig_.noseRadius[5],
-		trmConfig_.throatCutoff,
-		trmConfig_.throatVol,
-		trmConfig_.modulation,
-		trmConfig_.mixOffset
-	);
-	fclose(fp);
+	trmParamStream <<
+		trmConfig_.outputRate              << '\n' <<
+		trmControlModelConfig_.controlRate << '\n' <<
+		trmConfig_.volume                  << '\n' <<
+		trmConfig_.channels                << '\n' <<
+		trmConfig_.balance                 << '\n' <<
+		trmConfig_.waveform                << '\n' <<
+		trmConfig_.tp                      << '\n' <<
+		trmConfig_.tnMin                   << '\n' <<
+		trmConfig_.tnMax                   << '\n' <<
+		trmConfig_.breathiness             << '\n' <<
+		trmConfig_.vtlOffset + voices_[trmControlModelConfig_.voiceType].meanLength << '\n' << // tube length
+		trmConfig_.temperature             << '\n' <<
+		trmConfig_.lossFactor              << '\n' <<
+		trmConfig_.apScale                 << '\n' <<
+		trmConfig_.mouthCoef               << '\n' <<
+		trmConfig_.noseCoef                << '\n' <<
+		trmConfig_.noseRadius[1]           << '\n' <<
+		trmConfig_.noseRadius[2]           << '\n' <<
+		trmConfig_.noseRadius[3]           << '\n' <<
+		trmConfig_.noseRadius[4]           << '\n' <<
+		trmConfig_.noseRadius[5]           << '\n' <<
+		trmConfig_.throatCutoff            << '\n' <<
+		trmConfig_.throatVol               << '\n' <<
+		trmConfig_.modulation              << '\n' <<
+		trmConfig_.mixOffset               << '\n';
 }
 
 // Chunks are separated by /c.

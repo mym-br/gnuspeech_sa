@@ -18,10 +18,9 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
-#include <string>
+#include <fstream>
+#include <iostream>
 
 #include "Log.h"
 #include "Tube.h"
@@ -31,6 +30,8 @@
 int
 main(int argc, char* argv[])
 {
+	using namespace GS;
+
 	const char* inputFile = nullptr;
 	const char* outputFile = nullptr;
 
@@ -39,18 +40,24 @@ main(int argc, char* argv[])
 		inputFile = argv[1];
 		outputFile = argv[2];
 	} else if ((argc == 4) && (strcmp("-v", argv[1]) == 0)) {
-		GS::Log::debugEnabled = true;
+		Log::debugEnabled = true;
 		inputFile = argv[2];
 		outputFile = argv[3];
 	} else {
-		fprintf(stderr, "Usage: %s [-v] inputFile outputFile\n", argv[0]);
+		std::cerr << "Usage: " << argv[0] << " [-v] inputFile outputFile" << std::endl;
 		return -1;
 	}
 
-	GS::TRM::Tube trm;
-	trm.synthesizeToFile(inputFile, outputFile);
+	std::ifstream inputStream(inputFile, std::ios_base::in | std::ios_base::binary);
+	if (!inputStream) {
+		std::cerr << "Could not open the file " << inputFile << '.' << std::endl;
+		return -1;
+	}
 
-	if (GS::Log::debugEnabled) printf("\nWrote scaled samples to file: %s\n", outputFile);
+	TRM::Tube trm;
+	trm.synthesizeToFile(inputStream, outputFile);
+
+	LOG_DEBUG("\nWrote scaled samples to file: " << outputFile);
 
 	return 0;
 }

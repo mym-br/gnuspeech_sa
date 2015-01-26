@@ -37,13 +37,15 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include <utility> /* move */
 
 #include "Exception.h"
 #include "Log.h"
+#include "Text.h"
 #include "WAVEFileWriter.h"
-
-
 
 /*  COMPILE SO THAT INTERPOLATION NOT DONE FOR SOME CONTROL RATE PARAMETERS  */
 //#define MATCH_DSP                 1
@@ -83,44 +85,8 @@ namespace GS {
 namespace TRM {
 
 Tube::Tube()
-		: outputRate_(0.0)
-		, controlRate_(0.0)
-		, volume_(0.0)
-		, channels_(0)
-		, balance_(0.0)
-		, waveform_(0)
-		, tp_(0.0)
-		, tnMin_(0.0)
-		, tnMax_(0.0)
-		, breathiness_(0.0)
-		, length_(0.0)
-		, temperature_(0.0)
-		, lossFactor_(0.0)
-		, apScale_(0.0)
-		, mouthCoef_(0.0)
-		, noseCoef_(0.0)
-		, throatCutoff_(0.0)
-		, throatVol_(0.0)
-		, modulation_(0)
-		, mixOffset_(0.0)
-		, controlPeriod_(0)
-		, sampleRate_(0)
-		, actualTubeLength_(0.0)
-		, currentPtr_(1)
-		, prevPtr_(0)
-		, dampingFactor_(0.0)
-		, crossmixFactor_(0.0)
-		, breathinessFactor_(0.0)
-		, outputDataPos_(0)
 {
-	//TODO: create a clearMemory? function
-	memset(noseRadius_, 0, sizeof(double) * TOTAL_NASAL_SECTIONS);
-	memset(&oropharynx_[0][0][0], 0, sizeof(double) * TOTAL_SECTIONS * 2 * 2);
-	memset(oropharynxCoeff_, 0, sizeof(double) * TOTAL_COEFFICIENTS);
-	memset(&nasal_[0][0][0], 0, sizeof(double) * TOTAL_NASAL_SECTIONS * 2 * 2);
-	memset(nasalCoeff_, 0, sizeof(double) * TOTAL_NASAL_COEFFICIENTS);
-	memset(alpha_, 0, sizeof(double) * TOTAL_ALPHA_COEFFICIENTS);
-	memset(fricationTap_, 0, sizeof(double) * TOTAL_FRIC_COEFFICIENTS);
+	reset();
 
 	inputData_.reserve(INPUT_VECTOR_RESERVE);
 	outputData_.reserve(OUTPUT_VECTOR_RESERVE);
@@ -131,12 +97,69 @@ Tube::~Tube()
 }
 
 void
-Tube::synthesizeToFile(const char* inputFile, const char* outputFile)
+Tube::reset()
 {
-	if (!parseInputFile(inputFile)) {
-		THROW_EXCEPTION(TRMException, "Could not parse the input file: " << inputFile << '.');
-	}
+	outputRate_  = 0.0;
+	controlRate_ = 0.0;
+	volume_      = 0.0;
+	channels_    = 0;
+	balance_     = 0.0;
+	waveform_    = 0;
+	tp_          = 0.0;
+	tnMin_       = 0.0;
+	tnMax_       = 0.0;
+	breathiness_ = 0.0;
+	length_      = 0.0;
+	temperature_ = 0.0;
+	lossFactor_  = 0.0;
+	apScale_     = 0.0;
+	mouthCoef_   = 0.0;
+	noseCoef_    = 0.0;
+	memset(noseRadius_, 0, sizeof(double) * TOTAL_NASAL_SECTIONS);
+	throatCutoff_     = 0.0;
+	throatVol_        = 0.0;
+	modulation_       = 0;
+	mixOffset_        = 0.0;
+	controlPeriod_    = 0;
+	sampleRate_       = 0;
+	actualTubeLength_ = 0.0;
+	memset(&oropharynx_[0][0][0], 0, sizeof(double) * TOTAL_SECTIONS * 2 * 2);
+	memset(oropharynxCoeff_,      0, sizeof(double) * TOTAL_COEFFICIENTS);
+	memset(&nasal_[0][0][0],      0, sizeof(double) * TOTAL_NASAL_SECTIONS * 2 * 2);
+	memset(nasalCoeff_,           0, sizeof(double) * TOTAL_NASAL_COEFFICIENTS);
+	memset(alpha_,                0, sizeof(double) * TOTAL_ALPHA_COEFFICIENTS);
+	currentPtr_ = 1;
+	prevPtr_    = 0;
+	memset(fricationTap_, 0, sizeof(double) * TOTAL_FRIC_COEFFICIENTS);
+	dampingFactor_     = 0.0;
+	crossmixFactor_    = 0.0;
+	breathinessFactor_ = 0.0;
+	inputData_.resize(0);
+	memset(&currentData_, 0, sizeof(CurrentData));
+	memset(&singleInput_, 0, sizeof(InputData));
+	outputDataPos_ = 0;
+	outputData_.resize(0);
 
+	if (srConv_) srConv_->reset();
+	if (mouthRadiationFilter_) mouthRadiationFilter_->reset();
+	if (mouthReflectionFilter_) mouthReflectionFilter_->reset();
+	if (nasalRadiationFilter_) nasalRadiationFilter_->reset();
+	if (nasalReflectionFilter_) nasalReflectionFilter_->reset();
+	if (throat_) throat_->reset();
+	if (glottalSource_) glottalSource_->reset();
+	if (bandpassFilter_) bandpassFilter_->reset();
+	if (noiseFilter_) noiseFilter_->reset();
+	if (noiseSource_) noiseSource_->reset();
+	if (inputFilters_) inputFilters_->reset();
+}
+
+void
+Tube::synthesizeToFile(std::istream& inputStream, const char* outputFile)
+{
+	if (!outputData_.empty()) {
+		reset();
+	}
+	parseInputStream(inputStream);
 	initializeSynthesizer();
 #if 0
 	if (Log::debugEnabled) {
@@ -145,6 +168,18 @@ Tube::synthesizeToFile(const char* inputFile, const char* outputFile)
 #endif
 	synthesizeForInputSequence();
 	writeOutputToFile(outputFile);
+}
+
+void
+Tube::synthesizeToBuffer(std::istream& inputStream, std::vector<float>& outputBuffer)
+{
+	if (!outputData_.empty()) {
+		reset();
+	}
+	parseInputStream(inputStream);
+	initializeSynthesizer();
+	synthesizeForInputSequence();
+	writeOutputToBuffer(outputBuffer);
 }
 
 /******************************************************************************
@@ -250,213 +285,195 @@ Tube::printInfo(const char* inputFile)
 
 /******************************************************************************
 *
-*  function:  parseInputFile
+*  function:  parseInputStream
 *
-*  purpose:   Parses the input file and assigns values to global
+*  purpose:   Parses the input stream and assigns values to global
 *             variables.
 *
 ******************************************************************************/
-bool
-Tube::parseInputFile(const char* inputFile)
+void
+Tube::parseInputStream(std::istream& in)
 {
-	FILE* fp;
-	char line[128];
-
-	/*  OPEN THE INPUT FILE  */
-	if ((fp = fopen(inputFile, "rb")) == NULL) {
-		fprintf(stderr, "Can't open input file \"%s\".\n", inputFile);
-		return false;
-	}
+	std::string line;
 
 	/*  GET THE OUTPUT SAMPLE RATE  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read output sample rate.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read output sample rate.");
 	} else {
-		outputRate_ = strtod(line, NULL);
+		outputRate_ = Text::parseString<float>(line);
 	}
 
 	/*  GET THE INPUT CONTROL RATE  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read input control rate.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read input control rate.");
 	} else {
-		controlRate_ = strtod(line, NULL);
+		controlRate_ = Text::parseString<float>(line);
 	}
 
 	/*  GET THE MASTER VOLUME  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read master volume.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read master volume.");
 	} else {
-		volume_ = strtod(line, NULL);
+		volume_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE NUMBER OF SOUND OUTPUT CHANNELS  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read number of sound output channels.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read number of sound output channels.");
 	} else {
-		channels_ = strtol(line, NULL, 10);
+		channels_ = Text::parseString<int>(line);
 	}
 
 	/*  GET THE STEREO BALANCE  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read stereo balance.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read stereo balance.");
 	} else {
-		balance_ = strtod(line, NULL);
+		balance_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE GLOTTAL SOURCE WAVEFORM TYPE  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read glottal source waveform type.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read glottal source waveform type.");
 	} else {
-		waveform_ = strtol(line, NULL, 10);
+		waveform_ = Text::parseString<int>(line);
 	}
 
 	/*  GET THE GLOTTAL PULSE RISE TIME (tp)  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read glottal pulse rise time (tp).\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read glottal pulse rise time (tp).");
 	} else {
-		tp_ = strtod(line, NULL);
+		tp_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE GLOTTAL PULSE FALL TIME MINIMUM (tnMin)  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read glottal pulse fall time minimum (tnMin).\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read glottal pulse fall time minimum (tnMin).");
 	} else {
-		tnMin_ = strtod(line, NULL);
+		tnMin_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE GLOTTAL PULSE FALL TIME MAXIMUM (tnMax)  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read glottal pulse fall time maximum (tnMax).\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read glottal pulse fall time maximum (tnMax).");
 	} else {
-		tnMax_ = strtod(line, NULL);
+		tnMax_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE GLOTTAL SOURCE BREATHINESS  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read glottal source breathiness.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read glottal source breathiness.");
 	} else {
-		breathiness_ = strtod(line, NULL);
+		breathiness_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE NOMINAL TUBE LENGTH  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read nominal tube length.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read nominal tube length.");
 	} else {
-		length_ = strtod(line, NULL);
+		length_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE TUBE TEMPERATURE  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read tube temperature.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read tube temperature.");
 	} else {
-		temperature_ = strtod(line, NULL);
+		temperature_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE JUNCTION LOSS FACTOR  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read junction loss factor.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read junction loss factor.");
 	} else {
-		lossFactor_ = strtod(line, NULL);
+		lossFactor_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE APERTURE SCALING RADIUS  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read aperture scaling radius.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read aperture scaling radius.");
 	} else {
-		apScale_ = strtod(line, NULL);
+		apScale_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE MOUTH APERTURE COEFFICIENT  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read mouth aperture coefficient\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read mouth aperture coefficient.");
 	} else {
-		mouthCoef_ = strtod(line, NULL);
+		mouthCoef_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE NOSE APERTURE COEFFICIENT  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read nose aperture coefficient\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read nose aperture coefficient.");
 	} else {
-		noseCoef_ = strtod(line, NULL);
+		noseCoef_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE NOSE RADII  */
+	noseRadius_[0] = 0.0;
 	for (int i = 1; i < TOTAL_NASAL_SECTIONS; i++) {
-		if (fgets(line, 128, fp) == NULL) {
-			fprintf(stderr, "Can't read nose radius %-d.\n", i);
-			return false;
+		if (!std::getline(in, line)) {
+			THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read nose radius " << i << '.');
 		} else {
-			noseRadius_[i] = std::max(strtod(line, NULL), GS_TRM_TUBE_MIN_RADIUS);
+			noseRadius_[i] = std::max(Text::parseString<double>(line), GS_TRM_TUBE_MIN_RADIUS);
 		}
 	}
 
 	/*  GET THE THROAT LOWPASS FREQUENCY CUTOFF  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read throat lowpass filter cutoff.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read throat lowpass filter cutoff.");
 	} else {
-		throatCutoff_ = strtod(line, NULL);
+		throatCutoff_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE THROAT VOLUME  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read throat volume.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read throat volume.");
 	} else {
-		throatVol_ = strtod(line, NULL);
+		throatVol_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE PULSE MODULATION OF NOISE FLAG  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read pulse modulation of noise flag.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read pulse modulation of noise flag.");
 	} else {
-		modulation_ = strtol(line, NULL, 10);
+		modulation_ = Text::parseString<int>(line);
 	}
 
 	/*  GET THE NOISE CROSSMIX OFFSET  */
-	if (fgets(line, 128, fp) == NULL) {
-		fprintf(stderr, "Can't read noise crossmix offset.\n");
-		return false;
+	if (!std::getline(in, line)) {
+		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read noise crossmix offset.");
 	} else {
-		mixOffset_ = strtod(line, NULL);
+		mixOffset_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE INPUT TABLE VALUES  */
-	while (fgets(line, 128, fp)) {
-		char* ptr = line;
+	unsigned int paramNumber = 0;
+	while (std::getline(in, line)) {
+		std::istringstream lineStream(line);
 		std::unique_ptr<InputData> data(new InputData());
 
 		/*  GET EACH PARAMETER  */
-		data->glotPitch = strtod(ptr, &ptr);
-		data->glotVol   = strtod(ptr, &ptr);
-		data->aspVol    = strtod(ptr, &ptr);
-		data->fricVol   = strtod(ptr, &ptr);
-		data->fricPos   = strtod(ptr, &ptr);
-		data->fricCF    = strtod(ptr, &ptr);
-		data->fricBW    = strtod(ptr, &ptr);
+		lineStream >>
+			data->glotPitch >>
+			data->glotVol >>
+			data->aspVol >>
+			data->fricVol >>
+			data->fricPos >>
+			data->fricCF >>
+			data->fricBW;
 		for (int i = 0; i < TOTAL_REGIONS; i++) {
-			data->radius[i] = std::max(strtod(ptr, &ptr), GS_TRM_TUBE_MIN_RADIUS);
+			double radius;
+			lineStream >> radius;
+			data->radius[i] = std::max(radius, GS_TRM_TUBE_MIN_RADIUS);
 		}
-		data->velum     = strtod(ptr, &ptr);
+		lineStream >> data->velum;
+
+		if (!lineStream) {
+			THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read parameters (number " << paramNumber << ").");
+		}
 
 		inputData_.push_back(std::move(data));
+		++paramNumber;
 	}
 
 	/*  DOUBLE UP THE LAST INPUT TABLE, TO HELP INTERPOLATION CALCULATIONS  */
@@ -465,12 +482,6 @@ Tube::parseInputFile(const char* inputFile)
 		*lastData = *inputData_.back();
 		inputData_.push_back(std::move(lastData));
 	}
-
-	/*  CLOSE THE INPUT FILE  */
-	fclose(fp);
-
-	/*  RETURN SUCCESS  */
-	return true;
 }
 
 /******************************************************************************
@@ -1005,36 +1016,70 @@ Tube::writeOutputToFile(const char* outputFile)
 	/*  BE SURE TO FLUSH SRC BUFFER  */
 	srConv_->flushBuffer();
 
-	if (Log::debugEnabled) {
-		printf("\nnumber of samples:\t%-ld\n", srConv_->numberSamples());
-		printf("maximum sample value:\t%.6f\n", srConv_->maximumSampleValue());
-	}
+	LOG_DEBUG("\nNumber of samples: " << srConv_->numberSamples() <<
+			"\nMaximum sample value: " << srConv_->maximumSampleValue());
 
 	WAVEFileWriter fileWriter(outputFile, channels_, srConv_->numberSamples(), outputRate_);
 
 	if (channels_ == 1) {
-		float scale = (OUTPUT_SCALE / srConv_->maximumSampleValue()) * amplitude(volume_);
-		if (Log::debugEnabled) {
-			printf("scale:\t\t\t%.4f\n", scale);
-		}
-		for (int i = 0; i < srConv_->numberSamples(); i++) {
+		float scale = calculateMonoScale();
+		for (unsigned int i = 0, end = srConv_->numberSamples(); i < end; ++i) {
 			fileWriter.writeSample(outputData_[i] * scale);
 		}
 	} else {
-		float leftScale = -((balance_ / 2.0) - 0.5);
-		float rightScale = ((balance_ / 2.0) + 0.5);
-		float newMax = srConv_->maximumSampleValue() * (balance_ > 0.0 ? rightScale : leftScale);
-		float scale = (OUTPUT_SCALE / newMax) * amplitude(volume_);
-		leftScale  *= scale;
-		rightScale *= scale;
-		if (Log::debugEnabled) {
-			printf("left  scale:\t\t%.4f\n", leftScale);
-			printf("right scale:\t\t%.4f\n", rightScale);
-		}
-		for (int i = 0; i < srConv_->numberSamples(); i++) {
+		float leftScale, rightScale;
+		calculateStereoScale(leftScale, rightScale);
+		for (unsigned int i = 0, end = srConv_->numberSamples(); i < end; ++i) {
 			fileWriter.writeStereoSamples(outputData_[i] * leftScale, outputData_[i] * rightScale);
 		}
 	}
+}
+
+void
+Tube::writeOutputToBuffer(std::vector<float>& outputBuffer)
+{
+	/*  BE SURE TO FLUSH SRC BUFFER  */
+	srConv_->flushBuffer();
+
+	LOG_DEBUG("\nNumber of samples: " << srConv_->numberSamples() <<
+			"\nMaximum sample value: " << srConv_->maximumSampleValue());
+
+	outputBuffer.resize(srConv_->numberSamples() * channels_);
+
+	if (channels_ == 1) {
+		float scale = calculateMonoScale();
+		for (unsigned int i = 0, end = srConv_->numberSamples(); i < end; ++i) {
+			outputBuffer[i] = outputData_[i] * scale;
+		}
+	} else {
+		float leftScale, rightScale;
+		calculateStereoScale(leftScale, rightScale);
+		for (unsigned int i = 0, end = srConv_->numberSamples(); i < end; ++i) {
+			unsigned int baseIndex = i * 2;
+			outputBuffer[baseIndex    ] = outputData_[i] * leftScale;
+			outputBuffer[baseIndex + 1] = outputData_[i] * rightScale;
+		}
+	}
+}
+
+float
+Tube::calculateMonoScale()
+{
+	float scale = (OUTPUT_SCALE / srConv_->maximumSampleValue()) * amplitude(volume_);
+	LOG_DEBUG("\nScale: " << scale << '\n');
+	return scale;
+}
+
+void
+Tube::calculateStereoScale(float& leftScale, float& rightScale)
+{
+	leftScale = -((balance_ / 2.0) - 0.5);
+	rightScale = ((balance_ / 2.0) + 0.5);
+	float newMax = srConv_->maximumSampleValue() * (balance_ > 0.0 ? rightScale : leftScale);
+	float scale = (OUTPUT_SCALE / newMax) * amplitude(volume_);
+	leftScale  *= scale;
+	rightScale *= scale;
+	LOG_DEBUG("\nLeft scale: " << leftScale << " Right scale: " << rightScale << '\n');
 }
 
 /******************************************************************************

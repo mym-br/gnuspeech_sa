@@ -22,6 +22,8 @@
 #define TRM_CONTROL_MODEL_CONTROLLER_H_
 
 #include <cstdio>
+#include <fstream>
+#include <istream>
 
 #include "EventList.h"
 #include "Log.h"
@@ -49,6 +51,7 @@ public:
 	~Controller();
 
 	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, const char* outputFile);
+	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, std::iostream& trmParamStream);
 	void synthesizeFromEventList(const char* trmParamFile, const char* outputFile);
 	void loadTRMControlModelConfig(const char* configDirPath);
 	void loadTRMConfig(const char* configDirPath);
@@ -66,7 +69,7 @@ private:
 	Controller(const Controller&);
 	Controller& operator=(const Controller&);
 
-	void initUtterance(const char* trmParamFile);
+	void initUtterance(std::ostream& trmParamStream);
 	int calcChunks(const char* string);
 	int nextChunk(const char* string);
 	void printVowelTransitions();
@@ -74,7 +77,7 @@ private:
 	int validPosture(const char* token);
 	void setIntonation(int intonation);
 
-	template<typename T> void synthesizePhoneticStringChunk(T& phoneticStringParser, const char* phoneticStringChunk, const char* trmParamFile);
+	template<typename T> void synthesizePhoneticStringChunk(T& phoneticStringParser, const char* phoneticStringChunk, std::ostream& trmParamStream);
 
 	Model& model_;
 	VoiceConfig voices_[MAX_VOICES];
@@ -89,9 +92,24 @@ template<typename T>
 void
 Controller::synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, const char* outputFile)
 {
+	std::fstream trmParamStream(trmParamFile, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+	if (!trmParamStream) {
+		THROW_EXCEPTION(IOException, "Could not open the file " << trmParamFile << '.');
+	}
+
+	synthesizePhoneticString(phoneticStringParser, phoneticString, trmParamStream);
+
+	TRM::Tube trm;
+	trm.synthesizeToFile(trmParamStream, outputFile);
+}
+
+template<typename T>
+void
+Controller::synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, std::iostream& trmParamStream)
+{
 	int chunks = calcChunks(phoneticString);
 
-	initUtterance(trmParamFile);
+	initUtterance(trmParamStream);
 
 	int index = 0;
 	while (chunks > 0) {
@@ -99,19 +117,18 @@ Controller::synthesizePhoneticString(T& phoneticStringParser, const char* phonet
 			printf("Speaking \"%s\"\n", &phoneticString[index]);
 		}
 
-		synthesizePhoneticStringChunk(phoneticStringParser, &phoneticString[index], trmParamFile);
+		synthesizePhoneticStringChunk(phoneticStringParser, &phoneticString[index], trmParamStream);
 
 		index += nextChunk(&phoneticString[index + 2]) + 2;
 		chunks--;
 	}
 
-	TRM::Tube trm;
-	trm.synthesizeToFile(trmParamFile, outputFile);
+	trmParamStream.seekg(0);
 }
 
 template<typename T>
 void
-Controller::synthesizePhoneticStringChunk(T& phoneticStringParser, const char* phoneticStringChunk, const char* trmParamFile)
+Controller::synthesizePhoneticStringChunk(T& phoneticStringParser, const char* phoneticStringChunk, std::ostream& trmParamStream)
 {
 	eventList_.setUp();
 
@@ -122,7 +139,7 @@ Controller::synthesizePhoneticStringChunk(T& phoneticStringParser, const char* p
 	eventList_.applyIntonation();
 	eventList_.applyIntonationSmooth();
 
-	eventList_.generateOutput(trmParamFile);
+	eventList_.generateOutput(trmParamStream);
 }
 
 } /* namespace TRMControlModel */

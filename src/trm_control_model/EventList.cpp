@@ -23,6 +23,7 @@
 //#include <cmath> /* NAN */
 #include <cstdlib> /* random */
 #include <cstring>
+#include <iomanip>
 #include <sstream>
 #include <vector>
 
@@ -944,7 +945,7 @@ EventList::addIntonationPoint(double semitone, double offsetTime, double slope, 
 }
 
 void
-EventList::generateOutput(const char* trmParamFile)
+EventList::generateOutput(std::ostream& trmParamStream)
 {
 	double currentValues[36];
 	double currentDeltas[36];
@@ -953,10 +954,6 @@ EventList::generateOutput(const char* trmParamFile)
 
 	if (list_.empty()) {
 		return;
-	}
-	FILE* fp = fopen(trmParamFile, "ab");
-	if (fp == NULL) {
-		THROW_EXCEPTION(IOException, "Could not open the file " << trmParamFile << '.');
 	}
 
 	for (int i = 0; i < 16; i++) {
@@ -1017,14 +1014,12 @@ EventList::generateOutput(const char* trmParamFile)
 
 		table[0] += pitchMean_;
 
-		if (fp) {
-			fprintf(fp,
-				"%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n",
-				table[0], table[1], table[2], table[3],
-				table[4], table[5], table[6], table[7],
-				table[8], table[9], table[10], table[11],
-				table[12], table[13], table[14], table[15]);
+		trmParamStream << std::fixed << std::setprecision(3);
+		trmParamStream << table[0];
+		for (unsigned int k = 1; k < 16; ++k) {
+			trmParamStream << ' ' << table[k];
 		}
+		trmParamStream << '\n';
 
 		for (int j = 0; j < 32; j++) {
 			if (currentDeltas[j]) {
@@ -1076,8 +1071,6 @@ EventList::generateOutput(const char* trmParamFile)
 			}
 		}
 	}
-
-	fclose(fp);
 
 	if (Log::debugEnabled) {
 		printDataStructures();
