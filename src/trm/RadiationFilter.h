@@ -34,6 +34,7 @@ public:
 	RadiationFilter(double apertureCoeff);
 	~RadiationFilter();
 
+	void reset();
 	double filter(double input);
 private:
 	RadiationFilter(const RadiationFilter&);

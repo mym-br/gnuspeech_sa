@@ -81,6 +81,17 @@ SampleRateConverter::~SampleRateConverter()
 {
 }
 
+void
+SampleRateConverter::reset()
+{
+	emptyPtr_ = 0;
+	timeRegister_ = 0;
+	fillCounter_ = 0;
+	maximumSampleValue_ = 0.0;
+	numberSamples_ = 0;
+	initializeBuffer();
+}
+
 /******************************************************************************
 *
 *  function:  initializeConversion

@@ -93,6 +93,13 @@ WavetableGlottalSource::~WavetableGlottalSource()
 {
 }
 
+void
+WavetableGlottalSource::reset()
+{
+	currentPosition_ = 0;
+	firFilter_->reset();
+}
+
 /******************************************************************************
 *
 *  function:  updateWavetable

@@ -208,6 +208,24 @@ private:
 			, radius6Filter(sampleRate, period)
 			, radius7Filter(sampleRate, period)
 			, velumFilter(sampleRate, period) {}
+		void reset() {
+			glotPitchFilter.reset();
+			glotVolFilter.reset();
+			aspVolFilter.reset();
+			fricVolFilter.reset();
+			fricPosFilter.reset();
+			fricCFFilter.reset();
+			fricBWFilter.reset();
+			radius0Filter.reset();
+			radius1Filter.reset();
+			radius2Filter.reset();
+			radius3Filter.reset();
+			radius4Filter.reset();
+			radius5Filter.reset();
+			radius6Filter.reset();
+			radius7Filter.reset();
+			velumFilter.reset();
+		}
 	};
 
 	Tube(const Tube&);

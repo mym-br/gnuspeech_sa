@@ -36,6 +36,12 @@ NoiseSource::~NoiseSource()
 {
 }
 
+void
+NoiseSource::reset()
+{
+	seed_ = INITIAL_SEED;
+}
+
 double
 NoiseSource::getSample()
 {

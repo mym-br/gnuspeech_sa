@@ -31,6 +31,7 @@ public:
 	BandpassFilter();
 	~BandpassFilter();
 
+	void reset();
 	void update(double sampleRate, double bandwidth, double centerFreq);
 	double filter(double input);
 private:

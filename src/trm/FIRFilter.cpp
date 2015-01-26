@@ -77,6 +77,13 @@ FIRFilter::~FIRFilter()
 {
 }
 
+void
+FIRFilter::reset()
+{
+	for (auto& item : data_) item = 0.0;
+	ptr_ = 0;
+}
+
 /******************************************************************************
 *
 *  function:  maximallyFlat

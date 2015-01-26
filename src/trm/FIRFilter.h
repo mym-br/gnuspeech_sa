@@ -40,6 +40,7 @@ public:
 	FIRFilter(double beta, double gamma, double cutoff);
 	~FIRFilter();
 
+	void reset();
 	double filter(double input, int needOutput);
 private:
 	FIRFilter(const FIRFilter&);

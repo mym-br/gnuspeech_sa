@@ -33,6 +33,12 @@ NoiseFilter::~NoiseFilter()
 {
 }
 
+void
+NoiseFilter::reset()
+{
+	noiseX_ = 0.0;
+}
+
 double
 NoiseFilter::filter(double input)
 {

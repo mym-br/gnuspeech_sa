@@ -37,6 +37,13 @@ RadiationFilter::~RadiationFilter()
 {
 }
 
+void
+RadiationFilter::reset()
+{
+	radiationX_ = 0.0;
+	radiationY_ = 0.0;
+}
+
 double
 RadiationFilter::filter(double input)
 {

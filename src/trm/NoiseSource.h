@@ -31,6 +31,7 @@ public:
 	NoiseSource();
 	~NoiseSource();
 
+	void reset();
 	double getSample();
 private:
 	NoiseSource(const NoiseSource&);

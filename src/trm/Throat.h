@@ -31,6 +31,7 @@ public:
 	Throat(double sampleRate, double throatCutoff, double throatGain);
 	~Throat();
 
+	void reset();
 	double process(double input);
 private:
 	Throat(const Throat&);

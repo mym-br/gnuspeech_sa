@@ -35,6 +35,7 @@ class MovingAverageFilter {
 public:
 	MovingAverageFilter(FloatType sampleRate, FloatType period /* seconds */);
 
+	void reset();
 	FloatType filter(FloatType value);
 private:
 	std::vector<FloatType> buf_;
@@ -56,6 +57,18 @@ MovingAverageFilter<FloatType>::MovingAverageFilter(FloatType sampleRate, FloatT
 		, invN_(1.0 / buf_.size())
 {
 	assert(!buf_.empty());
+}
+
+/*******************************************************************************
+ *
+ */
+template<typename FloatType>
+void
+MovingAverageFilter<FloatType>::reset()
+{
+	for (auto& item : buf_) item = 0.0;
+	pos_ = buf_.size();
+	sum_ = 0.0;
 }
 
 /*******************************************************************************

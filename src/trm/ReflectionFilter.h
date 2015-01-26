@@ -33,6 +33,7 @@ public:
 	ReflectionFilter(double apertureCoeff);
 	~ReflectionFilter();
 
+	void reset();
 	double filter(double input);
 private:
 	ReflectionFilter(const ReflectionFilter&);

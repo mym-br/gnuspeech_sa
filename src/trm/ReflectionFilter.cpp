@@ -38,6 +38,12 @@ ReflectionFilter::~ReflectionFilter()
 {
 }
 
+void
+ReflectionFilter::reset()
+{
+	reflectionY_ = 0.0;
+}
+
 double
 ReflectionFilter::filter(double input)
 {

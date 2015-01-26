@@ -43,6 +43,7 @@ public:
 			double tp = 0.0, double tnMin = 0.0, double tnMax = 0.0);
 	~WavetableGlottalSource();
 
+	void reset();
 	double oscillator(double frequency);//TODO: change name?
 	void updateWavetable(double amplitude);
 private:

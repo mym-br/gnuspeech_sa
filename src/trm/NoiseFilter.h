@@ -32,6 +32,7 @@ public:
 	NoiseFilter();
 	~NoiseFilter();
 
+	void reset();
 	double filter(double input);
 private:
 	NoiseFilter(const NoiseFilter&);

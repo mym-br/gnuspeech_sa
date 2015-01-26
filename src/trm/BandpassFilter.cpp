@@ -43,6 +43,15 @@ BandpassFilter::~BandpassFilter()
 }
 
 void
+BandpassFilter::reset()
+{
+	xn1_ = 0.0;
+	xn2_ = 0.0;
+	yn1_ = 0.0;
+	yn2_ = 0.0;
+}
+
+void
 BandpassFilter::update(double sampleRate, double bandwidth, double centerFreq)
 {
 	double tanValue = tan((M_PI * bandwidth) / sampleRate);

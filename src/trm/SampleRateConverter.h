@@ -33,6 +33,7 @@ public:
 	SampleRateConverter(int sampleRate, float outputRate, std::vector<float>& outputData);
 	~SampleRateConverter();
 
+	void reset();
 	void dataFill(double data);
 	void dataEmpty();
 	void flushBuffer();
