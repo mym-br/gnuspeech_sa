@@ -19,6 +19,7 @@
 #define EXCEPTION_H_
 
 #include <algorithm> /* move */
+#include <cassert>
 #include <cstdio>    /* fprintf */
 #include <cstdlib>   /* free, malloc */
 #include <cstring>   /* strcpy, strlen */
@@ -65,23 +66,26 @@ public:
 		std::free(str_);
 	}
 	ExceptionString& operator=(const ExceptionString& o) noexcept {
-		if (o.str_ == nullptr) {
+		if (this != &o) {
+			if (o.str_ == nullptr) {
+				std::free(str_);
+				str_ = nullptr;
+				return *this;
+			}
+			std::size_t size = std::strlen(o.str_);
+			auto p = static_cast<char*>(std::malloc(size + 1));
+			if (p == nullptr) {
+				std::fprintf(stderr, "Exception string copy error. String: %s\n", o.str_);
+				return *this;
+			}
 			std::free(str_);
-			str_ = nullptr;
-			return *this;
+			str_ = p;
+			std::strcpy(str_, o.str_);
 		}
-		std::size_t size = std::strlen(o.str_);
-		auto p = static_cast<char*>(std::malloc(size + 1));
-		if (p == nullptr) {
-			std::fprintf(stderr, "Exception string copy error. String: %s\n", o.str_);
-			return *this;
-		}
-		std::free(str_);
-		str_ = p;
-		std::strcpy(str_, o.str_);
 		return *this;
 	}
 	ExceptionString& operator=(ExceptionString&& o) noexcept {
+		assert(this != &o);
 		std::free(str_);
 		str_ = o.str_;
 		o.str_ = nullptr;
