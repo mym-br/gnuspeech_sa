@@ -43,8 +43,8 @@ public:
 	void reset();
 	double filter(double input, int needOutput);
 private:
-	FIRFilter(const FIRFilter&);
-	FIRFilter& operator=(const FIRFilter&);
+	FIRFilter(const FIRFilter&) = delete;
+	FIRFilter& operator=(const FIRFilter&) = delete;
 
 	static int maximallyFlat(double beta, double gamma, int* np, double* coefficient);
 	static void trim(double cutoff, int* numberCoefficients, double* coefficient);

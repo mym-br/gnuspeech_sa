@@ -178,8 +178,8 @@ public:
 	void setUseFixedIntonationParameters(bool value) { useFixedIntonationParameters_ = value; }
 	void setFixedIntonationParameters(float notionalPitch, float pretonicRange, float pretonicLift, float tonicRange, float tonicMovement);
 private:
-	EventList(const EventList&);
-	EventList& operator=(const EventList&);
+	EventList(const EventList&) = delete;
+	EventList& operator=(const EventList&) = delete;
 
 	void parseGroups(int index, int number, FILE* fp);
 	void initToneGroups(const char* configDirPath);

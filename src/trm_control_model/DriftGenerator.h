@@ -34,8 +34,8 @@ public:
 	void setUp(float deviation, float sampleRate, float lowpassCutoff);
 	float drift();
 private:
-	DriftGenerator(const DriftGenerator&);
-	DriftGenerator& operator=(const DriftGenerator&);
+	DriftGenerator(const DriftGenerator&) = delete;
+	DriftGenerator& operator=(const DriftGenerator&) = delete;
 
 	float pitchDeviation_;
 	float pitchOffset_;

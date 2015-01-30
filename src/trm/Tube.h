@@ -232,8 +232,8 @@ private:
 		}
 	};
 
-	Tube(const Tube&);
-	Tube& operator=(const Tube&);
+	Tube(const Tube&) = delete;
+	Tube& operator=(const Tube&) = delete;
 
 	void reset();
 	void calculateTubeCoefficients();

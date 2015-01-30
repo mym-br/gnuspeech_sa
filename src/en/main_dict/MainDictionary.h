@@ -47,8 +47,8 @@ private:
 		MAXLEN = 1024
 	};
 
-	MainDictionary(const MainDictionary&);
-	MainDictionary& operator=(const MainDictionary&);
+	MainDictionary(const MainDictionary&) = delete;
+	MainDictionary& operator=(const MainDictionary&) = delete;
 
 	void clearBuffers();
 	const char* augmentedSearch(const char* orthography);

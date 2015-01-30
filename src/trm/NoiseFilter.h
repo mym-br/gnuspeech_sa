@@ -35,8 +35,8 @@ public:
 	void reset();
 	double filter(double input);
 private:
-	NoiseFilter(const NoiseFilter&);
-	NoiseFilter& operator=(const NoiseFilter&);
+	NoiseFilter(const NoiseFilter&) = delete;
+	NoiseFilter& operator=(const NoiseFilter&) = delete;
 
 	double noiseX_;
 };

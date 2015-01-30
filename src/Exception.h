@@ -134,8 +134,8 @@ public:
 		return buffer_.str();
 	}
 private:
-	ErrorMessage(const ErrorMessage&);
-	ErrorMessage& operator=(const ErrorMessage&);
+	ErrorMessage(const ErrorMessage&) = delete;
+	ErrorMessage& operator=(const ErrorMessage&) = delete;
 
 	std::ostringstream buffer_;
 };

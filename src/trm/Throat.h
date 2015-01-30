@@ -34,8 +34,8 @@ public:
 	void reset();
 	double process(double input);
 private:
-	Throat(const Throat&);
-	Throat& operator=(const Throat&);
+	Throat(const Throat&) = delete;
+	Throat& operator=(const Throat&) = delete;
 
 	double tb1_;
 	double ta0_;

@@ -34,8 +34,8 @@ public:
 	void reset();
 	double getSample();
 private:
-	NoiseSource(const NoiseSource&);
-	NoiseSource& operator=(const NoiseSource&);
+	NoiseSource(const NoiseSource&) = delete;
+	NoiseSource& operator=(const NoiseSource&) = delete;
 
 	double seed_;
 };

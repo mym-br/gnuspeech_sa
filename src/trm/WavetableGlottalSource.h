@@ -47,8 +47,8 @@ public:
 	double oscillator(double frequency);//TODO: change name?
 	void updateWavetable(double amplitude);
 private:
-	WavetableGlottalSource(const WavetableGlottalSource&);
-	WavetableGlottalSource& operator=(const WavetableGlottalSource&);
+	WavetableGlottalSource(const WavetableGlottalSource&) = delete;
+	WavetableGlottalSource& operator=(const WavetableGlottalSource&) = delete;
 
 	void incrementTablePosition(double frequency);
 

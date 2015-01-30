@@ -41,8 +41,8 @@ public:
 	std::string parseText(const char* text);
 
 private:
-	TextParser(const TextParser&);
-	TextParser& operator=(const TextParser&);
+	TextParser(const TextParser&) = delete;
+	TextParser& operator=(const TextParser&) = delete;
 
 	void init_parser_module();
 	int set_escape_code(char new_escape_code);

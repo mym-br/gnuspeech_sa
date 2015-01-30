@@ -90,8 +90,8 @@ public:
 	const char* parseNumber(const char* word, Mode mode);
 	const char* degenerateString(const char* word);
 private:
-	NumberParser(const NumberParser&);
-	NumberParser& operator=(const NumberParser&);
+	NumberParser(const NumberParser&) = delete;
+	NumberParser& operator=(const NumberParser&) = delete;
 
 	int errorCheck(Mode mode);
 	void initialParse();

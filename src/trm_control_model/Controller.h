@@ -66,8 +66,8 @@ private:
 		MAX_VOICES = 5
 	};
 
-	Controller(const Controller&);
-	Controller& operator=(const Controller&);
+	Controller(const Controller&) = delete;
+	Controller& operator=(const Controller&) = delete;
 
 	void initUtterance(std::ostream& trmParamStream);
 	int calcChunks(const char* string);

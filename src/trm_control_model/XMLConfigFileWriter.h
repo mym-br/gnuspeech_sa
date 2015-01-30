@@ -43,8 +43,8 @@ public:
 
 	void saveModel();
 private:
-	XMLConfigFileWriter(const XMLConfigFileWriter&);
-	XMLConfigFileWriter& operator=(const XMLConfigFileWriter&);
+	XMLConfigFileWriter(const XMLConfigFileWriter&) = delete;
+	XMLConfigFileWriter& operator=(const XMLConfigFileWriter&) = delete;
 
 	void writeElements();
 

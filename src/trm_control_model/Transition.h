@@ -98,8 +98,8 @@ public:
 			}
 		}
 	private:
-		Point(const Point&);
-		Point& operator=(const Point&);
+		Point(const Point&) = delete;
+		Point& operator=(const Point&) = delete;
 	};
 	typedef std::unique_ptr<Point> Point_ptr;
 
@@ -109,8 +109,8 @@ public:
 
 		Slope() : slope(0.0), displayTime(0.0) {}
 	private:
-		Slope(const Slope&);
-		Slope& operator=(const Slope&);
+		Slope(const Slope&) = delete;
+		Slope& operator=(const Slope&) = delete;
 	};
 	typedef std::unique_ptr<Slope> Slope_ptr;
 
@@ -124,8 +124,8 @@ public:
 		virtual bool isSlopeRatio() const { return true; }
 		double totalSlopeUnits() const;
 	private:
-		SlopeRatio(const SlopeRatio&);
-		SlopeRatio& operator=(const SlopeRatio&);
+		SlopeRatio(const SlopeRatio&) = delete;
+		SlopeRatio& operator=(const SlopeRatio&) = delete;
 	};
 
 	Transition(

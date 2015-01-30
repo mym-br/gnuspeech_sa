@@ -39,8 +39,8 @@ public:
 	void writeSample(float sample);
 	void writeStereoSamples(float leftSample, float rightSample);
 private:
-	WAVEFileWriter(const WAVEFileWriter&);
-	WAVEFileWriter& operator=(const WAVEFileWriter&);
+	WAVEFileWriter(const WAVEFileWriter&) = delete;
+	WAVEFileWriter& operator=(const WAVEFileWriter&) = delete;
 
 	void writeWaveFileHeader(int channels, int numberSamples, float outputRate);
 	void writeUInt32LE(int data);

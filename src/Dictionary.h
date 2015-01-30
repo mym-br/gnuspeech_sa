@@ -32,8 +32,8 @@ public:
 	const char* getEntry(const char* word) const;
 	const char* version() const;
 private:
-	Dictionary(const Dictionary&);
-	Dictionary& operator=(const Dictionary&);
+	Dictionary(const Dictionary&) = delete;
+	Dictionary& operator=(const Dictionary&) = delete;
 
 	std::unordered_map<std::string, std::string> map_;
 	std::string version_;

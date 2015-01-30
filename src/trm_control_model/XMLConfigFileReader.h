@@ -119,8 +119,8 @@ private:
 
 	SimpleXMLParser parser_;
 
-	XMLConfigFileReader(const XMLConfigFileReader&);
-	XMLConfigFileReader& operator=(const XMLConfigFileReader&);
+	XMLConfigFileReader(const XMLConfigFileReader&) = delete;
+	XMLConfigFileReader& operator=(const XMLConfigFileReader&) = delete;
 
 	void parseCategories();
 

@@ -36,8 +36,8 @@ public:
 	void reset();
 	double filter(double input);
 private:
-	ReflectionFilter(const ReflectionFilter&);
-	ReflectionFilter& operator=(const ReflectionFilter&);
+	ReflectionFilter(const ReflectionFilter&) = delete;
+	ReflectionFilter& operator=(const ReflectionFilter&) = delete;
 
 	double a10_;
 	double b11_;

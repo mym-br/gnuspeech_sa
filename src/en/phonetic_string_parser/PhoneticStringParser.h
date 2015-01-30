@@ -37,8 +37,8 @@ public:
 
 	int parseString(const char* string);
 private:
-	PhoneticStringParser(const PhoneticStringParser&);
-	PhoneticStringParser& operator=(const PhoneticStringParser&);
+	PhoneticStringParser(const PhoneticStringParser&) = delete;
+	PhoneticStringParser& operator=(const PhoneticStringParser&) = delete;
 
 	struct RewriterData {
 		int currentState;
