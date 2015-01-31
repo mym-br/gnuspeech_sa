@@ -17,6 +17,8 @@
 
 #include "Equation.h"
 
+#include <cctype> /* isspace */
+
 #include "Exception.h"
 #include "Log.h"
 #include "Text.h"
@@ -40,24 +42,16 @@ class FormulaNodeParser {
 public:
 	FormulaNodeParser(const std::string& s)
 				: formulaSymbolMap_(formulaSymbol.codeMap)
-				, s_(s)
+				, s_(GS::Text::trim(s))
 				, pos_(0)
 				, symbolType_(SYMBOL_TYPE_INVALID) {
-		if (s.empty()) {
+		if (s_.empty()) {
 			THROW_EXCEPTION(GS::TRMControlModelException, "Formula expression parser error: Empty string.");
 		}
 		nextSymbol();
 	}
 
-	void throwException(const char* errorDescription) const;
-	template<typename T> void throwException(const char* errorDescription, const T& complement) const;
-	bool finished() const {
-		return pos_ >= s_.size();
-	}
-	void nextSymbol();
-	FormulaNode_ptr parseFactor();
-	FormulaNode_ptr parseTerm();
-	FormulaNode_ptr parseExpression();
+	FormulaNode_ptr parse();
 private:
 	enum SymbolType {
 		SYMBOL_TYPE_INVALID,
@@ -76,14 +70,22 @@ private:
 	std::string symbol_;
 	SymbolType symbolType_;
 
+	void throwException(const char* errorDescription) const;
+	template<typename T> void throwException(const char* errorDescription, const T& complement) const;
+	bool finished() const {
+		return pos_ >= s_.size();
+	}
+	void nextSymbol();
+	FormulaNode_ptr parseFactor();
+	FormulaNode_ptr parseTerm();
+	FormulaNode_ptr parseExpression();
 	void skipSpaces();
 
 	static bool isSeparator(char c) {
 		switch (c) {
 		case RIGHT_PAREN_CHAR: return true;
 		case LEFT_PAREN_CHAR:  return true;
-		case ' ':              return true;
-		default:               return false;
+		default:               return std::isspace(c);
 		}
 	}
 };
@@ -106,7 +108,7 @@ FormulaNodeParser::throwException(const char* errorDescription, const T& complem
 void
 FormulaNodeParser::skipSpaces()
 {
-	while (!finished() && s_[pos_] == ' ') ++pos_;
+	while (!finished() && std::isspace(s_[pos_])) ++pos_;
 }
 
 void
@@ -254,6 +256,19 @@ FormulaNodeParser::parseExpression()
 	return term1;
 }
 
+/*******************************************************************************
+ *
+ */
+FormulaNode_ptr
+FormulaNodeParser::parse()
+{
+	FormulaNode_ptr formulaRoot = parseExpression();
+	if (symbolType_ != SYMBOL_TYPE_INVALID) { // there is a symbol available
+		THROW_EXCEPTION(GS::TRMControlModelException, "Formula expression parser error: Invalid text at the end of the formula.");
+	}
+	return formulaRoot;
+}
+
 } /* namespace */
 
 //==============================================================================
@@ -380,16 +395,11 @@ FormulaSymbolValue::print(std::ostream& out, int level) const
 void
 Equation::setFormula(const std::string& formula)
 {
-	if (formula.empty()) {
-		//THROW_EXCEPTION(InvalidParameterException, "Empty formula.");
-		return;
-	}
-
 	FormulaNodeParser p(formula);
-	FormulaNode_ptr testFormulaRoot = p.parseExpression();
+	FormulaNode_ptr tempFormulaRoot = p.parse();
 
 	formula_ = formula;
-	std::swap(testFormulaRoot, formulaRoot_);
+	std::swap(tempFormulaRoot, formulaRoot_);
 }
 
 /*******************************************************************************

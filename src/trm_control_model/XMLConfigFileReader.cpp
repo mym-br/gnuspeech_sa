@@ -179,17 +179,24 @@ XMLConfigFileReader::parseEquationsGroup()
 	for (const std::string* equation = parser_.getFirstChild(equationTagName_);
 				equation;
 				equation = parser_.getNextSibling(equationTagName_)) {
-		std::shared_ptr<Equation> eq(new Equation(parser_.getAttribute(nameAttrName_)));
-		eq->setFormula(parser_.getAttribute(formulaAttrName_));
 
+		std::string name = parser_.getAttribute(nameAttrName_);
+		std::string formula = parser_.getAttribute(formulaAttrName_);
+		std::string comment;
 		if (parser_.getFirstChild()) {
-			eq->setComment(parser_.getText());
+			comment = parser_.getText();
 			parser_.getNextSibling();
 		}
 
-		if (eq->formula().empty()) {
-			LOG_ERROR("Equation " << eq->name() << " without formula (ignored)."); // should not happen
+		if (formula.empty()) {
+			LOG_ERROR("Equation " << name << " without formula (ignored).");
 		} else {
+			std::shared_ptr<Equation> eq(new Equation(name));
+			eq->setFormula(formula);
+			if (!comment.empty()) {
+				eq->setComment(comment);
+			}
+
 			group.equationList.push_back(eq);
 		}
 	}

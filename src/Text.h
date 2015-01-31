@@ -29,6 +29,10 @@
 namespace GS {
 namespace Text {
 
+std::string trim(const std::string& s);
+
+
+
 template<typename T>
 std::string
 convertToString(const T& t) {
@@ -43,7 +47,12 @@ parseString(const std::string& s) {
 	std::istringstream in(s);
 	T res;
 	in >> res;
-	if (!in) THROW_EXCEPTION(InvalidValueException, "Wrong format: " << s << '.');
+	if (!in) {
+		THROW_EXCEPTION(InvalidValueException, "Wrong format: " << s << '.');
+	}
+	if (!in.eof()) {
+		THROW_EXCEPTION(InvalidValueException, "Invalid text at the end of: " << s << '.');
+	}
 	return res;
 }
 
