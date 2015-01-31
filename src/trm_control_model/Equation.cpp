@@ -29,12 +29,12 @@ namespace {
 
 using namespace GS::TRMControlModel;
 
-const char ADD_CHAR         = '+';
-const char SUB_CHAR         = '-';
-const char MULT_CHAR        = '*';
-const char DIV_CHAR         = '/';
-const char RIGHT_PAREN_CHAR = ')';
-const char LEFT_PAREN_CHAR  = '(';
+const char        addChar = '+';
+const char        subChar = '-';
+const char       multChar = '*';
+const char        divChar = '/';
+const char rightParenChar = ')';
+const char  leftParenChar = '(';
 
 FormulaSymbol formulaSymbol;
 
@@ -64,12 +64,6 @@ private:
 		SYMBOL_TYPE_STRING
 	};
 
-	const FormulaSymbol::CodeMap& formulaSymbolMap_;
-	const std::string s_;
-	std::string::size_type pos_;
-	std::string symbol_;
-	SymbolType symbolType_;
-
 	void throwException(const char* errorDescription) const;
 	template<typename T> void throwException(const char* errorDescription, const T& complement) const;
 	bool finished() const {
@@ -83,26 +77,34 @@ private:
 
 	static bool isSeparator(char c) {
 		switch (c) {
-		case RIGHT_PAREN_CHAR: return true;
-		case LEFT_PAREN_CHAR:  return true;
+		case rightParenChar: return true;
+		case leftParenChar:  return true;
 		default:               return std::isspace(c);
 		}
 	}
+
+	const FormulaSymbol::CodeMap& formulaSymbolMap_;
+	const std::string s_;
+	std::string::size_type pos_;
+	std::string symbol_;
+	SymbolType symbolType_;
 };
 
 void
 FormulaNodeParser::throwException(const char* errorDescription) const
 {
-	THROW_EXCEPTION(GS::TRMControlModelException, "Formula expression parser error: " << errorDescription
-					<< " at position " << pos_ << " of string [" << s_ << "].");
+	THROW_EXCEPTION(GS::TRMControlModelException, "Formula expression parser error: "
+				<< errorDescription
+				<< " at position " << (pos_ - symbol_.size()) << " of string [" << s_ << "].");
 }
 
 template<typename T>
 void
 FormulaNodeParser::throwException(const char* errorDescription, const T& complement) const
 {
-	THROW_EXCEPTION(GS::TRMControlModelException, "Formula expression parser error: " << errorDescription << complement
-					<< " at position " << pos_ << " of string [" << s_ << "].");
+	THROW_EXCEPTION(GS::TRMControlModelException, "Formula expression parser error: "
+				<< errorDescription << complement
+				<< " at position " << (pos_ - symbol_.size()) << " of string [" << s_ << "].");
 }
 
 void
@@ -116,7 +118,7 @@ FormulaNodeParser::nextSymbol()
 {
 	skipSpaces();
 
-	symbol_.clear();
+	symbol_.resize(0);
 
 	if (finished()) {
 		symbolType_ = SYMBOL_TYPE_INVALID;
@@ -124,27 +126,27 @@ FormulaNodeParser::nextSymbol()
 	}
 
 	char c = s_[pos_++];
+	symbol_ = c;
 	switch (c) {
-	case ADD_CHAR:
+	case addChar:
 		symbolType_ = SYMBOL_TYPE_ADD;
 		break;
-	case SUB_CHAR:
+	case subChar:
 		symbolType_ = SYMBOL_TYPE_SUB;
 		break;
-	case MULT_CHAR:
+	case multChar:
 		symbolType_ = SYMBOL_TYPE_MULT;
 		break;
-	case DIV_CHAR:
+	case divChar:
 		symbolType_ = SYMBOL_TYPE_DIV;
 		break;
-	case RIGHT_PAREN_CHAR:
+	case rightParenChar:
 		symbolType_ = SYMBOL_TYPE_RIGHT_PAREN;
 		break;
-	case LEFT_PAREN_CHAR:
+	case leftParenChar:
 		symbolType_ = SYMBOL_TYPE_LEFT_PAREN;
 		break;
 	default:
-		symbol_ += c;
 		symbolType_ = SYMBOL_TYPE_STRING;
 		while ( !finished() && !isSeparator(c = s_[pos_]) ) {
 			symbol_ += c;
@@ -189,17 +191,13 @@ FormulaNodeParser::parseFactor()
 		}
 	}
 	case SYMBOL_TYPE_RIGHT_PAREN:
-		throwException("Unexpected symbol: ", RIGHT_PAREN_CHAR);
-		break; // unreachable
+		throwException("Unexpected symbol: ", rightParenChar);
 	case SYMBOL_TYPE_MULT:
-		throwException("Unexpected symbol: ", MULT_CHAR);
-		break; // unreachable
+		throwException("Unexpected symbol: ", multChar);
 	case SYMBOL_TYPE_DIV:
-		throwException("Unexpected symbol: ", DIV_CHAR);
-		break; // unreachable
+		throwException("Unexpected symbol: ", divChar);
 	default:
 		throwException("Invalid symbol");
-		break; // unreachable
 	}
 	return FormulaNode_ptr(); // unreachable
 }
@@ -264,7 +262,7 @@ FormulaNodeParser::parse()
 {
 	FormulaNode_ptr formulaRoot = parseExpression();
 	if (symbolType_ != SYMBOL_TYPE_INVALID) { // there is a symbol available
-		THROW_EXCEPTION(GS::TRMControlModelException, "Formula expression parser error: Invalid text at the end of the formula.");
+		throwException("Invalid text");
 	}
 	return formulaRoot;
 }

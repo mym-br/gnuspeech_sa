@@ -23,23 +23,24 @@
 #ifndef TRM_CONTROL_MODEL_RULE_H_
 #define TRM_CONTROL_MODEL_RULE_H_
 
-#include <iostream>
-#include <string>
 #include <memory>
+#include <ostream>
+#include <string>
 #include <utility> /* move, swap */
 #include <vector>
 
-#include "Category.h"
-#include "Equation.h"
-#include "Posture.h"
-#include "Transition.h"
+#include "Exception.h"
 
 
 
 namespace GS {
 namespace TRMControlModel {
 
+class Category;
+class Equation;
 class Model;
+class Posture;
+class Transition;
 
 class RuleBooleanNode {
 public:

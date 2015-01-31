@@ -23,12 +23,15 @@
 #include "Rule.h"
 
 #include <cassert>
-#include <string>
+#include <cctype> /* isspace */
+#include <iostream>
 
 #include "Category.h"
-#include "Exception.h"
+#include "Equation.h"
 #include "Model.h"
+#include "Posture.h"
 #include "Text.h"
+#include "Transition.h"
 
 
 
@@ -37,46 +40,38 @@ namespace {
 using namespace GS::TRMControlModel;
 
 const char rightParenChar = ')';
-const char leftParenChar  = '(';
-const char matchAllChar   = '*';
+const char  leftParenChar = '(';
+const char   matchAllChar = '*';
 const std::string  orOpSymb = "or";
 const std::string notOpSymb = "not";
 const std::string xorOpSymb = "xor";
 const std::string andOpSymb = "and";
 
-enum SymbolType {
-	SYMBOL_TYPE_INVALID,
-	SYMBOL_TYPE_OR_OP,
-	SYMBOL_TYPE_NOT_OP,
-	SYMBOL_TYPE_XOR_OP,
-	SYMBOL_TYPE_AND_OP,
-	SYMBOL_TYPE_RIGHT_PAREN,
-	SYMBOL_TYPE_LEFT_PAREN,
-	SYMBOL_TYPE_STRING
-};
-
-bool isSeparator(char c)
-{
-	switch (c) {
-	case rightParenChar: return true;
-	case leftParenChar:  return true;
-	case ' ':            return true;
-	default: return false;
-	}
-}
-
 class Parser {
 public:
 	Parser(const std::string& s, const Model& model)
 				: model_(model)
-				, s_(s)
+				, s_(GS::Text::trim(s))
 				, pos_(0)
 				, symbolType_(SYMBOL_TYPE_INVALID) {
-		if (s.empty()) {
+		if (s_.empty()) {
 			THROW_EXCEPTION(GS::TRMControlModelException, "Boolean expression parser error: Empty string.");
 		}
 		nextSymbol();
 	}
+
+	RuleBooleanNode_ptr parse();
+private:
+	enum SymbolType {
+		SYMBOL_TYPE_INVALID,
+		SYMBOL_TYPE_OR_OP,
+		SYMBOL_TYPE_NOT_OP,
+		SYMBOL_TYPE_XOR_OP,
+		SYMBOL_TYPE_AND_OP,
+		SYMBOL_TYPE_RIGHT_PAREN,
+		SYMBOL_TYPE_LEFT_PAREN,
+		SYMBOL_TYPE_STRING
+	};
 
 	void throwException(const char* errorDescription) const;
 	template<typename T> void throwException(const char* errorDescription, const T& complement) const;
@@ -85,21 +80,29 @@ public:
 	}
 	void nextSymbol();
 	RuleBooleanNode_ptr getBooleanNode();
-private:
+	void skipSpaces();
+
+	static bool isSeparator(char c) {
+		switch (c) {
+		case rightParenChar: return true;
+		case leftParenChar:  return true;
+		default:             return std::isspace(c);
+		}
+	}
+
 	const Model& model_;
 	const std::string s_;
 	std::string::size_type pos_;
 	std::string symbol_;
 	SymbolType symbolType_;
-
-	void skipSpaces();
 };
 
 void
 Parser::throwException(const char* errorDescription) const
 {
 	THROW_EXCEPTION(GS::TRMControlModelException, "Boolean expression parser error: "
-					<< errorDescription << " at position " << pos_ << " of string [" << s_ << "].");
+				<< errorDescription
+				<< " at position " << (pos_ - symbol_.size()) << " of string [" << s_ << "].");
 }
 
 template<typename T>
@@ -107,13 +110,14 @@ void
 Parser::throwException(const char* errorDescription, const T& complement) const
 {
 	THROW_EXCEPTION(GS::TRMControlModelException, "Boolean expression parser error: "
-					<< errorDescription << complement << " at position " << pos_ << " of string [" << s_ << "].");
+				<< errorDescription << complement
+				<< " at position " << (pos_ - symbol_.size()) << " of string [" << s_ << "].");
 }
 
 void
 Parser::skipSpaces()
 {
-	while (!finished() && s_[pos_] == ' ') ++pos_;
+	while (!finished() && std::isspace(s_[pos_])) ++pos_;
 }
 
 void
@@ -121,7 +125,7 @@ Parser::nextSymbol()
 {
 	skipSpaces();
 
-	symbol_.clear();
+	symbol_.resize(0);
 
 	if (finished()) {
 		symbolType_ = SYMBOL_TYPE_INVALID;
@@ -129,7 +133,7 @@ Parser::nextSymbol()
 	}
 
 	char c = s_[pos_++];
-	symbol_ += c;
+	symbol_ = c;
 	switch (c) {
 	case rightParenChar:
 		symbolType_ = SYMBOL_TYPE_RIGHT_PAREN;
@@ -177,7 +181,6 @@ Parser::getBooleanNode()
 			RuleBooleanNode_ptr op1(getBooleanNode());
 
 			// Operator.
-			nextSymbol();
 			switch (symbolType_) {
 			case SYMBOL_TYPE_OR_OP:
 			{	// 2nd operand.
@@ -203,23 +206,21 @@ Parser::getBooleanNode()
 				p.reset(new RuleBooleanXorExpression(std::move(op1), std::move(op2)));
 				break;
 			}
+			case SYMBOL_TYPE_NOT_OP:
+				throwException("Invalid operator");
 			default:
-				throwException("Invalid operator: ", symbolType_);
+				throwException("Missing operator");
 			}
 		}
 
-		nextSymbol();
 		if (symbolType_ != SYMBOL_TYPE_RIGHT_PAREN) {
 			throwException("Right parenthesis not found");
 		}
+		nextSymbol();
 		return p;
 	}
 	case SYMBOL_TYPE_STRING:
 	{
-		if (symbolType_ == SYMBOL_TYPE_INVALID) {
-			throwException("Could not find the category");
-		}
-
 		bool matchAll = false;
 		if (symbol_.size() >= 2 && symbol_[symbol_.size() - 1] == matchAllChar) {
 			matchAll = true;
@@ -237,12 +238,16 @@ Parser::getBooleanNode()
 		if (posture != nullptr) {
 			category = posture->findCategory(name);
 		} else {
+			if (matchAll) {
+				throwException("Asterisk at the end of a category name");
+			}
 			category = model_.findCategory(name);
 		}
 		if (!category) {
 			throwException("Could not find category: ", name);
 		}
 
+		nextSymbol();
 		return RuleBooleanNode_ptr(new RuleBooleanTerminal(category, matchAll));
 	}
 	case SYMBOL_TYPE_OR_OP:
@@ -256,9 +261,19 @@ Parser::getBooleanNode()
 	case SYMBOL_TYPE_RIGHT_PAREN:
 		throwException("Unexpected right parenthesis");
 	default:
-		throwException("Invalid symbol");
+		throwException("Missing symbol");
 	}
 	return RuleBooleanNode_ptr(); // unreachable
+}
+
+RuleBooleanNode_ptr
+Parser::parse()
+{
+	RuleBooleanNode_ptr booleanRoot = getBooleanNode();
+	if (symbolType_ != SYMBOL_TYPE_INVALID) { // there is a symbol available
+		throwException("Invalid text");
+	}
+	return booleanRoot;
 }
 
 } /* namespace */
@@ -554,7 +569,7 @@ Rule::setBooleanExpressionList(const std::vector<std::string>& exprList, const M
 
 	for (unsigned int i = 0; i < size; ++i) {
 		Parser p(exprList[i], model);
-		testBooleanNodeList.push_back(p.getBooleanNode());
+		testBooleanNodeList.push_back(p.parse());
 	}
 
 	booleanExpressionList_ = exprList;
