@@ -113,11 +113,11 @@ WavetableGlottalSource::updateWavetable(double amplitude)
 {
 	/*  CALCULATE NEW CLOSURE POINT, BASED ON AMPLITUDE  */
 	double newDiv2 = tableDiv2_ - rint(amplitude * tnDelta_);
-	double newTnLength = newDiv2 - tableDiv1_;
+	double invNewTnLength = 1.0 / (newDiv2 - tableDiv1_);
 
 	/*  RECALCULATE THE FALLING PORTION OF THE GLOTTAL PULSE  */
-	for (int i = tableDiv1_, j = 0; i < newDiv2; i++, j++) {
-		double x = (double) j / newTnLength;
+	double x = 0.0;
+	for (int i = tableDiv1_; i < newDiv2; ++i, x += invNewTnLength) {
 		wavetable_[i] = 1.0 - (x * x);
 	}
 
@@ -151,7 +151,7 @@ WavetableGlottalSource::incrementTablePosition(double frequency)
 ******************************************************************************/
 #if OVERSAMPLING_OSCILLATOR
 double
-WavetableGlottalSource::oscillator(double frequency)  /*  2X OVERSAMPLING OSCILLATOR  */
+WavetableGlottalSource::getSample(double frequency)  /*  2X OVERSAMPLING OSCILLATOR  */
 {
 	int lowerPosition, upperPosition;
 	double interpolatedValue, output;
@@ -178,7 +178,7 @@ WavetableGlottalSource::oscillator(double frequency)  /*  2X OVERSAMPLING OSCILL
 }
 #else
 double
-WavetableGlottalSource::oscillator(double frequency)  /*  PLAIN OSCILLATOR  */
+WavetableGlottalSource::getSample(double frequency)  /*  PLAIN OSCILLATOR  */
 {
 	int lowerPosition, upperPosition;
 

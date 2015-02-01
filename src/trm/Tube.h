@@ -306,6 +306,8 @@ private:
 	double crossmixFactor_;              /*  calculated crossmix factor  */
 	double breathinessFactor_;
 
+	double prevGlotAmplitude_;
+
 	std::vector<std::unique_ptr<InputData>> inputData_;
 	CurrentData currentData_;
 	InputData singleInput_;

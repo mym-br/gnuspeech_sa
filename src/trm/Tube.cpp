@@ -134,6 +134,7 @@ Tube::reset()
 	dampingFactor_     = 0.0;
 	crossmixFactor_    = 0.0;
 	breathinessFactor_ = 0.0;
+	prevGlotAmplitude_ = -1.0;
 	inputData_.resize(0);
 	memset(&currentData_, 0, sizeof(CurrentData));
 	memset(&singleInput_, 0, sizeof(InputData));
@@ -644,11 +645,13 @@ Tube::synthesize()
 
 	/*  UPDATE THE SHAPE OF THE GLOTTAL PULSE, IF NECESSARY  */
 	if (waveform_ == GLOTTAL_SOURCE_PULSE) {
-		glottalSource_->updateWavetable(ax);
+		if (ax != prevGlotAmplitude_) {
+			glottalSource_->updateWavetable(ax);
+		}
 	}
 
 	/*  CREATE GLOTTAL PULSE (OR SINE TONE)  */
-	double pulse = glottalSource_->oscillator(f0);
+	double pulse = glottalSource_->getSample(f0);
 
 	/*  CREATE PULSED NOISE  */
 	double pulsedNoise = lpNoise * pulse;
@@ -677,6 +680,8 @@ Tube::synthesize()
 
 	/*  OUTPUT SAMPLE HERE  */
 	srConv_->dataFill(signal);
+
+	prevGlotAmplitude_ = ax;
 }
 
 /******************************************************************************

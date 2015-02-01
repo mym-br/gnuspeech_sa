@@ -44,7 +44,7 @@ public:
 	~WavetableGlottalSource();
 
 	void reset();
-	double oscillator(double frequency);//TODO: change name?
+	double getSample(double frequency);
 	void updateWavetable(double amplitude);
 private:
 	WavetableGlottalSource(const WavetableGlottalSource&) = delete;
