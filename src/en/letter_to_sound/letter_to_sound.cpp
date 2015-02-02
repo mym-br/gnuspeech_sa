@@ -125,7 +125,7 @@ letter_to_sound(const char* word, std::vector<char>& pronunciation)
 	}
 
 	/*  APPEND WORD_TYPE_DELIMITER  */
-	pronunciation[pronunciation.size() - 1] = WORD_TYPE_DELIMITER;
+	pronunciation[strlen(&pronunciation[0]) - 1] = WORD_TYPE_DELIMITER;
 
 	/*  GUESS TYPE OF WORD  */
 	if (number_of_syllables != 1) {
