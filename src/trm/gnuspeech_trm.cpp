@@ -22,6 +22,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "global.h"
 #include "Log.h"
 #include "Tube.h"
 
@@ -44,14 +45,16 @@ main(int argc, char* argv[])
 		inputFile = argv[2];
 		outputFile = argv[3];
 	} else {
-		std::cerr << "Usage: " << argv[0] << " [-v] inputFile outputFile" << std::endl;
-		return -1;
+		std::cout << "\nGnuspeech-SA TRM " << PROGRAM_VERSION << "\n\n";
+		std::cerr << "Usage: " << argv[0] << " [-v] trm_param_file.txt output_file.wav\n";
+		std::cout << "         -v : verbose\n" << std::endl;
+		return 1;
 	}
 
 	std::ifstream inputStream(inputFile, std::ios_base::in | std::ios_base::binary);
 	if (!inputStream) {
 		std::cerr << "Could not open the file " << inputFile << '.' << std::endl;
-		return -1;
+		return 1;
 	}
 
 	TRM::Tube trm;

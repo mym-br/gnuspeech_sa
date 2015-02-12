@@ -21,6 +21,7 @@ endif(MSVC)
 add_library(gnuspeechsa STATIC
     src/Dictionary.cpp src/Dictionary.h
     src/Exception.h
+    src/global.h
     src/KeyValueFileReader.cpp src/KeyValueFileReader.h
     src/Log.cpp src/Log.h
     src/Text.cpp src/Text.h

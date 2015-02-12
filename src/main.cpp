@@ -25,22 +25,20 @@
 
 #include "Controller.h"
 #include "Exception.h"
+#include "global.h"
 #include "Log.h"
 #include "Model.h"
 #include "en/phonetic_string_parser/PhoneticStringParser.h"
 #include "en/text_parser/TextParser.h"
-
-#define TRM_CONTROL_MODEL_CONFIG_FILE "/monet.xml"
-
-void showUsage();
 
 
 
 void
 showUsage(const char* programName)
 {
-	std::cout << "Usage: " << programName << " [-v] -c config_dir [-i input_file.txt] -p trm_param_file -o output_file.wav text" << std::endl;
-	std::cout << "         -v : verbose" << std::endl;
+	std::cout << "\nGnuspeech-SA " << PROGRAM_VERSION << "\n\n";
+	std::cout << "Usage: " << programName << " [--version] [-v] -c config_dir [-i input_text.txt] -p trm_param_file.txt -o output_file.wav text\n";
+	std::cout << "         -v : verbose\n" << std::endl;
 }
 
 int
@@ -94,6 +92,10 @@ main(int argc, char* argv[])
 			}
 			outputFile = argv[i];
 			++i;
+		} else if (strcmp(argv[i], "--version") == 0) {
+			++i;
+			showUsage(argv[0]);
+			return 0;
 		} else {
 			for ( ; i < argc; ++i) {
 				inputTextStream << argv[i] << ' ';
