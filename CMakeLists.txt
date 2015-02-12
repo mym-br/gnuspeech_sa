@@ -6,6 +6,16 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -march=native")
 #aux_source_directory(src SRC_LIST)
 #add_executable(${PROJECT_NAME} ${SRC_LIST})
 
+set(GNUSPEECHSA_VERSION_MAJOR 0)
+set(GNUSPEECHSA_VERSION_MINOR 1)
+set(GNUSPEECHSA_VERSION_PATCH 0)
+set(GNUSPEECHSA_VERSION_STRING ${GNUSPEECHSA_VERSION_MAJOR}.${GNUSPEECHSA_VERSION_MINOR}.${GNUSPEECHSA_VERSION_PATCH})
+
+if(MSVC)
+    # To have M_PI defined in <cmath>.
+    add_definitions(-D_USE_MATH_DEFINES)
+endif(MSVC)
+
 include_directories(
     src
     src/trm
@@ -13,12 +23,7 @@ include_directories(
     src/xml
 )
 
-if(MSVC)
-    # To have M_PI defined in <cmath>.
-    add_definitions(-D_USE_MATH_DEFINES)
-endif(MSVC)
-
-add_library(gnuspeechsa STATIC
+set(LIBRARY_FILES
     src/Dictionary.cpp src/Dictionary.h
     src/Exception.h
     src/global.h
@@ -94,6 +99,15 @@ add_library(gnuspeechsa STATIC
     src/xml/SimpleXMLParser.cpp src/xml/SimpleXMLParser.h
 )
 
+if(UNIX)
+    add_library(gnuspeechsa SHARED ${LIBRARY_FILES})
+    set_target_properties(gnuspeechsa PROPERTIES
+        VERSION ${GNUSPEECHSA_VERSION_STRING}
+        SOVERSION ${GNUSPEECHSA_VERSION_MAJOR})
+else(UNIX)
+    add_library(gnuspeechsa STATIC ${LIBRARY_FILES})
+endif(UNIX)
+
 add_executable(gnuspeech_sa
     src/main.cpp
 )
@@ -103,6 +117,17 @@ add_executable(gnuspeech_sa_trm
     src/trm/gnuspeech_trm.cpp
 )
 target_link_libraries(gnuspeech_sa_trm gnuspeechsa)
+
+if(UNIX)
+    include(GNUInstallDirs)
+    install(TARGETS gnuspeechsa gnuspeech_sa gnuspeech_sa_trm
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(DIRECTORY src/ DESTINATION include/gnuspeechsa FILES_MATCHING PATTERN "*.h")
+    install(DIRECTORY data DESTINATION share/gnuspeech/gnuspeechsa)
+    configure_file(gnuspeechsa.pc.pre gnuspeechsa.pc @ONLY)
+    install(FILES ${CMAKE_BINARY_DIR}/gnuspeechsa.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/)
+endif(UNIX)
 
 #add_dependencies(gnuspeech_sa gnuspeechsa)
 #add_dependencies(gnuspeech_sa_trm gnuspeechsa)

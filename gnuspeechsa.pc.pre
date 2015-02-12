@@ -1,0 +1,9 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+includedir=${prefix}/include/gnuspeechsa
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+
+Name: Gnuspeech-SA
+Description: Articulatory speech synthesizer
+Version: @GNUSPEECHSA_VERSION_STRING@
+Cflags: -I${includedir} -I${includedir}/trm -I${includedir}/trm_control_model -I${includedir}/xml
+Libs: -L${libdir} -lgnuspeechsa
