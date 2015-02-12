@@ -16,6 +16,9 @@
   cmake -D CMAKE_BUILD_TYPE=Release ../gnuspeech_sa
   make
 
+  # Optional:
+  make install
+
 - Test (GNU/Linux):
 
   ../gnuspeech_sa/scripts/test.sh 'Hello world.'
