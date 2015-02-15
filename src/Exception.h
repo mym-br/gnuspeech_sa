@@ -27,6 +27,13 @@
 #include <sstream>
 #include <string>
 
+// MSVC 2013
+#if defined(_MSC_VER) && defined(_NOEXCEPT)
+# define GS_EXCEPTION_NOEXCEPT _NOEXCEPT
+#else
+# define GS_EXCEPTION_NOEXCEPT noexcept
+#endif
+
 // __func__ is defined in C99/C++11.
 // __PRETTY_FUNCTION__ is a gcc extension.
 #ifdef __GNUC__
@@ -55,17 +62,17 @@ namespace GS {
 // Note: string / vector default constructor may throw bad_alloc in C++11.
 class ExceptionString {
 public:
-	ExceptionString() noexcept : str_(nullptr) {}
-	ExceptionString(const ExceptionString& o) noexcept : str_(nullptr) {
+	ExceptionString() GS_EXCEPTION_NOEXCEPT : str_(nullptr) {}
+	ExceptionString(const ExceptionString& o) GS_EXCEPTION_NOEXCEPT : str_(nullptr) {
 		*this = o;
 	}
-	ExceptionString(ExceptionString&& o) noexcept : str_(nullptr) {
+	ExceptionString(ExceptionString&& o) GS_EXCEPTION_NOEXCEPT : str_(nullptr) {
 		*this = std::move(o);
 	}
-	~ExceptionString() noexcept {
+	~ExceptionString() GS_EXCEPTION_NOEXCEPT {
 		std::free(str_);
 	}
-	ExceptionString& operator=(const ExceptionString& o) noexcept {
+	ExceptionString& operator=(const ExceptionString& o) GS_EXCEPTION_NOEXCEPT {
 		if (this != &o) {
 			if (o.str_ == nullptr) {
 				std::free(str_);
@@ -84,17 +91,17 @@ public:
 		}
 		return *this;
 	}
-	ExceptionString& operator=(ExceptionString&& o) noexcept {
+	ExceptionString& operator=(ExceptionString&& o) GS_EXCEPTION_NOEXCEPT {
 		assert(this != &o);
 		std::free(str_);
 		str_ = o.str_;
 		o.str_ = nullptr;
 		return *this;
 	}
-	const char* str() const noexcept {
+	const char* str() const GS_EXCEPTION_NOEXCEPT {
 		return str_ ? str_ : "";
 	}
-	void setStr(const char* s) noexcept {
+	void setStr(const char* s) GS_EXCEPTION_NOEXCEPT {
 		if (s == nullptr) {
 			std::free(str_);
 			str_ = nullptr;
@@ -149,7 +156,7 @@ private:
  */
 class Exception : public std::exception {
 public:
-	virtual const char* what() const noexcept {
+	virtual const char* what() const GS_EXCEPTION_NOEXCEPT {
 		return message_.str();
 	}
 

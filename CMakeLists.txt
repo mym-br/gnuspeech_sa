@@ -1,7 +1,9 @@
 project(gnuspeech_sa)
 cmake_minimum_required(VERSION 2.8)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -march=native")
+if(UNIX)
+    set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -march=native")
+endif(UNIX)
 
 #aux_source_directory(src SRC_LIST)
 #add_executable(${PROJECT_NAME} ${SRC_LIST})
