@@ -24,6 +24,7 @@
 #include <limits> /* std::numeric_limits<double>::infinity() */
 #include <memory>
 #include <ostream>
+#include <random>
 #include <vector>
 
 #include "DriftGenerator.h"
@@ -238,6 +239,10 @@ private:
 
 	bool useFixedIntonationParameters_;
 	float fixedIntonationParameters_[10];
+
+	std::random_device randDev_;
+	std::mt19937 randSrc_;
+	std::uniform_real_distribution<> randDist_;
 };
 
 } /* namespace TRMControlModel */

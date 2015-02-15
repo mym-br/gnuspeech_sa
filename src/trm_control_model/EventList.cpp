@@ -21,7 +21,6 @@
 #include "EventList.h"
 
 //#include <cmath> /* NAN */
-#include <cstdlib> /* random */
 #include <cstring>
 #include <iomanip>
 #include <sstream>
@@ -56,6 +55,7 @@ EventList::EventList(const char* configDirPath, Model& model)
 		, globalTempo_(1.0)
 		, tgParameters_(5)
 		, useFixedIntonationParameters_(false)
+		, randSrc_(randDev_())
 {
 	setUp();
 
@@ -721,6 +721,11 @@ EventList::applyIntonation()
 		THROW_EXCEPTION(UnavailableResourceException, "Could not find the category \"vocoid\".");
 	}
 
+	std::uniform_int_distribution<> intRandDist0(0, tgCount_[0] > 0 ? tgCount_[0] - 1 : 0);
+	std::uniform_int_distribution<> intRandDist1(0, tgCount_[1] > 0 ? tgCount_[1] - 1 : 0);
+	std::uniform_int_distribution<> intRandDist2(0, tgCount_[2] > 0 ? tgCount_[2] - 1 : 0);
+	std::uniform_int_distribution<> intRandDist3(0, tgCount_[3] > 0 ? tgCount_[3] - 1 : 0);
+
 	for (i = 0; i < currentToneGroup_; i++) {
 		firstFoot = toneGroups_[i].startFoot;
 		endFoot = toneGroups_[i].endFoot;
@@ -737,7 +742,7 @@ EventList::applyIntonation()
 			default:
 			case TONE_GROUP_TYPE_STATEMENT:
 				if (tgUseRandom_) {
-					tgRandom = rand() % tgCount_[0];
+					tgRandom = intRandDist0(randSrc_);
 				} else {
 					tgRandom = 0;
 				}
@@ -745,7 +750,7 @@ EventList::applyIntonation()
 				break;
 			case TONE_GROUP_TYPE_EXCLAMATION:
 				if (tgUseRandom_) {
-					tgRandom = rand() % tgCount_[0];
+					tgRandom = intRandDist0(randSrc_);
 				} else {
 					tgRandom = 0;
 				}
@@ -753,7 +758,7 @@ EventList::applyIntonation()
 				break;
 			case TONE_GROUP_TYPE_QUESTION:
 				if (tgUseRandom_) {
-					tgRandom = rand() % tgCount_[1];
+					tgRandom = intRandDist1(randSrc_);
 				} else {
 					tgRandom = 0;
 				}
@@ -761,7 +766,7 @@ EventList::applyIntonation()
 				break;
 			case TONE_GROUP_TYPE_CONTINUATION:
 				if (tgUseRandom_) {
-					tgRandom = rand() % tgCount_[2];
+					tgRandom = intRandDist2(randSrc_);
 				} else {
 					tgRandom = 0;
 				}
@@ -769,7 +774,7 @@ EventList::applyIntonation()
 				break;
 			case TONE_GROUP_TYPE_SEMICOLON:
 				if (tgUseRandom_) {
-					tgRandom = rand() % tgCount_[3];
+					tgRandom = intRandDist3(randSrc_);
 				} else {
 					tgRandom = 0;
 				}
@@ -807,9 +812,8 @@ EventList::applyIntonation()
 				}
 
 				if (tgUseRandom_) {
-					randomSemitone = ((double) rand() / (double) 0x7fffffff) * (double) intonParms_[3] -
-								intonParms_[3] / 2.0;
-					randomSlope = ((double) rand() / (double) 0x7fffffff) * 0.015 + 0.01;
+					randomSemitone = randDist_(randSrc_) * intonParms_[3] - intonParms_[3] / 2.0;
+					randomSlope = randDist_(randSrc_) * 0.015 + 0.01;
 				} else {
 					randomSemitone = 0.0;
 					randomSlope = 0.02;
@@ -836,12 +840,11 @@ EventList::applyIntonation()
 				}
 
 				if (tgUseRandom_) {
-					randomSemitone = ((double) rand() / (double) 0x7fffffff) * (double) intonParms_[6] -
-								intonParms_[6] / 2.0;
-					randomSlope += ((double) rand() / (double) 0x7fffffff) * 0.03;
+					randomSemitone = randDist_(randSrc_) * intonParms_[6] - intonParms_[6] / 2.0;
+					randomSlope += randDist_(randSrc_) * 0.03;
 				} else {
 					randomSemitone = 0.0;
-					randomSlope+= 0.03;
+					randomSlope += 0.03;
 				}
 				addIntonationPoint(intonParms_[2] + intonParms_[1] + randomSemitone,
 							offsetTime, randomSlope, ruleIndex);
