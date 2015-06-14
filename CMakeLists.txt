@@ -2,11 +2,12 @@ project(gnuspeech_sa)
 cmake_minimum_required(VERSION 2.8)
 
 if(UNIX)
-    set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -march=native")
-endif(UNIX)
-
-#aux_source_directory(src SRC_LIST)
-#add_executable(${PROJECT_NAME} ${SRC_LIST})
+    if(APPLE)
+        set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
+    else()
+        set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -march=native")
+    endif()
+endif()
 
 set(GNUSPEECHSA_VERSION_MAJOR 0)
 set(GNUSPEECHSA_VERSION_MINOR 1)
@@ -16,7 +17,7 @@ set(GNUSPEECHSA_VERSION_STRING ${GNUSPEECHSA_VERSION_MAJOR}.${GNUSPEECHSA_VERSIO
 if(MSVC)
     # To have M_PI defined in <cmath>.
     add_definitions(-D_USE_MATH_DEFINES)
-endif(MSVC)
+endif()
 
 include_directories(
     src
@@ -106,9 +107,9 @@ if(UNIX)
     set_target_properties(gnuspeechsa PROPERTIES
         VERSION ${GNUSPEECHSA_VERSION_STRING}
         SOVERSION ${GNUSPEECHSA_VERSION_MAJOR})
-else(UNIX)
+else()
     add_library(gnuspeechsa STATIC ${LIBRARY_FILES})
-endif(UNIX)
+endif()
 
 add_executable(gnuspeech_sa
     src/main.cpp
@@ -120,7 +121,7 @@ add_executable(gnuspeech_sa_trm
 )
 target_link_libraries(gnuspeech_sa_trm gnuspeechsa)
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
     include(GNUInstallDirs)
     install(TARGETS gnuspeechsa gnuspeech_sa gnuspeech_sa_trm
         RUNTIME DESTINATION bin
@@ -129,7 +130,7 @@ if(UNIX)
     install(DIRECTORY data DESTINATION share/gnuspeech/gnuspeechsa)
     configure_file(gnuspeechsa.pc.pre gnuspeechsa.pc @ONLY)
     install(FILES ${CMAKE_BINARY_DIR}/gnuspeechsa.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/)
-endif(UNIX)
+endif()
 
 #add_dependencies(gnuspeech_sa gnuspeechsa)
 #add_dependencies(gnuspeech_sa_trm gnuspeechsa)
