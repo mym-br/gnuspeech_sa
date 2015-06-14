@@ -5,20 +5,35 @@
 
   - A C++ compiler with C++11 support.
     The following compilers have been tested:
-    - GCC 4.8.2 (GNU/Linux x86_64).
-    - LLVM/Clang 3.3 (GNU/Linux x86_64).
+    - GCC 4.8.2, 4.9.2 (GNU/Linux x86_64).
+    - LLVM/Clang 3.3, 3.5 (GNU/Linux x86_64).
     - MSVC 2013 Express (Windows 7 x86_64).
 
-- Build (GNU/Linux):
+- Build:
 
-  mkdir ../gnuspeech_sa-build
-  cd ../gnuspeech_sa-build
-  cmake -D CMAKE_BUILD_TYPE=Release ../gnuspeech_sa
-  make
+  - GNU/Linux - GCC:
+    - Execute in a terminal (running bash):
+
+      pkg_dir=$PWD
+      mkdir ../gnuspeech_sa-build
+      cd ../gnuspeech_sa-build
+      cmake -D CMAKE_BUILD_TYPE=Release $pkg_dir
+      make
+
+  - GNU/Linux - LLVM/Clang:
+    - Execute in a terminal (running bash):
+
+      pkg_dir=$PWD
+      mkdir ../gnuspeech_sa-build
+      cd ../gnuspeech_sa-build
+      CXX=clang++ cmake -D CMAKE_BUILD_TYPE=Release $pkg_dir
+      make
+
+- Install (GNU/Linux):
 
   # Optional:
   make install
 
 - Test (GNU/Linux):
 
-  ../gnuspeech_sa/scripts/test.sh 'Hello world.'
+  ./gnuspeech_sa -c $pkg_dir/data/en -p /tmp/test_param.txt -o /tmp/test.wav "Hello world." && aplay -q /tmp/test.wav
