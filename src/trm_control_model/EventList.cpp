@@ -66,6 +66,9 @@ EventList::EventList(const char* configDirPath, Model& model)
 	for (int i = 0; i < 10; ++i) {
 		fixedIntonationParameters_[i] = 0.0;
 	}
+	for (int i = 0; i < TRM::Tube::TOTAL_REGIONS; ++i) {
+		radiusCoef[i] = 1.0;
+	}
 }
 
 EventList::~EventList()
@@ -148,6 +151,14 @@ EventList::setFixedIntonationParameters(float notionalPitch, float pretonicRange
 	fixedIntonationParameters_[3] = pretonicLift;
 	fixedIntonationParameters_[5] = tonicRange;
 	fixedIntonationParameters_[6] = tonicMovement;
+}
+
+void
+EventList::setRadiusCoef(const double* values)
+{
+	for (int i = 0; i < TRM::Tube::TOTAL_REGIONS; ++i) {
+		radiusCoef[i] = values[i];
+	}
 }
 
 void
@@ -1019,9 +1030,13 @@ EventList::generateOutput(std::ostream& trmParamStream)
 
 		trmParamStream << std::fixed << std::setprecision(3);
 		trmParamStream << table[0];
-		for (unsigned int k = 1; k < 16; ++k) {
+		for (int k = 1; k < 7; ++k) {
 			trmParamStream << ' ' << table[k];
 		}
+		for (int k = 7; k < 15; ++k) { // R1 - R8
+			trmParamStream << ' ' << table[k] * radiusCoef[k - 7];
+		}
+		trmParamStream << ' ' << table[15];
 		trmParamStream << '\n';
 
 		for (int j = 0; j < 32; j++) {

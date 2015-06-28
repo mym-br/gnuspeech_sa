@@ -43,7 +43,6 @@ struct Configuration {
 	void load(const std::string& configFilePath);
 
 	double controlRate;                 /*  1.0-1000.0 input tables/second (Hz)  */
-	int    voiceType;
 	double tempo;
 	double pitchOffset;
 	double driftDeviation;
@@ -56,6 +55,8 @@ struct Configuration {
 	double pretonicLift;
 	double tonicRange;
 	double tonicMovement;
+
+	std::string voiceName;
 };
 
 } /* namespace TRMControlModel */

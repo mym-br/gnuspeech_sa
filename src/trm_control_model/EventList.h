@@ -30,6 +30,7 @@
 #include "DriftGenerator.h"
 #include "IntonationPoint.h"
 #include "Model.h"
+#include "Tube.h"
 
 #define TONE_GROUP_TYPE_STATEMENT    0
 #define TONE_GROUP_TYPE_EXCLAMATION  1
@@ -178,6 +179,8 @@ public:
 
 	void setUseFixedIntonationParameters(bool value) { useFixedIntonationParameters_ = value; }
 	void setFixedIntonationParameters(float notionalPitch, float pretonicRange, float pretonicLift, float tonicRange, float tonicMovement);
+
+	void setRadiusCoef(const double* values);
 private:
 	EventList(const EventList&) = delete;
 	EventList& operator=(const EventList&) = delete;
@@ -243,6 +246,8 @@ private:
 	std::random_device randDev_;
 	std::mt19937 randSrc_;
 	std::uniform_real_distribution<> randDist_;
+
+	double radiusCoef[TRM::Tube::TOTAL_REGIONS];
 };
 
 } /* namespace TRMControlModel */

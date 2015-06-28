@@ -37,14 +37,6 @@
 namespace GS {
 namespace TRMControlModel {
 
-struct VoiceConfig {
-	float meanLength;
-	float tp;
-	float tnMin;
-	float tnMax;
-	float glotPitchMean;
-};
-
 class Controller {
 public:
 	Controller(const char* configDirPath, Model& model);
@@ -55,7 +47,6 @@ public:
 	void synthesizeFromEventList(const char* trmParamFile, const char* outputFile);
 	void loadTRMControlModelConfig(const char* configDirPath);
 	void loadTRMConfig(const char* configDirPath);
-	void initVoices(const char* configDirPath);
 
 	Model& model() { return model_; }
 	EventList& eventList() { return eventList_; }
@@ -80,7 +71,6 @@ private:
 	template<typename T> void synthesizePhoneticStringChunk(T& phoneticStringParser, const char* phoneticStringChunk, std::ostream& trmParamStream);
 
 	Model& model_;
-	VoiceConfig voices_[MAX_VOICES];
 	EventList eventList_;
 	Configuration trmControlModelConfig_;
 	TRM::Configuration trmConfig_;

@@ -271,7 +271,7 @@ private:
 	double temperature_;                 /*  tube temperature (25 - 40 C)  */
 	double lossFactor_;                  /*  junction loss factor in (0 - 5 %)  */
 
-	double apScale_;                     /*  aperture scl. radius (3.05 - 12 cm)  */
+	double apertureRadius_;              /*  aperture scl. radius (3.05 - 12 cm)  */
 	double mouthCoef_;                   /*  mouth aperture coefficient  */
 	double noseCoef_;                    /*  nose aperture coefficient  */
 
@@ -345,7 +345,7 @@ Tube::loadConfiguration(const T& config)
 	length_       = config.length;
 	temperature_  = config.temperature;
 	lossFactor_   = config.lossFactor;
-	apScale_      = config.apScale;
+	apertureRadius_ = config.apertureRadius;
 	mouthCoef_    = config.mouthCoef;
 	noseCoef_     = config.noseCoef;
 

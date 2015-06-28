@@ -21,7 +21,7 @@
 /******************************************************************************
 *
 *     Program:       tube
-*     
+*
 *     Description:   Software (non-real-time) implementation of the Tube
 *                    Resonance Model for speech production.
 *
@@ -112,7 +112,7 @@ Tube::reset()
 	length_      = 0.0;
 	temperature_ = 0.0;
 	lossFactor_  = 0.0;
-	apScale_     = 0.0;
+	apertureRadius_ = 0.0;
 	mouthCoef_   = 0.0;
 	noseCoef_    = 0.0;
 	memset(noseRadius_, 0, sizeof(double) * TOTAL_NASAL_SECTIONS);
@@ -219,7 +219,7 @@ Tube::printInfo(const char* inputFile)
 	printf("temperature:\t\t%.2f degrees C\n", temperature_);
 	printf("lossFactor:\t\t%.2f%%\n\n", lossFactor_);
 
-	printf("apScale:\t\t%.2f cm\n", apScale_);
+	printf("apertureRadius:\t\t%.2f cm\n", apertureRadius_);
 	printf("mouthCoef:\t\t%.1f Hz\n", mouthCoef_);
 	printf("noseCoef:\t\t%.1f Hz\n\n", noseCoef_);
 
@@ -392,7 +392,7 @@ Tube::parseInputStream(std::istream& in)
 	if (!std::getline(in, line)) {
 		THROW_EXCEPTION(TRMException, "Error in tube input parsing: Could not read aperture scaling radius.");
 	} else {
-		apScale_ = Text::parseString<double>(line);
+		apertureRadius_ = Text::parseString<double>(line);
 	}
 
 	/*  GET THE MOUTH APERTURE COEFFICIENT  */
@@ -785,7 +785,7 @@ Tube::sampleRateInterpolation()
 *
 *  purpose:   Calculates the scattering coefficients for the fixed
 *             sections of the nasal cavity.
-*			
+*
 ******************************************************************************/
 void
 Tube::initializeNasalCavity()
@@ -801,7 +801,7 @@ Tube::initializeNasalCavity()
 
 	/*  CALCULATE THE FIXED COEFFICIENT FOR THE NOSE APERTURE  */
 	radA2 = noseRadius_[N6] * noseRadius_[N6];
-	radB2 = apScale_ * apScale_;
+	radB2 = apertureRadius_ * apertureRadius_;
 	nasalCoeff_[NC6] = (radA2 - radB2) / (radA2 + radB2);
 }
 
@@ -830,7 +830,7 @@ Tube::calculateTubeCoefficients()
 
 	/*  CALCULATE THE COEFFICIENT FOR THE MOUTH APERTURE  */
 	radA2 = currentData_.radius[R8] * currentData_.radius[R8];
-	radB2 = apScale_ * apScale_;
+	radB2 = apertureRadius_ * apertureRadius_;
 	oropharynxCoeff_[C8] = (radA2 - radB2) / (radA2 + radB2);
 
 	/*  CALCULATE ALPHA COEFFICIENTS FOR 3-WAY JUNCTION  */

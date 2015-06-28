@@ -28,7 +28,7 @@
 
 #define TRM_CONTROL_MODEL_CONFIG_FILE_NAME "/trm_control_model.config"
 #define TRM_CONFIG_FILE_NAME "/trm.config"
-#define VOICES_CONFIG_FILE_NAME "/voices.config"
+#define VOICE_FILE_PREFIX "/voice_"
 
 
 
@@ -41,7 +41,6 @@ Controller::Controller(const char* configDirPath, Model& model)
 {
 	loadTRMControlModelConfig(configDirPath);
 	loadTRMConfig(configDirPath);
-	initVoices(configDirPath);
 }
 
 Controller::~Controller()
@@ -61,7 +60,11 @@ Controller::loadTRMConfig(const char* configDirPath)
 {
 	std::ostringstream trmConfigFilePath;
 	trmConfigFilePath << configDirPath << TRM_CONFIG_FILE_NAME;
-	trmConfig_.load(trmConfigFilePath.str());
+
+	std::ostringstream voiceFilePath;
+	voiceFilePath << configDirPath << VOICE_FILE_PREFIX << trmControlModelConfig_.voiceName << ".config";
+
+	trmConfig_.load(trmConfigFilePath.str(), voiceFilePath.str());
 }
 
 /*******************************************************************************
@@ -93,29 +96,26 @@ Controller::synthesizeFromEventList(const char* trmParamFile, const char* output
 void
 Controller::initUtterance(std::ostream& trmParamStream)
 {
-	if (trmControlModelConfig_.voiceType < 0 || trmControlModelConfig_.voiceType >= MAX_VOICES) {
-		THROW_EXCEPTION(InvalidParameterException, "Invalid voice type: " << trmControlModelConfig_.voiceType << '.');
-	}
-
 	if ((trmConfig_.outputRate != 22050.0) && (trmConfig_.outputRate != 44100.0)) {
 		trmConfig_.outputRate = 44100.0;
 	}
-	if ((trmConfig_.vtlOffset + voices_[trmControlModelConfig_.voiceType].meanLength) < 15.9) {
+	if ((trmConfig_.vtlOffset + trmConfig_.vocalTractLength) < 15.9) {
 		trmConfig_.outputRate = 44100.0;
 	}
 
 	if (Log::debugEnabled) {
-		printf("Tube Length = %f\n", trmConfig_.vtlOffset + voices_[trmControlModelConfig_.voiceType].meanLength);
-		printf("Voice: %d L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n", trmControlModelConfig_.voiceType,
-			voices_[trmControlModelConfig_.voiceType].meanLength, voices_[trmControlModelConfig_.voiceType].tp, voices_[trmControlModelConfig_.voiceType].tnMin,
-			voices_[trmControlModelConfig_.voiceType].tnMax, voices_[trmControlModelConfig_.voiceType].glotPitchMean);
+		printf("Tube Length = %f\n", trmConfig_.vtlOffset + trmConfig_.vocalTractLength);
+		printf("Voice: %s L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n", trmControlModelConfig_.voiceName.c_str(),
+			trmConfig_.vocalTractLength, trmConfig_.glottalPulseTp, trmConfig_.glottalPulseTnMin,
+			trmConfig_.glottalPulseTnMax, trmConfig_.referenceGlottalPitch);
 		printf("sampling Rate: %f\n", trmConfig_.outputRate);
 	}
 
-	eventList_.setPitchMean(trmControlModelConfig_.pitchOffset + voices_[trmControlModelConfig_.voiceType].glotPitchMean);
+	eventList_.setPitchMean(trmControlModelConfig_.pitchOffset + trmConfig_.referenceGlottalPitch);
 	eventList_.setGlobalTempo(trmControlModelConfig_.tempo);
 	setIntonation(trmControlModelConfig_.intonation);
 	eventList_.setUpDriftGenerator(trmControlModelConfig_.driftDeviation, trmControlModelConfig_.controlRate, trmControlModelConfig_.driftLowpassCutoff);
+	eventList_.setRadiusCoef(trmConfig_.radiusCoef);
 
 	trmParamStream <<
 		trmConfig_.outputRate              << '\n' <<
@@ -124,14 +124,14 @@ Controller::initUtterance(std::ostream& trmParamStream)
 		trmConfig_.channels                << '\n' <<
 		trmConfig_.balance                 << '\n' <<
 		trmConfig_.waveform                << '\n' <<
-		trmConfig_.tp                      << '\n' <<
-		trmConfig_.tnMin                   << '\n' <<
-		trmConfig_.tnMax                   << '\n' <<
+		trmConfig_.glottalPulseTp          << '\n' <<
+		trmConfig_.glottalPulseTnMin       << '\n' <<
+		trmConfig_.glottalPulseTnMax       << '\n' <<
 		trmConfig_.breathiness             << '\n' <<
-		trmConfig_.vtlOffset + voices_[trmControlModelConfig_.voiceType].meanLength << '\n' << // tube length
+		trmConfig_.vtlOffset + trmConfig_.vocalTractLength << '\n' << // tube length
 		trmConfig_.temperature             << '\n' <<
 		trmConfig_.lossFactor              << '\n' <<
-		trmConfig_.apScale                 << '\n' <<
+		trmConfig_.apertureRadius          << '\n' <<
 		trmConfig_.mouthCoef               << '\n' <<
 		trmConfig_.noseCoef                << '\n' <<
 		trmConfig_.noseRadius[1]           << '\n' <<
@@ -177,59 +177,6 @@ Controller::nextChunk(const char* string)
 		}
 	}
 	return 0;
-}
-
-void
-Controller::initVoices(const char* configDirPath)
-{
-	FILE* fp;
-	char line[256];
-	int currentVoice = 0;
-
-	memset(voices_, 0, sizeof(VoiceConfig) * MAX_VOICES);
-	std::ostringstream path;
-	path << configDirPath << VOICES_CONFIG_FILE_NAME;
-	fp = fopen(path.str().c_str(), "rb");
-	if (fp == NULL) {
-		THROW_EXCEPTION(IOException, "Could not open the file " << path.str().c_str() << '.');
-	}
-	while (fgets(line, 256, fp)) {
-		if ((line[0] == '#') || (line[0] == ' ')) {
-			// Skip.
-		} else {
-			if (!strncmp(line, "Male", 4)) {
-				currentVoice = 0;
-			} else if (!strncmp(line, "Female", 6)) {
-				currentVoice = 1;
-			} else if (!strncmp(line, "LgChild", 7)) {
-				currentVoice = 2;
-			} else if (!strncmp(line, "SmChild", 7)) {
-				currentVoice = 3;
-			} else if (!strncmp(line, "Baby", 4)) {
-				currentVoice = 4;
-			} else if (!strncmp(line, "length", 6)) {
-				voices_[currentVoice].meanLength = atof(&line[6]);
-			} else if (!strncmp(line, "tp", 2)) {
-				voices_[currentVoice].tp = atof(&line[2]);
-			} else if (!strncmp(line, "tnMin", 5)) {
-				voices_[currentVoice].tnMin = atof(&line[5]);
-			} else if (!strncmp(line, "tnMax", 5)) {
-				voices_[currentVoice].tnMax = atof(&line[5]);
-			} else if (!strncmp(line, "glotPitch", 9)) {
-				voices_[currentVoice].glotPitchMean = atof(&line[9]);
-			}
-		}
-	}
-	fclose(fp);
-
-	if (Log::debugEnabled) {
-		printf("===== Voices configuration:\n");
-		for (int i = 0; i < MAX_VOICES; i++) {
-			printf("L: %f  tp: %f  tnMin: %f  tnMax: %f  glotPitch: %f\n",
-				voices_[i].meanLength, voices_[i].tp, voices_[i].tnMin,
-				voices_[i].tnMax, voices_[i].glotPitchMean);
-		}
-	}
 }
 
 int

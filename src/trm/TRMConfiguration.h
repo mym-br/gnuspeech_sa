@@ -33,7 +33,7 @@ namespace TRM {
 struct Configuration {
 	Configuration();
 
-	void load(const std::string& configFilePath);
+	void load(const std::string& configFilePath, const std::string& voiceFilePath);
 
 	double outputRate;                   /*  output sample rate (22.05, 44.1)  */
 
@@ -42,26 +42,30 @@ struct Configuration {
 	double balance;                      /*  stereo balance (-1 to +1)  */
 
 	int    waveform;                     /*  GS waveform type (0=PULSE, 1=SINE  */
-	double tp;                           /*  % glottal pulse rise time  */
-	double tnMin;                        /*  % glottal pulse fall time minimum  */
-	double tnMax;                        /*  % glottal pulse fall time maximum  */
-	double breathiness;                  /*  % glottal source breathiness  */
 
 	double vtlOffset;                    /*  tube length offset  */
 	double temperature;                  /*  tube temperature (25 - 40 C)  */
 	double lossFactor;                   /*  junction loss factor in (0 - 5 %)  */
 
-	double apScale;                      /*  aperture scl. radius (3.05 - 12 cm)  */
 	double mouthCoef;                    /*  mouth aperture coefficient  */
 	double noseCoef;                     /*  nose aperture coefficient  */
-
-	double noseRadius[Tube::TOTAL_NASAL_SECTIONS];   /*  fixed nose radii (0 - 3 cm)  */
 
 	double throatCutoff;                 /*  throat lp cutoff (50 - nyquist Hz)  */
 	double throatVol;                    /*  throat volume (0 - 48 dB) */
 
 	int    modulation;                   /*  pulse mod. of noise (0=OFF, 1=ON)  */
 	double mixOffset;                    /*  noise crossmix offset (30 - 60 dB)  */
+
+	// Parameters that depend on the voice.
+	double glottalPulseTp;               /*  % glottal pulse rise time  */
+	double glottalPulseTnMin;            /*  % glottal pulse fall time minimum  */
+	double glottalPulseTnMax;            /*  % glottal pulse fall time maximum  */
+	double breathiness;                  /*  % glottal source breathiness  */
+	double vocalTractLength;
+	double referenceGlottalPitch;
+	double apertureRadius;               /*  aperture scl. radius (3.05 - 12 cm)  */
+	double noseRadius[Tube::TOTAL_NASAL_SECTIONS];   /*  fixed nose radii (0 - 3 cm)  */
+	double radiusCoef[Tube::TOTAL_REGIONS];
 };
 
 } /* namespace TRM */

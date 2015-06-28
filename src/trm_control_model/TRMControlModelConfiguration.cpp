@@ -29,12 +29,16 @@ namespace TRMControlModel {
 
 Configuration::Configuration()
 		: controlRate(0.0)
-		, voiceType(0)
 		, tempo(0.0)
 		, pitchOffset(0.0)
 		, driftDeviation(0.0)
 		, driftLowpassCutoff(0.0)
 		, intonation(0)
+		, notionalPitch(0.0)
+		, pretonicRange(0.0)
+		, pretonicLift(0.0)
+		, tonicRange(0.0)
+		, tonicMovement(0.0)
 {
 }
 
@@ -44,7 +48,6 @@ Configuration::load(const std::string& configFilePath)
 	KeyValueFileReader reader(configFilePath);
 
 	controlRate        = reader.value<double>("control_rate");
-	voiceType          = reader.value<int>("voice_type");
 	tempo              = reader.value<double>("tempo");
 	pitchOffset        = reader.value<double>("pitch_offset");
 	driftDeviation     = reader.value<double>("drift_deviation");
@@ -72,6 +75,8 @@ Configuration::load(const std::string& configFilePath)
 	pretonicLift  = reader.value<double>("pretonic_lift");
 	tonicRange    = reader.value<double>("tonic_range");
 	tonicMovement = reader.value<double>("tonic_movement");
+
+	voiceName = reader.value<std::string>("voice_name");
 }
 
 } /* namespace TRMControlModel */
