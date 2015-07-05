@@ -20,7 +20,6 @@
 
 #include "EventList.h"
 
-//#include <cmath> /* NAN */
 #include <cstring>
 #include <iomanip>
 #include <sstream>
