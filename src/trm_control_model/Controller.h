@@ -45,13 +45,11 @@ public:
 	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, const char* outputFile);
 	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, std::iostream& trmParamStream);
 	void synthesizeFromEventList(const char* trmParamFile, const char* outputFile);
-	void loadTRMControlModelConfig(const char* configDirPath);
-	void loadTRMConfig(const char* configDirPath);
 
 	Model& model() { return model_; }
 	EventList& eventList() { return eventList_; }
-	Configuration& trmControlModelConfig() { return trmControlModelConfig_; }
-	TRM::Configuration& trmConfig() { return trmConfig_; }
+	Configuration& trmControlModelConfiguration() { return trmControlModelConfig_; }
+	TRM::Configuration& trmConfiguration() { return trmConfig_; }
 private:
 	enum {
 		MAX_VOICES = 5
@@ -60,6 +58,7 @@ private:
 	Controller(const Controller&) = delete;
 	Controller& operator=(const Controller&) = delete;
 
+	void loadConfiguration(const char* configDirPath);
 	void initUtterance(std::ostream& trmParamStream);
 	int calcChunks(const char* string);
 	int nextChunk(const char* string);

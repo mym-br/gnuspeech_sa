@@ -39,8 +39,7 @@ Controller::Controller(const char* configDirPath, Model& model)
 		: model_(model)
 		, eventList_(configDirPath, model_)
 {
-	loadTRMControlModelConfig(configDirPath);
-	loadTRMConfig(configDirPath);
+	loadConfiguration(configDirPath);
 }
 
 Controller::~Controller()
@@ -48,16 +47,16 @@ Controller::~Controller()
 }
 
 void
-Controller::loadTRMControlModelConfig(const char* configDirPath)
+Controller::loadConfiguration(const char* configDirPath)
 {
+	// Load TRMControlModel::Configuration.
+
 	std::ostringstream trmControlModelConfigFilePath;
 	trmControlModelConfigFilePath << configDirPath << TRM_CONTROL_MODEL_CONFIG_FILE_NAME;
 	trmControlModelConfig_.load(trmControlModelConfigFilePath.str());
-}
 
-void
-Controller::loadTRMConfig(const char* configDirPath)
-{
+	// Load TRM::Configuration.
+
 	std::ostringstream trmConfigFilePath;
 	trmConfigFilePath << configDirPath << TRM_CONFIG_FILE_NAME;
 
