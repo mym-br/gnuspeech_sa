@@ -183,14 +183,21 @@ XMLConfigFileWriter::writeElements()
 
 	LOG_DEBUG("parameters ==================================================");
 	xml.openElement("parameters");
-	for (unsigned int i = 0, numParam = model_.parameterList().size(); i < numParam; ++i) {
-		const Parameter& param = model_.getParameter(i);
+	for (const Parameter& param : model_.parameterList()) {
 		xml.openElementWithAttributes("parameter");
 		xml.addAttribute("name", param.name());
 		xml.addAttribute("minimum", param.minimum());
 		xml.addAttribute("maximum", param.maximum());
 		xml.addAttribute("default", param.defaultValue());
-		xml.endAttributesAndCloseElement();
+		if (param.comment().empty()) {
+			xml.endAttributesAndCloseElement();
+			continue;
+		}
+		xml.endAttributes();
+		xml.openInlineElement("comment");
+		xml.addText(param.comment());
+		xml.closeInlineElement("comment");
+		xml.closeElement("parameter");
 	}
 	xml.closeElement("parameters");
 
@@ -202,7 +209,15 @@ XMLConfigFileWriter::writeElements()
 		xml.addAttribute("minimum", symbol.minimum());
 		xml.addAttribute("maximum", symbol.maximum());
 		xml.addAttribute("default", symbol.defaultValue());
-		xml.endAttributesAndCloseElement();
+		if (symbol.comment().empty()) {
+			xml.endAttributesAndCloseElement();
+			continue;
+		}
+		xml.endAttributes();
+		xml.openInlineElement("comment");
+		xml.addText(symbol.comment());
+		xml.closeInlineElement("comment");
+		xml.closeElement("symbol");
 	}
 	xml.closeElement("symbols");
 

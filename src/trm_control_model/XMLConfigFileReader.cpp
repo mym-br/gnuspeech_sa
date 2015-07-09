@@ -65,8 +65,14 @@ XMLConfigFileReader::parseParameters()
 		float minimum      = Text::parseString<float>(parser_.getAttribute(minimumAttrName_));
 		float maximum      = Text::parseString<float>(parser_.getAttribute(maximumAttrName_));
 		float defaultValue = Text::parseString<float>(parser_.getAttribute(defaultAttrName_));
+		std::string comment;
 
-		model_.parameterList().emplace_back(name, minimum, maximum, defaultValue);
+		if (parser_.getFirstChild()) {
+			comment = parser_.getText();
+			parser_.getNextSibling();
+		}
+
+		model_.parameterList().emplace_back(name, minimum, maximum, defaultValue, comment);
 	}
 }
 
@@ -81,8 +87,14 @@ XMLConfigFileReader::parseSymbols()
 		float minimum      = Text::parseString<float>(parser_.getAttribute(minimumAttrName_));
 		float maximum      = Text::parseString<float>(parser_.getAttribute(maximumAttrName_));
 		float defaultValue = Text::parseString<float>(parser_.getAttribute(defaultAttrName_));
+		std::string comment;
 
-		model_.symbolList().emplace_back(name, minimum, maximum, defaultValue);
+		if (parser_.getFirstChild()) {
+			comment = parser_.getText();
+			parser_.getNextSibling();
+		}
+
+		model_.symbolList().emplace_back(name, minimum, maximum, defaultValue, comment);
 	}
 }
 

@@ -33,11 +33,12 @@ namespace TRMControlModel {
 
 class Parameter {
 public:
-	Parameter(const std::string& name, float minimum, float maximum, float defaultValue)
+	Parameter(const std::string& name, float minimum, float maximum, float defaultValue, const std::string& comment)
 		: name_(name)
 		, minimum_(minimum)
 		, maximum_(maximum)
 		, defaultValue_(defaultValue)
+		, comment_(comment)
 	{}
 
 	const std::string& name() const { return name_; }
@@ -51,11 +52,15 @@ public:
 
 	float defaultValue() const { return defaultValue_; }
 	void setDefaultValue(float defaultValue) { defaultValue_ = defaultValue; }
+
+	const std::string& comment() const { return comment_; }
+	void setComment(const std::string& comment) { comment_ = comment; }
 private:
 	std::string name_;
 	float minimum_;
 	float maximum_;
 	float defaultValue_;
+	std::string comment_;
 };
 
 } /* namespace TRMControlModel */
