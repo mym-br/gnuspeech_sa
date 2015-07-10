@@ -35,7 +35,7 @@ public:
 	DictionarySearch();
 	~DictionarySearch();
 
-	void load(const char* configDirPath);
+	void load(const char* dictionaryPath);
 
 	// The returned string is invalidated if the dictionary is changed.
 	const char* getEntry(const char* word);

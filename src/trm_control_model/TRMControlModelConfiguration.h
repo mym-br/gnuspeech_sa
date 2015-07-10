@@ -57,6 +57,9 @@ struct Configuration {
 	double tonicMovement;
 
 	std::string voiceName;
+	std::string dictionary1File;
+	std::string dictionary2File;
+	std::string dictionary3File;
 };
 
 } /* namespace TRMControlModel */

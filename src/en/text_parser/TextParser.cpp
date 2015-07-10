@@ -47,6 +47,7 @@
 
 #include <cmath>
 #include <ctype.h>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -155,9 +156,9 @@
 /*  Dictionary Ordering Definitions  */
 #define TTS_EMPTY                       0
 #define TTS_NUMBER_PARSER               1
-//#define TTS_USER_DICTIONARY             2
-//#define TTS_APPLICATION_DICTIONARY      3
-#define TTS_MAIN_DICTIONARY             4
+#define TTS_DICTIONARY_1                2
+#define TTS_DICTIONARY_2                3
+#define TTS_DICTIONARY_3                4
 #define TTS_LETTER_TO_SOUND             5
 
 #define TTS_PARSER_SUCCESS       (-1)
@@ -1950,16 +1951,37 @@ check_tonic(std::stringstream& stream, long start_pos, long end_pos)
 namespace GS {
 namespace En {
 
-TextParser::TextParser(const char* configDirPath)
-	: escape_character_(DEFAULT_ESCAPE_CHARACTER)
+TextParser::TextParser(const char* configDirPath,
+			const std::string& dictionary1Path,
+			const std::string& dictionary2Path,
+			const std::string& dictionary3Path)
+		: escape_character_(DEFAULT_ESCAPE_CHARACTER)
 {
-	dict_.load(configDirPath);
+	if (dictionary1Path != "none") {
+		dict1_.reset(new DictionarySearch);
+		std::ostringstream filePath;
+		filePath << configDirPath << '/' << dictionary1Path;
+		dict1_->load(filePath.str().c_str());
+	}
+	if (dictionary2Path != "none") {
+		dict2_.reset(new DictionarySearch);
+		std::ostringstream filePath;
+		filePath << configDirPath << '/' << dictionary2Path;
+		dict2_->load(filePath.str().c_str());
+	}
+	if (dictionary3Path != "none") {
+		dict3_.reset(new DictionarySearch);
+		std::ostringstream filePath;
+		filePath << configDirPath << '/' << dictionary3Path;
+		dict3_->load(filePath.str().c_str());
+	}
 
-	//TODO: load from file?
 	dictionaryOrder_[0] = TTS_NUMBER_PARSER;
-	dictionaryOrder_[1] = TTS_MAIN_DICTIONARY;
-	dictionaryOrder_[2] = TTS_LETTER_TO_SOUND;
-	dictionaryOrder_[3] = TTS_EMPTY;
+	dictionaryOrder_[1] = TTS_DICTIONARY_1;
+	dictionaryOrder_[2] = TTS_DICTIONARY_2;
+	dictionaryOrder_[3] = TTS_DICTIONARY_3;
+	dictionaryOrder_[4] = TTS_LETTER_TO_SOUND;
+	dictionaryOrder_[5] = TTS_EMPTY;
 }
 
 TextParser::~TextParser()
@@ -2097,13 +2119,12 @@ TextParser::parseText(const char* text)
 const char*
 TextParser::lookup_word(const char* word, short* dict)
 {
-	int i;
 	if (Log::debugEnabled) {
 		printf("lookup_word word: %s\n", word);
 	}
 
 	/*  SEARCH DICTIONARIES IN USER ORDER TILL PRONUNCIATION FOUND  */
-	for (i = 0; i < 4; i++) {
+	for (int i = 0; i < DICTIONARY_ORDER_SIZE; i++) {
 		switch(dictionaryOrder_[i]) {
 		case TTS_EMPTY:
 			break;
@@ -2114,29 +2135,35 @@ TextParser::lookup_word(const char* word, short* dict)
 					*dict = TTS_NUMBER_PARSER;
 					return pron;
 				}
-				break;
 			}
-//		case TTS_USER_DICTIONARY:
-//			if ((pronunciation = preditor_get_entry(userDictionary,word)) != NULL) {
-//				*dict = TTS_USER_DICTIONARY;
-//				return((const char *)pronunciation);
-//			}
-//			return nullptr;
-//		case TTS_APPLICATION_DICTIONARY:
-//			if ((pronunciation = preditor_get_entry(appDictionary,word)) != NULL) {
-//				*dict = TTS_APPLICATION_DICTIONARY;
-//				return((const char *)pronunciation);
-//			}
-//			return nullptr;
-		case TTS_MAIN_DICTIONARY:
-			{
-				const char* entry = dict_.getEntry(word);
+			break;
+		case TTS_DICTIONARY_1:
+			if (dict1_) {
+				const char* entry = dict1_->getEntry(word);
 				if (entry != nullptr) {
-					*dict = TTS_MAIN_DICTIONARY;
+					*dict = TTS_DICTIONARY_1;
 					return entry;
 				}
-				break;
 			}
+			break;
+		case TTS_DICTIONARY_2:
+			if (dict2_) {
+				const char* entry = dict2_->getEntry(word);
+				if (entry != nullptr) {
+					*dict = TTS_DICTIONARY_2;
+					return entry;
+				}
+			}
+			break;
+		case TTS_DICTIONARY_3:
+			if (dict3_) {
+				const char* entry = dict3_->getEntry(word);
+				if (entry != nullptr) {
+					*dict = TTS_DICTIONARY_3;
+					return entry;
+				}
+			}
+			break;
 		default:
 			break;
 		}

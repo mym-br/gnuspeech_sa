@@ -30,6 +30,7 @@
 #include "Model.h"
 #include "en/phonetic_string_parser/PhoneticStringParser.h"
 #include "en/text_parser/TextParser.h"
+#include "TRMControlModelConfiguration.h"
 
 
 
@@ -136,8 +137,12 @@ main(int argc, char* argv[])
 		}
 
 		std::unique_ptr<GS::TRMControlModel::Controller> trmController(new GS::TRMControlModel::Controller(configDirPath, *trmControlModel));
+		const GS::TRMControlModel::Configuration& trmControlConfig = trmController->trmControlModelConfiguration();
 
-		std::unique_ptr<GS::En::TextParser> textParser(new GS::En::TextParser(configDirPath));
+		std::unique_ptr<GS::En::TextParser> textParser(new GS::En::TextParser(configDirPath,
+											trmControlConfig.dictionary1File,
+											trmControlConfig.dictionary2File,
+											trmControlConfig.dictionary3File));
 		std::unique_ptr<GS::En::PhoneticStringParser> phoneticStringParser(new GS::En::PhoneticStringParser(configDirPath, *trmController));
 
 		std::string phoneticString = textParser->parseText(inputText.c_str());

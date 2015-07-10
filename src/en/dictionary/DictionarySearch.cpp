@@ -21,11 +21,8 @@
 #include "DictionarySearch.h"
 
 #include <cstring>
-#include <sstream>
 
 #include "en/dictionary/suffix_list.h"
-
-#define MAIN_DICTIONARY_FILE "/MainDictionary"
 
 
 
@@ -89,11 +86,9 @@ DictionarySearch::~DictionarySearch()
 }
 
 void
-DictionarySearch::load(const char* configDirPath)
+DictionarySearch::load(const char* dictionaryPath)
 {
-	std::ostringstream path;
-	path << configDirPath << MAIN_DICTIONARY_FILE;
-	dict_.load(path.str().c_str());
+	dict_.load(dictionaryPath);
 }
 
 const char*

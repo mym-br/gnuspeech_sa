@@ -77,6 +77,9 @@ Configuration::load(const std::string& configFilePath)
 	tonicMovement = reader.value<double>("tonic_movement");
 
 	voiceName = reader.value<std::string>("voice_name");
+	dictionary1File = reader.value<std::string>("dictionary_1_file");
+	dictionary2File = reader.value<std::string>("dictionary_2_file");
+	dictionary3File = reader.value<std::string>("dictionary_3_file");
 }
 
 } /* namespace TRMControlModel */

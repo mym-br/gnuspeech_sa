@@ -21,6 +21,7 @@
 #ifndef EN_TEXT_PARSER_H_
 #define EN_TEXT_PARSER_H_
 
+#include <memory>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -35,12 +36,19 @@ namespace En {
 
 class TextParser {
 public:
-	TextParser(const char* configDirPath);
+	TextParser(const char* configDirPath,
+			const std::string& dictionary1Path,
+			const std::string& dictionary2Path,
+			const std::string& dictionary3Path);
 	~TextParser();
 
 	std::string parseText(const char* text);
 
 private:
+	enum {
+		DICTIONARY_ORDER_SIZE = 6
+	};
+
 	TextParser(const TextParser&) = delete;
 	TextParser& operator=(const TextParser&) = delete;
 
@@ -53,10 +61,12 @@ private:
 	int final_conversion(std::stringstream& stream1, long stream1_length,
 				std::stringstream& stream2, long* stream2_length);
 
-	DictionarySearch dict_;
+	std::unique_ptr<DictionarySearch> dict1_;
+	std::unique_ptr<DictionarySearch> dict2_;
+	std::unique_ptr<DictionarySearch> dict3_;
 
 	char escape_character_;
-	short dictionaryOrder_[4];
+	short dictionaryOrder_[DICTIONARY_ORDER_SIZE];
 
 	std::stringstream auxStream_;
 	std::vector<char> pronunciation_;
