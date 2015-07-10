@@ -18,8 +18,8 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#ifndef EN_MAIN_DICTIONARY_H_
-#define EN_MAIN_DICTIONARY_H_
+#ifndef EN_DICTIONARY_SEARCH_H_
+#define EN_DICTIONARY_SEARCH_H_
 
 #include <array>
 
@@ -30,10 +30,10 @@
 namespace GS {
 namespace En {
 
-class MainDictionary {
+class DictionarySearch {
 public:
-	MainDictionary();
-	~MainDictionary();
+	DictionarySearch();
+	~DictionarySearch();
 
 	void load(const char* configDirPath);
 
@@ -47,8 +47,8 @@ private:
 		MAXLEN = 1024
 	};
 
-	MainDictionary(const MainDictionary&) = delete;
-	MainDictionary& operator=(const MainDictionary&) = delete;
+	DictionarySearch(const DictionarySearch&) = delete;
+	DictionarySearch& operator=(const DictionarySearch&) = delete;
 
 	void clearBuffers();
 	const char* augmentedSearch(const char* orthography);
@@ -61,4 +61,4 @@ private:
 } /* namespace En */
 } /* namespace GS */
 
-#endif /* EN_MAIN_DICTIONARY_H_ */
+#endif /* EN_DICTIONARY_SEARCH_H_ */

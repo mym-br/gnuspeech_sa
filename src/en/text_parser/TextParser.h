@@ -25,7 +25,7 @@
 #include <sstream>
 #include <vector>
 
-#include "en/main_dict/MainDictionary.h"
+#include "en/dictionary/DictionarySearch.h"
 #include "en/text_parser/NumberParser.h"
 
 
@@ -53,7 +53,7 @@ private:
 	int final_conversion(std::stringstream& stream1, long stream1_length,
 				std::stringstream& stream2, long* stream2_length);
 
-	MainDictionary dict_;
+	DictionarySearch dict_;
 
 	char escape_character_;
 	short dictionaryOrder_[4];

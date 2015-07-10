@@ -56,8 +56,8 @@ set(LIBRARY_FILES
     src/en/letter_to_sound/vowel_before.cpp src/en/letter_to_sound/vowel_before.h
     src/en/letter_to_sound/word_to_patphone.cpp src/en/letter_to_sound/word_to_patphone.h
 
-    src/en/main_dict/MainDictionary.cpp src/en/main_dict/MainDictionary.h
-    src/en/main_dict/suffix_list.h
+    src/en/dictionary/DictionarySearch.cpp src/en/dictionary/DictionarySearch.h
+    src/en/dictionary/suffix_list.h
 
     src/en/number_pronunciations.h
 

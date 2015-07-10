@@ -18,12 +18,12 @@
 // 2014-09
 // This file was copied from Gnuspeech and modified by Marcelo Y. Matuda.
 
-#include "MainDictionary.h"
+#include "DictionarySearch.h"
 
 #include <cstring>
 #include <sstream>
 
-#include "en/main_dict/suffix_list.h"
+#include "en/dictionary/suffix_list.h"
 
 #define MAIN_DICTIONARY_FILE "/MainDictionary"
 
@@ -73,23 +73,23 @@ namespace GS {
 namespace En {
 
 void
-MainDictionary::clearBuffers()
+DictionarySearch::clearBuffers()
 {
 	buffer_.fill('\0');
 	wordTypeBuffer_.fill('\0');
 }
 
-MainDictionary::MainDictionary()
+DictionarySearch::DictionarySearch()
 {
 	clearBuffers();
 }
 
-MainDictionary::~MainDictionary()
+DictionarySearch::~DictionarySearch()
 {
 }
 
 void
-MainDictionary::load(const char* configDirPath)
+DictionarySearch::load(const char* configDirPath)
 {
 	std::ostringstream path;
 	path << configDirPath << MAIN_DICTIONARY_FILE;
@@ -97,13 +97,13 @@ MainDictionary::load(const char* configDirPath)
 }
 
 const char*
-MainDictionary::getEntry(const char* word)
+DictionarySearch::getEntry(const char* word)
 {
 	return augmentedSearch(word);
 }
 
 const char*
-MainDictionary::version()
+DictionarySearch::version()
 {
 	return dict_.version();
 }
@@ -122,7 +122,7 @@ MainDictionary::version()
 *
 **************************************************************************/
 const char*
-MainDictionary::augmentedSearch(const char* orthography)
+DictionarySearch::augmentedSearch(const char* orthography)
 {
 	const char* word;
 	const char* pt;
