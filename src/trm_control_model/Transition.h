@@ -138,6 +138,27 @@ public:
 	{
 	}
 
+// VS2013 does not create move constructor/assignment.
+#ifdef _MSC_VER
+	Transition(Transition&& o)
+		: name_(std::move(o.name_))
+		, type_(o.type_)
+		, special_(o.special_)
+		, pointOrSlopeList_(std::move(o.pointOrSlopeList_))
+		, comment_(std::move(o.comment_))
+	{}
+	Transition& operator=(Transition&& o) {
+		if (this != &o) {
+			this->name_ = std::move(o.name_);
+			this->type_ = o.type_;
+			this->special_ = o.special_;
+			this->pointOrSlopeList_ = std::move(o.pointOrSlopeList_);
+			this->comment_ = std::move(o.comment_);
+		}
+		return *this;
+	}
+#endif
+
 	const std::string& name() const { return name_; }
 	void setName(const std::string& name) { name_ = name; }
 
