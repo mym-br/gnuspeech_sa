@@ -83,13 +83,26 @@ Controller::synthesizeFromEventList(const char* trmParamFile, const char* output
 
 	trmParamStream.seekg(0);
 
-	std::ofstream outputStream(outputFile, std::ios_base::out | std::ios_base::binary);
-	if (!outputStream) {
-		THROW_EXCEPTION(IOException, "The output file " << outputFile << " could not be created.");
-	}
-
 	TRM::Tube trm;
 	trm.synthesizeToFile(trmParamStream, outputFile);
+}
+
+void
+Controller::synthesizeFromEventList(const char* trmParamFile, std::vector<float>& buffer)
+{
+	std::fstream trmParamStream(trmParamFile, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+	if (!trmParamStream) {
+		THROW_EXCEPTION(IOException, "Could not open the file " << trmParamFile << '.');
+	}
+
+	initUtterance(trmParamStream);
+
+	eventList_.generateOutput(trmParamStream);
+
+	trmParamStream.seekg(0);
+
+	TRM::Tube trm;
+	trm.synthesizeToBuffer(trmParamStream, buffer);
 }
 
 void

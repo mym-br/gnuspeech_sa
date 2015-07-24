@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <fstream>
 #include <istream>
+#include <vector>
 
 #include "EventList.h"
 #include "Log.h"
@@ -43,8 +44,10 @@ public:
 	~Controller();
 
 	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, const char* outputFile);
+	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, std::vector<float>& buffer);
 	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, std::iostream& trmParamStream);
 	void synthesizeFromEventList(const char* trmParamFile, const char* outputFile);
+	void synthesizeFromEventList(const char* trmParamFile, std::vector<float>& buffer);
 
 	Model& model() { return model_; }
 	EventList& eventList() { return eventList_; }
@@ -90,6 +93,21 @@ Controller::synthesizePhoneticString(T& phoneticStringParser, const char* phonet
 
 	TRM::Tube trm;
 	trm.synthesizeToFile(trmParamStream, outputFile);
+}
+
+template<typename T>
+void
+Controller::synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, std::vector<float>& buffer)
+{
+	std::fstream trmParamStream(trmParamFile, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+	if (!trmParamStream) {
+		THROW_EXCEPTION(IOException, "Could not open the file " << trmParamFile << '.');
+	}
+
+	synthesizePhoneticString(phoneticStringParser, phoneticString, trmParamStream);
+
+	TRM::Tube trm;
+	trm.synthesizeToBuffer(trmParamStream, buffer);
 }
 
 template<typename T>
