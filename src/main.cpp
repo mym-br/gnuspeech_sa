@@ -37,7 +37,7 @@
 void
 showUsage(const char* programName)
 {
-	std::cout << "\nGnuspeech-SA " << PROGRAM_VERSION << "\n\n";
+	std::cout << "\nGnuspeechSA " << PROGRAM_VERSION << "\n\n";
 	std::cout << "Usage: " << programName << " [--version] [-v] -c config_dir [-i input_text.txt] -p trm_param_file.txt -o output_file.wav text\n";
 	std::cout << "         -v : verbose\n" << std::endl;
 }

@@ -45,7 +45,7 @@ main(int argc, char* argv[])
 		inputFile = argv[2];
 		outputFile = argv[3];
 	} else {
-		std::cout << "\nGnuspeech-SA TRM " << PROGRAM_VERSION << "\n\n";
+		std::cout << "\nGnuspeechSA TRM " << PROGRAM_VERSION << "\n\n";
 		std::cerr << "Usage: " << argv[0] << " [-v] trm_param_file.txt output_file.wav\n";
 		std::cout << "         -v : verbose\n" << std::endl;
 		return 1;

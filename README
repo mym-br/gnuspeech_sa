@@ -1,8 +1,8 @@
 
-Gnuspeech-SA (Stand-Alone)
+GnuspeechSA (Stand-Alone)
 ==========================
 
-Gnuspeech-SA is a port to C++/C of the TTS_Server in the original Gnuspeech
+GnuspeechSA is a port to C++/C of the TTS_Server in the original Gnuspeech
 (http://www.gnu.org/software/gnuspeech/) source code written for NeXTSTEP.
 It is a command-line program that converts text to speech.
 
