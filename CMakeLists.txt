@@ -33,6 +33,7 @@ set(LIBRARY_FILES
     src/KeyValueFileReader.cpp src/KeyValueFileReader.h
     src/Log.cpp src/Log.h
     src/Text.cpp src/Text.h
+    src/VocalTractModelParameterValue.h
     src/WAVEFileWriter.cpp src/WAVEFileWriter.h
 
     src/en/letter_to_sound/apply_stress.cpp src/en/letter_to_sound/apply_stress.h

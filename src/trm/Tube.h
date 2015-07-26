@@ -34,6 +34,7 @@
 #include "ReflectionFilter.h"
 #include "SampleRateConverter.h"
 #include "Throat.h"
+#include "VocalTractModelParameterValue.h"
 #include "WavetableGlottalSource.h"
 
 #define GS_TRM_TUBE_MIN_RADIUS (0.001)
@@ -65,6 +66,24 @@ public:
 		N6 = 5,
 		TOTAL_NASAL_SECTIONS = 6
 	};
+	enum ParameterIndex {
+		PARAM_GLOT_PITCH = 0,
+		PARAM_GLOT_VOL   = 1,
+		PARAM_ASP_VOL    = 2,
+		PARAM_FRIC_VOL   = 3,
+		PARAM_FRIC_POS   = 4,
+		PARAM_FRIC_CF    = 5,
+		PARAM_FRIC_BW    = 6,
+		PARAM_R1         = 7,
+		PARAM_R2         = 8,
+		PARAM_R3         = 9,
+		PARAM_R4         = 10,
+		PARAM_R5         = 11,
+		PARAM_R6         = 12,
+		PARAM_R7         = 13,
+		PARAM_R8         = 14,
+		PARAM_VELUM      = 15
+	};
 
 	Tube();
 	~Tube();
@@ -72,10 +91,10 @@ public:
 	void synthesizeToFile(std::istream& inputStream, const char* outputFile);
 	void synthesizeToBuffer(std::istream& inputStream, std::vector<float>& outputBuffer);
 
-	template<typename T> void loadConfiguration(const T& config);
+	template<typename T> void loadConfigurationForInteractiveExecution(const T& config);
 	void initializeSynthesizer();
 	void initializeInputFilters(double period);
-	template<typename T> void loadSingleInput(const T& data);
+	void loadSingleInput(const VocalTractModelParameterValue pv);
 	void synthesizeForInputSequence();
 	void synthesizeForSingleInput(int numIterations);
 
@@ -330,7 +349,7 @@ private:
 
 template<typename T>
 void
-Tube::loadConfiguration(const T& config)
+Tube::loadConfigurationForInteractiveExecution(const T& config)
 {
 	outputRate_   = config.outputRate;
 	controlRate_  = config.controlRate;
@@ -360,28 +379,6 @@ Tube::loadConfiguration(const T& config)
 	throatVol_    = config.throatVol;
 	modulation_   = config.modulation;
 	mixOffset_    = config.mixOffset;
-}
-
-template<typename T>
-void
-Tube::loadSingleInput(const T& data)
-{
-	singleInput_.glotPitch = data[0];
-	singleInput_.glotVol   = data[1];
-	singleInput_.aspVol    = data[2];
-	singleInput_.fricVol   = data[3];
-	singleInput_.fricPos   = data[4];
-	singleInput_.fricCF    = data[5];
-	singleInput_.fricBW    = data[6];
-	singleInput_.radius[0] = std::max(static_cast<double>(data[7]) , GS_TRM_TUBE_MIN_RADIUS);
-	singleInput_.radius[1] = std::max(static_cast<double>(data[8]) , GS_TRM_TUBE_MIN_RADIUS);
-	singleInput_.radius[2] = std::max(static_cast<double>(data[9]) , GS_TRM_TUBE_MIN_RADIUS);
-	singleInput_.radius[3] = std::max(static_cast<double>(data[10]), GS_TRM_TUBE_MIN_RADIUS);
-	singleInput_.radius[4] = std::max(static_cast<double>(data[11]), GS_TRM_TUBE_MIN_RADIUS);
-	singleInput_.radius[5] = std::max(static_cast<double>(data[12]), GS_TRM_TUBE_MIN_RADIUS);
-	singleInput_.radius[6] = std::max(static_cast<double>(data[13]), GS_TRM_TUBE_MIN_RADIUS);
-	singleInput_.radius[7] = std::max(static_cast<double>(data[14]), GS_TRM_TUBE_MIN_RADIUS);
-	singleInput_.velum     = data[15];
 }
 
 } /* namespace TRM */

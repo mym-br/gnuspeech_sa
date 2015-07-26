@@ -1128,5 +1128,62 @@ Tube::frequency(double pitch)
 	return PITCH_BASE * pow(2.0, (pitch + PITCH_OFFSET) / 12.0);
 }
 
+void
+Tube::loadSingleInput(const VocalTractModelParameterValue pv)
+{
+	switch (pv.index) {
+	case PARAM_GLOT_PITCH:
+		singleInput_.glotPitch = pv.value;
+		break;
+	case PARAM_GLOT_VOL:
+		singleInput_.glotVol   = pv.value;
+		break;
+	case PARAM_ASP_VOL:
+		singleInput_.aspVol    = pv.value;
+		break;
+	case PARAM_FRIC_VOL:
+		singleInput_.fricVol   = pv.value;
+		break;
+	case PARAM_FRIC_POS:
+		singleInput_.fricPos   = pv.value;
+		break;
+	case PARAM_FRIC_CF:
+		singleInput_.fricCF    = pv.value;
+		break;
+	case PARAM_FRIC_BW:
+		singleInput_.fricBW    = pv.value;
+		break;
+	case PARAM_R1:
+		singleInput_.radius[0] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
+		break;
+	case PARAM_R2:
+		singleInput_.radius[1] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
+		break;
+	case PARAM_R3:
+		singleInput_.radius[2] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
+		break;
+	case PARAM_R4:
+		singleInput_.radius[3] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
+		break;
+	case PARAM_R5:
+		singleInput_.radius[4] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
+		break;
+	case PARAM_R6:
+		singleInput_.radius[5] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
+		break;
+	case PARAM_R7:
+		singleInput_.radius[6] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
+		break;
+	case PARAM_R8:
+		singleInput_.radius[7] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
+		break;
+	case PARAM_VELUM:
+		singleInput_.velum     = pv.value;
+		break;
+	default:
+		THROW_EXCEPTION(TRMException, "Invalid parameter index: " << pv.index << '.');
+	}
+}
+
 } /* namespace TRM */
 } /* namespace GS */
