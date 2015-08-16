@@ -63,8 +63,8 @@ WAVEFileWriter::writeWaveFileHeader(int channels, int numberSamples, float outpu
 {
 	int dataChunkSize = channels * numberSamples * sizeof(std::int16_t);
 	int formSize = 4 + 24 + (8 + dataChunkSize);
-	int frameSize = std::ceil(channels * (BITS_PER_SAMPLE / 8.0));
-	int bytesPerSecond = std::ceil(outputRate * frameSize);
+	int frameSize = static_cast<int>(std::ceil(channels * (BITS_PER_SAMPLE / 8.0)));
+	int bytesPerSecond = static_cast<int>(std::ceil(outputRate * frameSize));
 
 	/*  Form container identifier  */
 	fputs("RIFF", stream_);
@@ -88,7 +88,7 @@ WAVEFileWriter::writeWaveFileHeader(int channels, int numberSamples, float outpu
 	writeUInt16LE(channels);
 
 	/*  Output Sample Rate  */
-	writeUInt32LE(std::round(outputRate));
+	writeUInt32LE(static_cast<int>(std::round(outputRate)));
 
 	/*  Bytes per second  */
 	writeUInt32LE(bytesPerSecond);
@@ -121,7 +121,7 @@ WAVEFileWriter::writeWaveFileHeader(int channels, int numberSamples, float outpu
 void
 WAVEFileWriter::writeSample(float sample)
 {
-	writeUInt16LE(std::round(sample * sampleScale_));
+	writeUInt16LE(static_cast<int>(std::round(sample * sampleScale_)));
 }
 
 /******************************************************************************
@@ -139,8 +139,8 @@ WAVEFileWriter::writeSample(float sample)
 void
 WAVEFileWriter::writeStereoSamples(float leftSample, float rightSample)
 {
-	writeUInt16LE(std::round(leftSample * sampleScale_));
-	writeUInt16LE(std::round(rightSample * sampleScale_));
+	writeUInt16LE(static_cast<int>(std::round(leftSample * sampleScale_)));
+	writeUInt16LE(static_cast<int>(std::round(rightSample * sampleScale_)));
 }
 
 /******************************************************************************

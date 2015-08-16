@@ -515,8 +515,8 @@ Tube::initializeSynthesizer()
 	/*  CALCULATE THE SAMPLE RATE, BASED ON NOMINAL TUBE LENGTH AND SPEED OF SOUND  */
 	if (length_ > 0.0) {
 		double c = speedOfSound(temperature_);
-		controlPeriod_ = rint((c * TOTAL_SECTIONS * 100.0) / (length_ * controlRate_));
-		sampleRate_ = controlRate_ * controlPeriod_;
+		controlPeriod_ = static_cast<int>(rint((c * TOTAL_SECTIONS * 100.0) / (length_ * controlRate_)));
+		sampleRate_ = static_cast<int>(controlRate_ * controlPeriod_);
 		actualTubeLength_ = (c * TOTAL_SECTIONS * 100.0) / sampleRate_;
 		nyquist = sampleRate_ / 2.0;
 	} else {
@@ -1070,7 +1070,7 @@ Tube::writeOutputToBuffer(std::vector<float>& outputBuffer)
 float
 Tube::calculateMonoScale()
 {
-	float scale = (OUTPUT_SCALE / srConv_->maximumSampleValue()) * amplitude(volume_);
+	float scale = static_cast<float>((OUTPUT_SCALE / srConv_->maximumSampleValue()) * amplitude(volume_));
 	LOG_DEBUG("\nScale: " << scale << '\n');
 	return scale;
 }
@@ -1078,10 +1078,10 @@ Tube::calculateMonoScale()
 void
 Tube::calculateStereoScale(float& leftScale, float& rightScale)
 {
-	leftScale = -((balance_ / 2.0) - 0.5);
-	rightScale = ((balance_ / 2.0) + 0.5);
-	float newMax = srConv_->maximumSampleValue() * (balance_ > 0.0 ? rightScale : leftScale);
-	float scale = (OUTPUT_SCALE / newMax) * amplitude(volume_);
+	leftScale = static_cast<float>(-((balance_ / 2.0) - 0.5));
+	rightScale = static_cast<float>(((balance_ / 2.0) + 0.5));
+	float newMax = static_cast<float>(srConv_->maximumSampleValue() * (balance_ > 0.0 ? rightScale : leftScale));
+	float scale = static_cast<float>((OUTPUT_SCALE / newMax) * amplitude(volume_));
 	leftScale  *= scale;
 	rightScale *= scale;
 	LOG_DEBUG("\nLeft scale: " << leftScale << " Right scale: " << rightScale << '\n');

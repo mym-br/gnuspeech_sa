@@ -107,7 +107,7 @@ EventList::setUp()
 }
 
 void
-EventList::setUpDriftGenerator(float deviation, float sampleRate, float lowpassCutoff)
+EventList::setUpDriftGenerator(double deviation, double sampleRate, double lowpassCutoff)
 {
 	driftGenerator_.setUp(deviation, sampleRate, lowpassCutoff);
 }
@@ -1013,19 +1013,19 @@ EventList::generateOutput(std::ostream& trmParamStream)
 		currentValues[32] = -20.0;
 	}
 
-	unsigned int i = 1;
+	unsigned int index = 1;
 	int currentTime = 0;
 	int nextTime = list_[1]->time;
-	while (i < list_.size()) {
+	while (index < list_.size()) {
 
 		for (int j = 0; j < 16; j++) {
 			table[j] = (float) currentValues[j] + (float) currentValues[j + 16];
 		}
 		if (!microFlag_) table[0] = 0.0;
-		if (driftFlag_)  table[0] += driftGenerator_.drift();
-		if (macroFlag_)  table[0] += currentValues[32];
+		if (driftFlag_)  table[0] += static_cast<float>(driftGenerator_.drift());
+		if (macroFlag_)  table[0] += static_cast<long>(currentValues[32]);
 
-		table[0] += pitchMean_;
+		table[0] += static_cast<float>(pitchMean_);
 
 		trmParamStream << std::fixed << std::setprecision(3);
 		trmParamStream << table[0];
@@ -1056,14 +1056,14 @@ EventList::generateOutput(std::ostream& trmParamStream)
 		currentTime += 4;
 
 		if (currentTime >= nextTime) {
-			i++;
-			if (i == list_.size()) {
+			++index;
+			if (index == list_.size()) {
 				break;
 			}
-			nextTime = list_[i]->time;
+			nextTime = list_[index]->time;
 			for (int j = 0; j < 33; j++) { /* 32? 33? */
-				if (list_[i - 1]->getValue(j) != GS_EVENTLIST_INVALID_EVENT_VALUE) {
-					unsigned int k = i;
+				if (list_[index - 1]->getValue(j) != GS_EVENTLIST_INVALID_EVENT_VALUE) {
+					unsigned int k = index;
 					while ((temp = list_[k]->getValue(j)) == GS_EVENTLIST_INVALID_EVENT_VALUE) {
 						if (k >= list_.size() - 1U) {
 							currentDeltas[j] = 0.0;
@@ -1078,12 +1078,12 @@ EventList::generateOutput(std::ostream& trmParamStream)
 				}
 			}
 			if (smoothIntonation_) {
-				if (list_[i - 1]->getValue(33) != GS_EVENTLIST_INVALID_EVENT_VALUE) {
-					currentValues[32] = list_[i - 1]->getValue(32);
+				if (list_[index - 1]->getValue(33) != GS_EVENTLIST_INVALID_EVENT_VALUE) {
+					currentValues[32] = list_[index - 1]->getValue(32);
 					currentDeltas[32] = 0.0;
-					currentDeltas[33] = list_[i - 1]->getValue(33);
-					currentDeltas[34] = list_[i - 1]->getValue(34);
-					currentDeltas[35] = list_[i - 1]->getValue(35);
+					currentDeltas[33] = list_[index - 1]->getValue(33);
+					currentDeltas[34] = list_[index - 1]->getValue(34);
+					currentDeltas[35] = list_[index - 1]->getValue(35);
 				}
 			}
 		}

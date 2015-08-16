@@ -309,7 +309,7 @@ SampleRateConverter::dataEmpty()
 			numberSamples_++;
 
 			/*  SAVE THE SAMPLE  */
-			outputData_.push_back(output);
+			outputData_.push_back(static_cast<float>(output));
 
 			/*  CHANGE TIME REGISTER BACK TO ORIGINAL FORM  */
 			timeRegister_ = ~timeRegister_;
@@ -376,7 +376,7 @@ SampleRateConverter::dataEmpty()
 			numberSamples_++;
 
 			/*  SAVE THE SAMPLE  */
-			outputData_.push_back(output);
+			outputData_.push_back(static_cast<float>(output));
 
 			/*  INCREMENT THE TIME REGISTER  */
 			timeRegister_ += timeRegisterIncrement_;

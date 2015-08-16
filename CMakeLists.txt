@@ -17,6 +17,9 @@ set(GNUSPEECHSA_VERSION_STRING ${GNUSPEECHSA_VERSION_MAJOR}.${GNUSPEECHSA_VERSIO
 if(MSVC)
     # To have M_PI defined in <cmath>.
     add_definitions(-D_USE_MATH_DEFINES)
+
+    # Disable warnings about strcpy_s, strcat_s, etc.
+    add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
 endif()
 
 include_directories(

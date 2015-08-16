@@ -484,7 +484,7 @@ strip_punctuation(char* buffer, int length, std::stringstream& stream, long* str
 	}
 
 	/*  SET STREAM LENGTH  */
-	*stream_length = stream.tellp();
+	*stream_length = static_cast<long>(stream.tellp());
 }
 
 /******************************************************************************
@@ -687,7 +687,7 @@ set_tone_group(std::stringstream& stream, long tg_pos, const char* word)
 	}
 
 	/*  GET CURRENT POSITION IN STREAM  */
-	long current_pos = stream.tellp();
+	long current_pos = static_cast<long>(stream.tellp());
 
 	/*  SEEK TO TONE GROUP MARKER POSITION  */
 	stream.seekp(tg_pos);
@@ -754,7 +754,7 @@ convert_silence(const char* buffer, std::stringstream& stream)
 	}
 
 	/*  RETURN ACTUAL LENGTH OF SILENCE  */
-	return number_silence_phones * SILENCE_PHONE_LENGTH;
+	return static_cast<float>(number_silence_phones * SILENCE_PHONE_LENGTH);
 }
 
 /******************************************************************************
@@ -879,7 +879,7 @@ insert_tag(std::stringstream& stream, long insert_point, const char* word)
 	}
 
 	/*  FIND POSITION OF END OF STREAM  */
-	long end_point = stream.tellp();
+	long end_point = static_cast<long>(stream.tellp());
 
 	/*  CALCULATE HOW MANY CHARACTERS TO SHIFT  */
 	long length = end_point - insert_point;
@@ -1837,7 +1837,7 @@ safety_check(std::stringstream& stream, long* stream_length)
 					break;
 				}
 				if (c == ' ') {
-					last_word_pos = stream.tellg();
+					last_word_pos = static_cast<long>(stream.tellg());
 				}
 			}
 			state = NON_PHONEME;
@@ -1849,7 +1849,7 @@ safety_check(std::stringstream& stream, long* stream_length)
 	}
 
 	/*  BE SURE TO RESET LENGTH OF STREAM  */
-	*stream_length = stream.tellg();
+	*stream_length = static_cast<long>(stream.tellg());
 }
 
 /******************************************************************************
@@ -1907,7 +1907,7 @@ check_tonic(std::stringstream& stream, long start_pos, long end_pos)
 	long i, last_foot_pos = UNDEFINED_POSITION;
 
 	/*  REMEMBER CURRENT POSITION IN STREAM  */
-	long temp_pos = stream.tellp();
+	long temp_pos = static_cast<long>(stream.tellp());
 
 	/*  CALCULATE EXTENT OF STREAM TO LOOP THROUGH  */
 	long extent = end_pos - start_pos;
@@ -2596,7 +2596,7 @@ TextParser::final_conversion(std::stringstream& stream1, long stream1_length,
 
 				/*  SET LAST WRITTEN STATE, AND END POSITION AFTER THE WORD  */
 				last_written_state = STATE_WORD;
-				last_word_end = stream2.tellp();
+				last_word_end = static_cast<long>(stream2.tellp());
 				break;
 
 			case STATE_MEDIAL_PUNC:
@@ -2604,7 +2604,7 @@ TextParser::final_conversion(std::stringstream& stream1, long stream1_length,
 				switch(last_written_state) {
 				case STATE_WORD:
 					if (shift_silence(input, i, stream1_length, mode, stream2)) {
-						last_word_end = stream2.tellp();
+						last_word_end = static_cast<long>(stream2.tellp());
 					} else if ((next_state != STATE_END) &&
 							another_word_follows(input, i, stream1_length, mode)) {
 						if (!strcmp(word,",")) {
@@ -2629,7 +2629,7 @@ TextParser::final_conversion(std::stringstream& stream1, long stream1_length,
 			case STATE_FINAL_PUNC:
 				if (last_written_state == STATE_WORD) {
 					if (shift_silence(input, i, stream1_length, mode, stream2)) {
-						last_word_end = stream2.tellp();
+						last_word_end = static_cast<long>(stream2.tellp());
 						stream2 << TONE_GROUP_BOUNDARY << ' ';
 						prior_tonic = TTS_FALSE;
 						if (set_tone_group(stream2, tg_marker_pos, word) == TTS_PARSER_FAILURE) {
@@ -2669,11 +2669,11 @@ TextParser::final_conversion(std::stringstream& stream1, long stream1_length,
 						return TTS_PARSER_FAILURE;
 					}
 					last_written_state = STATE_SILENCE;
-					last_word_end = stream2.tellp();
+					last_word_end = static_cast<long>(stream2.tellp());
 				} else if (last_written_state == STATE_WORD) {
 					convert_silence(word, stream2);
 					last_written_state = STATE_SILENCE;
-					last_word_end = stream2.tellp();
+					last_word_end = static_cast<long>(stream2.tellp());
 				}
 				break;
 
@@ -2717,7 +2717,7 @@ TextParser::final_conversion(std::stringstream& stream1, long stream1_length,
 	stream2 << '\0';
 
 	/*  SET STREAM2 LENGTH  */
-	*stream2_length = stream2.tellp();
+	*stream2_length = static_cast<long>(stream2.tellp());
 
 	/*  RETURN SUCCESS  */
 	return TTS_PARSER_SUCCESS;
@@ -2840,7 +2840,7 @@ TextParser::expand_word(char* word, int is_tonic, std::stringstream& stream)
 
 	/*  IF TONIC, CONVERT LAST FOOT MARKER TO TONIC MARKER  */
 	if (is_tonic && (last_foot_begin != UNDEFINED_POSITION)) {
-		long temporaryPosition = stream.tellp();
+		long temporaryPosition = static_cast<long>(stream.tellp());
 		stream.seekp(last_foot_begin);
 		stream << TONIC_BEGIN;
 		stream.seekp(temporaryPosition);

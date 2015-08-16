@@ -347,20 +347,20 @@ Model::getFormulaSymbolValue(FormulaSymbol::Code symbol) const
 void
 Model::setDefaultFormulaSymbols(Transition::Type transitionType)
 {
-	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION1, 33.3333);
-	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION2, 33.3333);
-	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION3, 33.3333);
-	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION4, 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION1, 33.3333f);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION2, 33.3333f);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION3, 33.3333f);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_TRANSITION4, 33.3333f);
 
-	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA1      , 33.3333);
-	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA2      , 33.3333);
-	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA3      , 33.3333);
-	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA4      , 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA1      , 33.3333f);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA2      , 33.3333f);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA3      , 33.3333f);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSA4      , 33.3333f);
 
-	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB1      , 33.3333);
-	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB2      , 33.3333);
-	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB3      , 33.3333);
-	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB4      , 33.3333);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB1      , 33.3333f);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB2      , 33.3333f);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB3      , 33.3333f);
+	setFormulaSymbolValue(FormulaSymbol::SYMB_QSSB4      , 33.3333f);
 
 	setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO1, 1.0);
 	setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO2, 1.0);

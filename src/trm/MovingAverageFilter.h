@@ -19,6 +19,7 @@
 #define MOVING_AVERAGE_FILTER_H_
 
 #include <cassert>
+#include <cstddef> /* std::size_t */
 #include <cmath> /* round */
 #include <vector>
 
@@ -51,7 +52,7 @@ private:
  */
 template<typename FloatType>
 MovingAverageFilter<FloatType>::MovingAverageFilter(FloatType sampleRate, FloatType period)
-		: buf_(std::round(sampleRate * period))
+		: buf_(static_cast<std::size_t>(std::round(sampleRate * period)))
 		, pos_(buf_.size())
 		, sum_(0.0)
 		, invN_(1.0 / buf_.size())

@@ -79,7 +79,7 @@ private:
 		switch (c) {
 		case rightParenChar: return true;
 		case leftParenChar:  return true;
-		default:               return std::isspace(c);
+		default:             return std::isspace(c) != 0;
 		}
 	}
 

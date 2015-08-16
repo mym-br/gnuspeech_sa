@@ -170,7 +170,7 @@ public:
 	void generateOutput(std::ostream& trmParamStream);
 	void clearMacroIntonation();
 
-	void setUpDriftGenerator(float deviation, float sampleRate, float lowpassCutoff);
+	void setUpDriftGenerator(double deviation, double sampleRate, double lowpassCutoff);
 
 	const Posture* getPostureAtIndex(unsigned int index) const;
 	const PostureData* getPostureDataAtIndex(unsigned int index) const;

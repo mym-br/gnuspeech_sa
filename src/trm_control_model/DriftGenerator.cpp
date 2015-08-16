@@ -60,7 +60,7 @@ DriftGenerator::~DriftGenerator()
 *
 ******************************************************************************/
 void
-DriftGenerator::setUp(float deviation, float sampleRate, float lowpassCutoff)
+DriftGenerator::setUp(double deviation, double sampleRate, double lowpassCutoff)
 {
 	/*  SET PITCH DEVIATION AND OFFSET VARIABLES  */
 	pitchDeviation_ = deviation * 2.0;
@@ -88,12 +88,12 @@ DriftGenerator::setUp(float deviation, float sampleRate, float lowpassCutoff)
 *	purpose:	Returns one sample of the drift signal.
 *			
 ******************************************************************************/
-float
+double
 DriftGenerator::drift()
 {
 	/*  CREATE RANDOM NUMBER BETWEEN 0 AND 1  */
-	float temp = seed_ * FACTOR;
-	seed_ = temp - (int) temp;  /* SEED IS SAVED FOR NEXT INVOCATION  */
+	double temp = seed_ * FACTOR;
+	seed_ = temp - static_cast<int>(temp);  /* SEED IS SAVED FOR NEXT INVOCATION  */
 
 	/*  CREATE RANDOM SIGNAL WITH RANGE -DEVIATION TO +DEVIATION  */
 	temp = (seed_ * pitchDeviation_) - pitchOffset_;

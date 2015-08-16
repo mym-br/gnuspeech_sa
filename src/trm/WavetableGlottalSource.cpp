@@ -50,8 +50,8 @@ WavetableGlottalSource::WavetableGlottalSource(
 	// in the wavetable, for use in the oscillator.
 
 	/*  CALCULATE WAVE TABLE PARAMETERS  */
-	tableDiv1_ = rint(TABLE_LENGTH * (tp / 100.0));
-	tableDiv2_ = rint(TABLE_LENGTH * ((tp + tnMax) / 100.0));
+	tableDiv1_ = static_cast<int>(rint(TABLE_LENGTH * (tp / 100.0)));
+	tableDiv2_ = static_cast<int>(rint(TABLE_LENGTH * ((tp + tnMax) / 100.0)));
 	tnLength_ = tableDiv2_ - tableDiv1_;
 	tnDelta_ = rint(TABLE_LENGTH * ((tnMax - tnMin) / 100.0));
 	basicIncrement_ = (double) TABLE_LENGTH / (double) sampleRate;
@@ -117,12 +117,12 @@ WavetableGlottalSource::updateWavetable(double amplitude)
 
 	/*  RECALCULATE THE FALLING PORTION OF THE GLOTTAL PULSE  */
 	double x = 0.0;
-	for (int i = tableDiv1_; i < newDiv2; ++i, x += invNewTnLength) {
+	for (int i = tableDiv1_, end = static_cast<int>(newDiv2); i < end; ++i, x += invNewTnLength) {
 		wavetable_[i] = 1.0 - (x * x);
 	}
 
 	/*  FILL IN WITH CLOSED PORTION OF GLOTTAL PULSE  */
-	for (int i = newDiv2; i < tableDiv2_; i++) {
+	for (int i = static_cast<int>(newDiv2); i < tableDiv2_; i++) {
 		wavetable_[i] = 0.0;
 	}
 }
@@ -161,8 +161,8 @@ WavetableGlottalSource::getSample(double frequency)  /*  2X OVERSAMPLING OSCILLA
 		incrementTablePosition(frequency / 2.0);
 
 		/*  FIND SURROUNDING INTEGER TABLE POSITIONS  */
-		lowerPosition = (int) currentPosition_;
-		upperPosition = mod0(lowerPosition + 1);
+		lowerPosition = static_cast<int>(currentPosition_);
+		upperPosition = static_cast<int>(mod0(lowerPosition + 1));
 
 		/*  CALCULATE INTERPOLATED TABLE VALUE  */
 		interpolatedValue = wavetable_[lowerPosition] +

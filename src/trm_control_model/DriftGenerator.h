@@ -31,18 +31,18 @@ public:
 	DriftGenerator();
 	~DriftGenerator();
 
-	void setUp(float deviation, float sampleRate, float lowpassCutoff);
-	float drift();
+	void setUp(double deviation, double sampleRate, double lowpassCutoff);
+	double drift();
 private:
 	DriftGenerator(const DriftGenerator&) = delete;
 	DriftGenerator& operator=(const DriftGenerator&) = delete;
 
-	float pitchDeviation_;
-	float pitchOffset_;
-	float seed_;
-	float a0_;
-	float b1_;
-	float previousSample_;
+	double pitchDeviation_;
+	double pitchOffset_;
+	double seed_;
+	double a0_;
+	double b1_;
+	double previousSample_;
 };
 
 } /* namespace TRMControlModel */

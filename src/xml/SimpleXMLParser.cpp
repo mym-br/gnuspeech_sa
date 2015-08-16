@@ -58,10 +58,10 @@ SimpleXMLParser::SimpleXMLParser(const std::string& filePath)
 	}
 
 	while (inFile.read(buf, BUFFER_SIZE)) {
-		source_.append(buf, inFile.gcount());
+		source_.append(buf, static_cast<unsigned int>(inFile.gcount()));
 	}
 	if (inFile.gcount() > 0) {
-		source_.append(buf, inFile.gcount());
+		source_.append(buf, static_cast<unsigned int>(inFile.gcount()));
 	}
 	assert(source_.size() > 0);
 }

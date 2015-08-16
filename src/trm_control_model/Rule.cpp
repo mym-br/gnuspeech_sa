@@ -86,7 +86,7 @@ private:
 		switch (c) {
 		case rightParenChar: return true;
 		case leftParenChar:  return true;
-		default:             return std::isspace(c);
+		default:             return std::isspace(c) != 0;
 		}
 	}
 
@@ -523,15 +523,15 @@ Rule::evaluateExpressionSymbols(const double* tempos, const std::vector<const Po
 	} else {
 		localTempos[3] = 0.0;
 	}
-	model.setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO1, localTempos[0]);
-	model.setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO2, localTempos[1]);
-	model.setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO3, localTempos[2]);
-	model.setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO4, localTempos[3]);
-	model.setFormulaSymbolValue(FormulaSymbol::SYMB_RD   , ruleSymbols[0]);
-	model.setFormulaSymbolValue(FormulaSymbol::SYMB_BEAT , ruleSymbols[1]);
-	model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK1, ruleSymbols[2]);
-	model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK2, ruleSymbols[3]);
-	model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK3, ruleSymbols[4]);
+	model.setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO1, static_cast<float>(localTempos[0]));
+	model.setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO2, static_cast<float>(localTempos[1]));
+	model.setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO3, static_cast<float>(localTempos[2]));
+	model.setFormulaSymbolValue(FormulaSymbol::SYMB_TEMPO4, static_cast<float>(localTempos[3]));
+	model.setFormulaSymbolValue(FormulaSymbol::SYMB_RD   , static_cast<float>(ruleSymbols[0]));
+	model.setFormulaSymbolValue(FormulaSymbol::SYMB_BEAT , static_cast<float>(ruleSymbols[1]));
+	model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK1, static_cast<float>(ruleSymbols[2]));
+	model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK2, static_cast<float>(ruleSymbols[3]));
+	model.setFormulaSymbolValue(FormulaSymbol::SYMB_MARK3, static_cast<float>(ruleSymbols[4]));
 
 	// Execute in this order.
 	if (exprSymbolEquations_.ruleDuration) {

@@ -46,7 +46,7 @@ double
 NoiseSource::getSample()
 {
 	double product = seed_ * FACTOR;
-	seed_ = product - (int) product;
+	seed_ = product - static_cast<int>(product);
 	return seed_ - 0.5;
 }
 
