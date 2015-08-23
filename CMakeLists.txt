@@ -24,6 +24,7 @@ endif()
 
 include_directories(
     src
+    src/rapidxml
     src/trm
     src/trm_control_model
     src/xml
@@ -72,6 +73,8 @@ set(LIBRARY_FILES
     src/en/text_parser/special_acronyms.h
     src/en/text_parser/TextParser.cpp src/en/text_parser/TextParser.h
 
+    src/rapidxml/rapidxml.hpp
+
     src/trm/BandpassFilter.cpp src/trm/BandpassFilter.h
     src/trm/FIRFilter.cpp src/trm/FIRFilter.h
     src/trm/MovingAverageFilter.h
@@ -103,7 +106,8 @@ set(LIBRARY_FILES
     src/trm_control_model/XMLConfigFileReader.cpp src/trm_control_model/XMLConfigFileReader.h
     src/trm_control_model/XMLConfigFileWriter.cpp src/trm_control_model/XMLConfigFileWriter.h
 
-    src/xml/SimpleXMLParser.cpp src/xml/SimpleXMLParser.h
+    src/xml/RapidXmlUtil.h
+    src/xml/StreamXMLWriter.h
 )
 
 if(UNIX)

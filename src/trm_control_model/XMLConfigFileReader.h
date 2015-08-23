@@ -1,5 +1,5 @@
 /***************************************************************************
- *  Copyright 2014 Marcelo Y. Matuda                                       *
+ *  Copyright 2014, 2015 Marcelo Y. Matuda                                 *
  *  Copyright 1991, 1992, 1993, 1994, 1995, 1996, 2001, 2002               *
  *    David R. Hill, Leonard Manzara, Craig Schock                         *
  *                                                                         *
@@ -25,18 +25,19 @@
 
 #include <string>
 
-#include "Equation.h"
-#include "Posture.h"
-#include "Rule.h"
-#include "SimpleXMLParser.h"
-#include "Transition.h"
 
 
+namespace rapidxml {
+template<typename Ch> class xml_node;
+}
 
 namespace GS {
 namespace TRMControlModel {
 
 class Model;
+class Posture;
+class Rule;
+class Transition;
 
 /*******************************************************************************
  * This class supposes that the XML is in the correct format.
@@ -46,108 +47,43 @@ public:
 	XMLConfigFileReader(Model& model, const std::string& filePath);
 	~XMLConfigFileReader();
 
+	// Loads the model from the XML.
+	//
+	// Precondition: the model is empty.
 	void loadModel();
 private:
-	Model& model_;
-
-	//TODO: why these strings? To avoid temporaries?
-	std::string booleanExpressionTagName_;
-	std::string booleanExpressionsTagName_;
-	std::string categoriesTagName_;
-	std::string categoryTagName_;
-	std::string categoryRefTagName_;
-	std::string commentTagName_;
-	std::string equationTagName_;
-	std::string equationGroupTagName_;
-	std::string equationsTagName_;
-	std::string expressionSymbolsTagName_;
-	std::string parameterTagName_;
-	std::string parameterProfilesTagName_;
-	std::string parametersTagName_;
-	std::string parameterTargetsTagName_;
-	std::string parameterTransitionTagName_;
-	std::string pointOrSlopesTagName_;
-	std::string pointTagName_;
-	std::string pointsTagName_;
-	std::string postureCategoriesTagName_;
-	std::string posturesTagName_;
-	std::string postureTagName_;
-	std::string ruleTagName_;
-	std::string rulesTagName_;
-	std::string slopeTagName_;
-	std::string slopeRatioTagName_;
-	std::string slopesTagName_;
-	std::string specialProfilesTagName_;
-	std::string specialTransitionsTagName_;
-	std::string symbolEquationTagName_;
-	std::string symbolsTagName_;
-	std::string symbolTagName_;
-	std::string symbolTargetsTagName_;
-	std::string targetTagName_;
-	std::string transitionTagName_;
-	std::string transitionGroupTagName_;
-	std::string transitionsTagName_;
-
-	std::string defaultAttrName_;
-	std::string displayTimeAttrName_;
-	std::string equationAttrName_;
-	std::string formulaAttrName_;
-	std::string freeTimeAttrName_;
-	std::string isPhantomAttrName_;
-	std::string maximumAttrName_;
-	std::string minimumAttrName_;
-	std::string nameAttrName_;
-	std::string p12AttrName_;
-	std::string p23AttrName_;
-	std::string p34AttrName_;
-	std::string slopeAttrName_;
-	std::string symbolAttrName_;
-	std::string timeExpressionAttrName_;
-	std::string typeAttrName_;
-	std::string transitionAttrName_;
-	std::string valueAttrName_;
-
-	std::string beatSymbolName_;
-	std::string durationSymbolName_;
-	std::string mark1SymbolName_;
-	std::string mark2SymbolName_;
-	std::string mark3SymbolName_;
-	std::string qssaSymbolName_;
-	std::string qssbSymbolName_;
-	std::string rdSymbolName_;
-	std::string transitionSymbolName_;
-
-	SimpleXMLParser parser_;
-
 	XMLConfigFileReader(const XMLConfigFileReader&) = delete;
 	XMLConfigFileReader& operator=(const XMLConfigFileReader&) = delete;
 
-	void parseCategories();
+	void parseCategories(rapidxml::xml_node<char>* categoriesElem);
 
-	void parseParameters();
+	void parseParameters(rapidxml::xml_node<char>* parametersElem);
 
-	void parseSymbols();
+	void parseSymbols(rapidxml::xml_node<char>* symbolsElem);
 
-	void parsePostureSymbols(Posture& posture);
-	void parsePostureCategories(Posture& posture);
-	void parsePostureParameters(Posture& posture);
-	void parsePosture();
-	void parsePostures();
+	void parsePostureSymbols(rapidxml::xml_node<char>* symbolTargetsElem, Posture& posture);
+	void parsePostureCategories(rapidxml::xml_node<char>* postureCategoriesElem, Posture& posture);
+	void parsePostureParameters(rapidxml::xml_node<char>* parameterTargetsElem, Posture& posture);
+	void parsePosture(rapidxml::xml_node<char>* postureElem);
+	void parsePostures(rapidxml::xml_node<char>* posturesElem);
 
-	void parseEquationsGroup();
-	void parseEquations();
+	void parseEquationsGroup(rapidxml::xml_node<char>* equationGroupElem);
+	void parseEquations(rapidxml::xml_node<char>* equationsElem);
 
-	void parseSlopeRatio(Transition& transition);
-	void parseTransitionPointOrSlopes(Transition& transition);
-	void parseTransitionsGroup(bool special);
-	void parseTransitions(bool special);
+	void parseSlopeRatio(rapidxml::xml_node<char>* slopeRatioElem, Transition& transition);
+	void parseTransitionPointOrSlopes(rapidxml::xml_node<char>* pointOrSlopesElem, Transition& transition);
+	void parseTransitionsGroup(rapidxml::xml_node<char>* transitionGroupElem, bool special);
+	void parseTransitions(rapidxml::xml_node<char>* transitionsElem, bool special);
 
-	void parseRuleParameterProfiles(Rule& list);
-	void parseRuleSpecialProfiles(Rule& list);
-	void parseRuleExpressionSymbols(Rule& list);
-	void parseRuleBooleanExpressions(Rule& rule);
-	void parseRule();
-	void parseRules();
+	void parseRuleParameterProfiles(rapidxml::xml_node<char>* parameterProfilesElem, Rule& list);
+	void parseRuleSpecialProfiles(rapidxml::xml_node<char>* specialProfilesElem, Rule& list);
+	void parseRuleExpressionSymbols(rapidxml::xml_node<char>* expressionSymbolsElem, Rule& list);
+	void parseRuleBooleanExpressions(rapidxml::xml_node<char>* booleanExpressionsElem, Rule& rule);
+	void parseRule(rapidxml::xml_node<char>* ruleElem);
+	void parseRules(rapidxml::xml_node<char>* rulesElem);
+
+	Model& model_;
+	std::string filePath_;
 };
 
 } /* namespace TRMControlModel */

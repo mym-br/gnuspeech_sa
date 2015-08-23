@@ -1,5 +1,5 @@
 /***************************************************************************
- *  Copyright 2014 Marcelo Y. Matuda                                       *
+ *  Copyright 2014, 2015 Marcelo Y. Matuda                                 *
  *  Copyright 1991, 1992, 1993, 1994, 1995, 1996, 2001, 2002               *
  *    David R. Hill, Leonard Manzara, Craig Schock                         *
  *                                                                         *
@@ -20,92 +20,16 @@
 // This file was created by Marcelo Y. Matuda, and code/information
 // from Gnuspeech was added to it later.
 
-#include <cstring> /* strerror */
-
 #include "XMLConfigFileWriter.h"
+
+#include <cstring> /* strerror */
+#include <fstream>
+#include <sstream>
 
 #include "Exception.h"
 #include "Log.h"
 #include "Model.h"
-
-
-
-namespace {
-
-void
-indentLine(std::ofstream& out, int n)
-{
-	if (n < 0) return;
-	for (int i = 0; i < n; ++i) {
-		out << "  ";
-	}
-}
-
-class XMLAux {
-public:
-	XMLAux(std::ofstream& out, int indentLevel)
-		: out_(out), indentLevel_(indentLevel) {}
-
-	void openElement(const std::string& name) {
-		indentLine(out_, indentLevel_++);
-		out_ << '<' << name << ">\n";
-	}
-	void openInlineElement(const std::string& name) {
-		indentLine(out_, indentLevel_++);
-		out_ << '<' << name << '>';
-	}
-	void openElementWithAttributes(const std::string& name) {
-		indentLine(out_, indentLevel_++);
-		out_ << '<' << name;
-	}
-
-	void addAttribute(const std::string& name, int value) {
-		out_ << ' ' << name << "=\"" << value << '"';
-	}
-	void addAttribute(const std::string& name, unsigned int value) {
-		out_ << ' ' << name << "=\"" << value << '"';
-	}
-	void addAttribute(const std::string& name, const std::string& value) {
-		out_ << ' ' << name << "=\"" << value << '"';
-	}
-	void addAttribute(const std::string& name, float value) {
-		out_ << ' ' << name << "=\"" << value << '"';
-	}
-	void addAttribute(const std::string& name, double value) {
-		out_ << ' ' << name << "=\"" << value << '"';
-	}
-
-	void endAttributes() {
-		out_ << ">\n";
-	}
-	void endAttributesAndCloseElement() {
-		--indentLevel_;
-		out_ << "/>\n";
-	}
-
-	void addText(const std::string& text) {
-		out_ << text;
-	}
-
-	void closeElement(const std::string& name) {
-		indentLine(out_, --indentLevel_);
-		out_ << "</" << name << ">\n";
-	}
-	void closeInlineElement(const std::string& name) {
-		--indentLevel_;
-		out_ << "</" << name << ">\n";
-	}
-
-	void indent() {
-		indentLine(out_, indentLevel_);
-	}
-
-private:
-	std::ofstream& out_;
-	int indentLevel_;
-};
-
-} // namespace
+#include "StreamXMLWriter.h"
 
 
 
@@ -117,12 +41,8 @@ namespace TRMControlModel {
  */
 XMLConfigFileWriter::XMLConfigFileWriter(const Model& model, const std::string& filePath)
 		: model_(model)
-		, out_(filePath, std::ios_base::out | std::ios_base::binary)
 		, filePath_(filePath)
 {
-	if (!out_) {
-		THROW_EXCEPTION(IOException, "The output file " << filePath << " could not be created.");
-	}
 }
 
 /*******************************************************************************
@@ -138,20 +58,28 @@ XMLConfigFileWriter::~XMLConfigFileWriter()
 void
 XMLConfigFileWriter::saveModel()
 {
-	if (!out_.is_open()) {
-		THROW_EXCEPTION(InvalidStateException, "The file is not open.");
+	std::ofstream out(filePath_, std::ios_base::out | std::ios_base::binary);
+	if (!out) {
+		THROW_EXCEPTION(IOException, "The output file " << filePath_ << " could not be created.");
 	}
 
-	out_ << "<?xml version='1.0' encoding='utf-8'?>\n<root version='1'>\n";
-	writeElements();
-	out_ << "</root>\n";
+	StreamXMLWriter xml(out, 2);
+	xml.writeDeclaration();
 
-	out_.flush();
-	if (!out_) {
+	xml.openElementWithAttributes("root");
+	xml.addAttribute("version", 1);
+	xml.endAttributes();
+
+	writeElements(xml);
+
+	xml.closeElement("root");
+
+	out.flush();
+	if (!out) {
 		THROW_EXCEPTION(IOException, "Could not write to the file " << filePath_ << ". Reason: " << std::strerror(errno) << '.');
 	}
-	out_.close();
-	if (!out_) {
+	out.close();
+	if (!out) {
 		THROW_EXCEPTION(IOException, "Could not close the file " << filePath_ << '.');
 	}
 }
@@ -160,10 +88,8 @@ XMLConfigFileWriter::saveModel()
  *
  */
 void
-XMLConfigFileWriter::writeElements()
+XMLConfigFileWriter::writeElements(StreamXMLWriter& xml)
 {
-	XMLAux xml(out_, 1);
-
 	LOG_DEBUG("categories ==================================================");
 	xml.openElement("categories");
 	for (const auto& category : model_.categoryList()) {
@@ -225,7 +151,7 @@ XMLConfigFileWriter::writeElements()
 	xml.openElement("postures");
 
 	for (unsigned int i = 0, size = model_.postureList().size(); i < size; ++i) {
-		const auto& posture = model_.postureList()[i];
+		const Posture& posture = model_.postureList()[i];
 
 		xml.openElementWithAttributes("posture");
 		xml.addAttribute("symbol", posture.name());
@@ -274,7 +200,7 @@ XMLConfigFileWriter::writeElements()
 
 	LOG_DEBUG("equations ==================================================");
 	xml.openElement("equations");
-	for (const auto& group : model_.equationGroupList()) {
+	for (const EquationGroup& group : model_.equationGroupList()) {
 		xml.openElementWithAttributes("equation-group");
 		xml.addAttribute("name", group.name);
 		xml.endAttributes();
@@ -298,7 +224,7 @@ XMLConfigFileWriter::writeElements()
 
 	LOG_DEBUG("transitions ==================================================");
 	xml.openElement("transitions");
-	for (const auto& group : model_.transitionGroupList()) {
+	for (const TransitionGroup& group : model_.transitionGroupList()) {
 		xml.openElementWithAttributes("transition-group");
 		xml.addAttribute("name", group.name);
 		xml.endAttributes();
@@ -315,7 +241,7 @@ XMLConfigFileWriter::writeElements()
 			xml.openElement("point-or-slopes");
 			for (const auto& pointOrSlope : transition->pointOrSlopeList()) {
 				if (pointOrSlope->isSlopeRatio()) {
-					const auto& slopeRatio = dynamic_cast<const Transition::SlopeRatio&>(*pointOrSlope);
+					const Transition::SlopeRatio& slopeRatio = dynamic_cast<const Transition::SlopeRatio&>(*pointOrSlope);
 					xml.openElement("slope-ratio");
 					xml.openElement("points");
 					for (const auto& point : slopeRatio.pointList) {
@@ -343,7 +269,7 @@ XMLConfigFileWriter::writeElements()
 					xml.closeElement("slopes");
 					xml.closeElement("slope-ratio");
 				} else {
-					const auto& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
+					const Transition::Point& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
 					xml.openElementWithAttributes("point");
 					xml.addAttribute("type", Transition::Point::getNameFromType(point.type));
 					xml.addAttribute("value", point.value);
@@ -367,7 +293,7 @@ XMLConfigFileWriter::writeElements()
 
 	LOG_DEBUG("special-transitions ==================================================");
 	xml.openElement("special-transitions");
-	for (const auto& group : model_.specialTransitionGroupList()) {
+	for (const TransitionGroup& group : model_.specialTransitionGroupList()) {
 		xml.openElementWithAttributes("transition-group");
 		xml.addAttribute("name", group.name);
 		xml.endAttributes();
@@ -386,7 +312,7 @@ XMLConfigFileWriter::writeElements()
 				if (pointOrSlope->isSlopeRatio()) {
 					THROW_EXCEPTION(InvalidValueException, "Unexpected slope ratio in special transition.");
 				} else {
-					const auto& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
+					const Transition::Point& point = dynamic_cast<const Transition::Point&>(*pointOrSlope);
 					xml.openElementWithAttributes("point");
 					xml.addAttribute("type", Transition::Point::getNameFromType(point.type));
 					xml.addAttribute("value", point.value);
@@ -411,10 +337,13 @@ XMLConfigFileWriter::writeElements()
 	LOG_DEBUG("rules ==================================================");
 	xml.openElement("rules");
 	unsigned int ruleNumber = 0;
-	for (const std::unique_ptr<Rule>& rule : model_.ruleList()) {
+	for (const auto& rule : model_.ruleList()) {
 		++ruleNumber;
 		xml.indent();
-		out_ << "<!-- Rule: " << ruleNumber << " -->\n";
+		std::ostringstream comment;
+		comment << "Rule: " << ruleNumber;
+		xml.writeComment(comment.str());
+
 		xml.openElement("rule");
 
 		xml.openElement("boolean-expressions");

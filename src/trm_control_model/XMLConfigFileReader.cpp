@@ -1,5 +1,5 @@
 /***************************************************************************
- *  Copyright 2014 Marcelo Y. Matuda                                       *
+ *  Copyright 2014, 2015 Marcelo Y. Matuda                                 *
  *  Copyright 1991, 1992, 1993, 1994, 1995, 1996, 2001, 2002               *
  *    David R. Hill, Leonard Manzara, Craig Schock                         *
  *                                                                         *
@@ -24,52 +24,122 @@
 
 #include <memory>
 
-#include "Category.h"
 #include "Exception.h"
 #include "Log.h"
 #include "Model.h"
-#include "Parameter.h"
-#include "Posture.h"
+#include "RapidXmlUtil.h"
 #include "Text.h"
 
 
+
+using namespace rapidxml;
+
+namespace {
+
+const std::string booleanExpressionTagName   = "boolean-expression";
+const std::string booleanExpressionsTagName  = "boolean-expressions";
+const std::string categoriesTagName          = "categories";
+const std::string categoryTagName            = "category";
+const std::string categoryRefTagName         = "category-ref";
+const std::string commentTagName             = "comment";
+const std::string equationTagName            = "equation";
+const std::string equationGroupTagName       = "equation-group";
+const std::string equationsTagName           = "equations";
+const std::string expressionSymbolsTagName   = "expression-symbols";
+const std::string parameterTagName           = "parameter";
+const std::string parameterProfilesTagName   = "parameter-profiles";
+const std::string parametersTagName          = "parameters";
+const std::string parameterTargetsTagName    = "parameter-targets";
+const std::string parameterTransitionTagName = "parameter-transition";
+const std::string pointOrSlopesTagName       = "point-or-slopes";
+const std::string pointTagName               = "point";
+const std::string pointsTagName              = "points";
+const std::string postureCategoriesTagName   = "posture-categories";
+const std::string posturesTagName            = "postures";
+const std::string postureTagName             = "posture";
+const std::string ruleTagName                = "rule";
+const std::string rulesTagName               = "rules";
+const std::string slopeTagName               = "slope";
+const std::string slopeRatioTagName          = "slope-ratio";
+const std::string slopesTagName              = "slopes";
+const std::string specialProfilesTagName     = "special-profiles";
+const std::string specialTransitionsTagName  = "special-transitions";
+const std::string symbolEquationTagName      = "symbol-equation";
+const std::string symbolsTagName             = "symbols";
+const std::string symbolTagName              = "symbol";
+const std::string symbolTargetsTagName       = "symbol-targets";
+const std::string targetTagName              = "target";
+const std::string transitionTagName          = "transition";
+const std::string transitionGroupTagName     = "transition-group";
+const std::string transitionsTagName         = "transitions";
+
+const std::string defaultAttrName        = "default";
+const std::string displayTimeAttrName    = "display-time";
+const std::string equationAttrName       = "equation";
+const std::string formulaAttrName        = "formula";
+const std::string freeTimeAttrName       = "free-time";
+const std::string isPhantomAttrName      = "is-phantom";
+const std::string maximumAttrName        = "maximum";
+const std::string minimumAttrName        = "minimum";
+const std::string nameAttrName           = "name";
+const std::string p12AttrName            = "p12";
+const std::string p23AttrName            = "p23";
+const std::string p34AttrName            = "p34";
+const std::string slopeAttrName          = "slope";
+const std::string symbolAttrName         = "symbol";
+const std::string timeExpressionAttrName = "time-expression";
+const std::string typeAttrName           = "type";
+const std::string transitionAttrName     = "transition";
+const std::string valueAttrName          = "value";
+
+const std::string beatSymbolName       = "beat";
+const std::string durationSymbolName   = "duration";
+const std::string mark1SymbolName      = "mark1";
+const std::string mark2SymbolName      = "mark2";
+const std::string mark3SymbolName      = "mark3";
+const std::string qssaSymbolName       = "qssa";
+const std::string qssbSymbolName       = "qssb";
+const std::string rdSymbolName         = "rd";
+const std::string transitionSymbolName = "transition";
+
+} /* namespace */
 
 namespace GS {
 namespace TRMControlModel {
 
 void
-XMLConfigFileReader::parseCategories()
+XMLConfigFileReader::parseCategories(rapidxml::xml_node<char>* categoriesElem)
 {
-	for (const std::string* category = parser_.getFirstChild(categoryTagName_);
-				category;
-				category = parser_.getNextSibling(categoryTagName_)) {
+	for (xml_node<char>* categoryElem = firstChild(categoriesElem, categoryTagName);
+				categoryElem;
+				categoryElem = nextSibling(categoryElem, categoryTagName)) {
 
-		std::shared_ptr<Category> newCategory(new Category(parser_.getAttribute(nameAttrName_)));
+		std::shared_ptr<Category> newCategory(new Category(attributeValue(categoryElem, nameAttrName)));
 		model_.categoryList().push_back(newCategory);
 
-		if (parser_.getFirstChild()) {
-			model_.categoryList().back()->setComment(parser_.getText());
-			parser_.getNextSibling();
+		xml_node<char>* commentElem = firstChild(categoryElem, commentTagName);
+		if (commentElem) {
+			model_.categoryList().back()->setComment(commentElem->value());
 		}
 	}
 }
 
 void
-XMLConfigFileReader::parseParameters()
+XMLConfigFileReader::parseParameters(rapidxml::xml_node<char>* parametersElem)
 {
-	for (const std::string* parameter = parser_.getFirstChild(parameterTagName_);
-				parameter;
-				parameter = parser_.getNextSibling(parameterTagName_)) {
+	for (xml_node<char>* parameterElem = firstChild(parametersElem, parameterTagName);
+				parameterElem;
+				parameterElem = nextSibling(parameterElem, parameterTagName)) {
 
-		std::string name   = parser_.getAttribute(nameAttrName_);
-		float minimum      = Text::parseString<float>(parser_.getAttribute(minimumAttrName_));
-		float maximum      = Text::parseString<float>(parser_.getAttribute(maximumAttrName_));
-		float defaultValue = Text::parseString<float>(parser_.getAttribute(defaultAttrName_));
+		std::string name   = attributeValue(parameterElem, nameAttrName);
+		float minimum      = Text::parseString<float>(attributeValue(parameterElem, minimumAttrName));
+		float maximum      = Text::parseString<float>(attributeValue(parameterElem, maximumAttrName));
+		float defaultValue = Text::parseString<float>(attributeValue(parameterElem, defaultAttrName));
 		std::string comment;
 
-		if (parser_.getFirstChild()) {
-			comment = parser_.getText();
-			parser_.getNextSibling();
+		xml_node<char>* commentElem = firstChild(parameterElem, commentTagName);
+		if (commentElem) {
+			comment = commentElem->value();
 		}
 
 		model_.parameterList().emplace_back(name, minimum, maximum, defaultValue, comment);
@@ -77,21 +147,21 @@ XMLConfigFileReader::parseParameters()
 }
 
 void
-XMLConfigFileReader::parseSymbols()
+XMLConfigFileReader::parseSymbols(rapidxml::xml_node<char>* symbolsElem)
 {
-	for (const std::string* symbol = parser_.getFirstChild(symbolTagName_);
-				symbol;
-				symbol = parser_.getNextSibling(symbolTagName_)) {
+	for (xml_node<char>* symbolElem = firstChild(symbolsElem, symbolTagName);
+				symbolElem;
+				symbolElem = nextSibling(symbolElem, symbolTagName)) {
 
-		std::string name   = parser_.getAttribute(nameAttrName_);
-		float minimum      = Text::parseString<float>(parser_.getAttribute(minimumAttrName_));
-		float maximum      = Text::parseString<float>(parser_.getAttribute(maximumAttrName_));
-		float defaultValue = Text::parseString<float>(parser_.getAttribute(defaultAttrName_));
+		std::string name   = attributeValue(symbolElem, nameAttrName);
+		float minimum      = Text::parseString<float>(attributeValue(symbolElem, minimumAttrName));
+		float maximum      = Text::parseString<float>(attributeValue(symbolElem, maximumAttrName));
+		float defaultValue = Text::parseString<float>(attributeValue(symbolElem, defaultAttrName));
 		std::string comment;
 
-		if (parser_.getFirstChild()) {
-			comment = parser_.getText();
-			parser_.getNextSibling();
+		xml_node<char>* commentElem = firstChild(symbolElem, commentTagName);
+		if (commentElem) {
+			comment = commentElem->value();
 		}
 
 		model_.symbolList().emplace_back(name, minimum, maximum, defaultValue, comment);
@@ -99,13 +169,14 @@ XMLConfigFileReader::parseSymbols()
 }
 
 void
-XMLConfigFileReader::parsePostureSymbols(Posture& posture)
+XMLConfigFileReader::parsePostureSymbols(rapidxml::xml_node<char>* symbolTargetsElem, Posture& posture)
 {
-	for (const std::string* target = parser_.getFirstChild(targetTagName_);
-				target;
-				target = parser_.getNextSibling(targetTagName_)) {
-		const std::string& name = parser_.getAttribute(nameAttrName_);
-		const std::string& value = parser_.getAttribute(valueAttrName_);
+	for (xml_node<char>* targetElem = firstChild(symbolTargetsElem, targetTagName);
+				targetElem;
+				targetElem = nextSibling(targetElem, targetTagName)) {
+
+		const std::string name = attributeValue(targetElem, nameAttrName);
+		const std::string value = attributeValue(targetElem, valueAttrName);
 		for (unsigned int i = 0, size = model_.symbolList().size(); i < size; ++i) {
 			const Symbol& symbol = model_.symbolList()[i];
 			if (symbol.name() == name) {
@@ -116,13 +187,13 @@ XMLConfigFileReader::parsePostureSymbols(Posture& posture)
 }
 
 void
-XMLConfigFileReader::parsePostureCategories(Posture& posture)
+XMLConfigFileReader::parsePostureCategories(rapidxml::xml_node<char>* postureCategoriesElem, Posture& posture)
 {
-	for (const std::string* catRef = parser_.getFirstChild(categoryRefTagName_);
-				catRef;
-				catRef = parser_.getNextSibling(categoryRefTagName_)) {
+	for (xml_node<char>* catRefElem = firstChild(postureCategoriesElem, categoryRefTagName);
+				catRefElem;
+				catRefElem = nextSibling(catRefElem, categoryRefTagName)) {
 
-		const std::string name = parser_.getAttribute(nameAttrName_);
+		const std::string name = attributeValue(catRefElem, nameAttrName);
 		if (name != posture.name()) {
 			std::shared_ptr<Category> postureCat = model_.findCategory(name);
 			if (!postureCat) {
@@ -134,38 +205,38 @@ XMLConfigFileReader::parsePostureCategories(Posture& posture)
 }
 
 void
-XMLConfigFileReader::parsePostureParameters(Posture& posture)
+XMLConfigFileReader::parsePostureParameters(rapidxml::xml_node<char>* parameterTargetsElem, Posture& posture)
 {
-	for (const std::string* target = parser_.getFirstChild(targetTagName_);
-				target;
-				target = parser_.getNextSibling(targetTagName_)) {
+	for (xml_node<char>* targetElem = firstChild(parameterTargetsElem, targetTagName);
+				targetElem;
+				targetElem = nextSibling(targetElem, targetTagName)) {
 
-		std::string parameterName = parser_.getAttribute(nameAttrName_);
+		std::string parameterName = attributeValue(targetElem, nameAttrName);
 		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
 
-		posture.setParameterTarget(parameterIndex, Text::parseString<float>(parser_.getAttribute(valueAttrName_)));
+		posture.setParameterTarget(parameterIndex, Text::parseString<float>(attributeValue(targetElem, valueAttrName)));
 	}
 }
 
 void
-XMLConfigFileReader::parsePosture()
+XMLConfigFileReader::parsePosture(rapidxml::xml_node<char>* postureElem)
 {
 	std::unique_ptr<Posture> posture(new Posture(
-						 parser_.getAttribute(symbolAttrName_),
-						 model_.parameterList().size(),
-						 model_.symbolList().size()));
+						attributeValue(postureElem, symbolAttrName),
+						model_.parameterList().size(),
+						model_.symbolList().size()));
 
-	for (const std::string* child = parser_.getFirstChild();
-				child;
-				child = parser_.getNextSibling()) {
-		if (*child == postureCategoriesTagName_) {
-			parsePostureCategories(*posture);
-		} else if (*child == parameterTargetsTagName_) {
-			parsePostureParameters(*posture);
-		} else if (*child == symbolTargetsTagName_) {
-			parsePostureSymbols(*posture);
-		} else if (*child == commentTagName_) {
-			posture->setComment(parser_.getText());
+	for (xml_node<char>* childElem = firstChild(postureElem);
+				childElem;
+				childElem = nextSibling(childElem)) {
+		if (compareElementName(childElem, postureCategoriesTagName)) {
+			parsePostureCategories(childElem, *posture);
+		} else if (compareElementName(childElem, parameterTargetsTagName)) {
+			parsePostureParameters(childElem, *posture);
+		} else if (compareElementName(childElem, symbolTargetsTagName)) {
+			parsePostureSymbols(childElem, *posture);
+		} else if (compareElementName(childElem, commentTagName)) {
+			posture->setComment(childElem->value());
 		}
 	}
 
@@ -173,31 +244,31 @@ XMLConfigFileReader::parsePosture()
 }
 
 void
-XMLConfigFileReader::parsePostures()
+XMLConfigFileReader::parsePostures(rapidxml::xml_node<char>* posturesElem)
 {
-	for (const std::string* posture = parser_.getFirstChild(postureTagName_);
-				posture;
-				posture = parser_.getNextSibling(postureTagName_)) {
-		parsePosture();
+	for (xml_node<char>* postureElem = firstChild(posturesElem, postureTagName);
+				postureElem;
+				postureElem = nextSibling(postureElem, postureTagName)) {
+		parsePosture(postureElem);
 	}
 }
 
 void
-XMLConfigFileReader::parseEquationsGroup()
+XMLConfigFileReader::parseEquationsGroup(rapidxml::xml_node<char>* equationGroupElem)
 {
 	EquationGroup group;
-	group.name = parser_.getAttribute(nameAttrName_);
+	group.name = attributeValue(equationGroupElem, nameAttrName);
 
-	for (const std::string* equation = parser_.getFirstChild(equationTagName_);
-				equation;
-				equation = parser_.getNextSibling(equationTagName_)) {
+	for (xml_node<char>* equationElem = firstChild(equationGroupElem, equationTagName);
+				equationElem;
+				equationElem = nextSibling(equationElem, equationTagName)) {
 
-		std::string name = parser_.getAttribute(nameAttrName_);
-		std::string formula = parser_.getAttribute(formulaAttrName_);
+		std::string name = attributeValue(equationElem, nameAttrName);
+		std::string formula = attributeValue(equationElem, formulaAttrName, true);
 		std::string comment;
-		if (parser_.getFirstChild()) {
-			comment = parser_.getText();
-			parser_.getNextSibling();
+		xml_node<char>* commentElem = firstChild(equationElem, commentTagName);
+		if (commentElem) {
+			comment = commentElem->value();
 		}
 
 		if (formula.empty()) {
@@ -217,34 +288,34 @@ XMLConfigFileReader::parseEquationsGroup()
 }
 
 void
-XMLConfigFileReader::parseEquations()
+XMLConfigFileReader::parseEquations(rapidxml::xml_node<char>* equationsElem)
 {
-	for (const std::string* group = parser_.getFirstChild(equationGroupTagName_);
-				group;
-				group = parser_.getNextSibling(equationGroupTagName_)) {
-		parseEquationsGroup();
+	for (xml_node<char>* groupElem = firstChild(equationsElem, equationGroupTagName);
+				groupElem;
+				groupElem = nextSibling(groupElem, equationGroupTagName)) {
+		parseEquationsGroup(groupElem);
 	}
 }
 
 void
-XMLConfigFileReader::parseSlopeRatio(Transition& transition)
+XMLConfigFileReader::parseSlopeRatio(rapidxml::xml_node<char>* slopeRatioElem, Transition& transition)
 {
 	std::unique_ptr<Transition::SlopeRatio> p(new Transition::SlopeRatio());
 
-	for (const std::string* child = parser_.getFirstChild();
-				child;
-				child = parser_.getNextSibling()) {
-		if (*child == pointsTagName_) {
-			for (const std::string* point = parser_.getFirstChild(pointTagName_);
-						point;
-						point = parser_.getNextSibling(pointTagName_)) {
+	for (xml_node<char>* childElem = firstChild(slopeRatioElem);
+				childElem;
+				childElem = nextSibling(childElem)) {
+		if (compareElementName(childElem, pointsTagName)) {
+			for (xml_node<char>* pointElem = firstChild(childElem, pointTagName);
+						pointElem;
+						pointElem = nextSibling(pointElem, pointTagName)) {
 				std::unique_ptr<Transition::Point> p2(new Transition::Point());
-				p2->type = Transition::Point::getTypeFromName(parser_.getAttribute(typeAttrName_));
-				p2->value = Text::parseString<float>(parser_.getAttribute(valueAttrName_));
+				p2->type = Transition::Point::getTypeFromName(attributeValue(pointElem, typeAttrName));
+				p2->value = Text::parseString<float>(attributeValue(pointElem, valueAttrName));
 
-				const std::string timeExpr = parser_.getAttribute(timeExpressionAttrName_);
+				const std::string timeExpr = attributeValue(pointElem, timeExpressionAttrName, true);
 				if (timeExpr.empty()) {
-					p2->freeTime = Text::parseString<float>(parser_.getAttribute(freeTimeAttrName_));
+					p2->freeTime = Text::parseString<float>(attributeValue(pointElem, freeTimeAttrName));
 				} else {
 					std::shared_ptr<Equation> equation = model_.findEquation(timeExpr);
 					if (!equation) {
@@ -253,18 +324,18 @@ XMLConfigFileReader::parseSlopeRatio(Transition& transition)
 					p2->timeExpression = equation;
 				}
 
-				if (parser_.getAttribute(isPhantomAttrName_) == "yes") {
+				if (std::string("yes") == attributeValue(pointElem, isPhantomAttrName, true)) {
 					p2->isPhantom = true;
 				}
 				p->pointList.push_back(std::move(p2));
 			}
-		} else if (*child == slopesTagName_) {
-			for (const std::string* slope = parser_.getFirstChild(slopeTagName_);
-						slope;
-						slope = parser_.getNextSibling(slopeTagName_)) {
+		} else if (compareElementName(childElem, slopesTagName)) {
+			for (xml_node<char>* slopeElem = firstChild(childElem, slopeTagName);
+						slopeElem;
+						slopeElem = nextSibling(slopeElem, slopeTagName)) {
 				std::unique_ptr<Transition::Slope> p2(new Transition::Slope());
-				p2->slope = Text::parseString<float>(parser_.getAttribute(slopeAttrName_));
-				p2->displayTime = Text::parseString<float>(parser_.getAttribute(displayTimeAttrName_));
+				p2->slope = Text::parseString<float>(attributeValue(slopeElem, slopeAttrName));
+				p2->displayTime = Text::parseString<float>(attributeValue(slopeElem, displayTimeAttrName));
 				p->slopeList.push_back(std::move(p2));
 			}
 		}
@@ -274,19 +345,19 @@ XMLConfigFileReader::parseSlopeRatio(Transition& transition)
 }
 
 void
-XMLConfigFileReader::parseTransitionPointOrSlopes(Transition& transition)
+XMLConfigFileReader::parseTransitionPointOrSlopes(rapidxml::xml_node<char>* pointOrSlopesElem, Transition& transition)
 {
-	for (const std::string* child = parser_.getFirstChild();
-				child;
-				child = parser_.getNextSibling()) {
-		if (*child == pointTagName_) {
+	for (xml_node<char>* childElem = firstChild(pointOrSlopesElem);
+				childElem;
+				childElem = nextSibling(childElem)) {
+		if (compareElementName(childElem, pointTagName)) {
 			std::unique_ptr<Transition::Point> p(new Transition::Point());
-			p->type = Transition::Point::getTypeFromName(parser_.getAttribute(typeAttrName_));
-			p->value = Text::parseString<float>(parser_.getAttribute(valueAttrName_));
+			p->type = Transition::Point::getTypeFromName(attributeValue(childElem, typeAttrName));
+			p->value = Text::parseString<float>(attributeValue(childElem, valueAttrName));
 
-			const std::string timeExpr = parser_.getAttribute(timeExpressionAttrName_);
+			const std::string timeExpr = attributeValue(childElem, timeExpressionAttrName, true);
 			if (timeExpr.empty()) {
-				p->freeTime = Text::parseString<float>(parser_.getAttribute(freeTimeAttrName_));
+				p->freeTime = Text::parseString<float>(attributeValue(childElem, freeTimeAttrName));
 			} else {
 				std::shared_ptr<Equation> equation = model_.findEquation(timeExpr);
 				if (!equation) {
@@ -295,38 +366,38 @@ XMLConfigFileReader::parseTransitionPointOrSlopes(Transition& transition)
 				p->timeExpression = equation;
 			}
 
-			if (parser_.getAttribute(isPhantomAttrName_) == "yes") {
+			if (std::string("yes") == attributeValue(childElem, isPhantomAttrName, true)) {
 				p->isPhantom = true;
 			}
 			transition.pointOrSlopeList().push_back(std::move(p));
-		} else if (*child == slopeRatioTagName_) {
-			parseSlopeRatio(transition);
+		} else if (compareElementName(childElem, slopeRatioTagName)) {
+			parseSlopeRatio(childElem, transition);
 		}
 	}
 }
 
 void
-XMLConfigFileReader::parseTransitionsGroup(bool special)
+XMLConfigFileReader::parseTransitionsGroup(rapidxml::xml_node<char>* transitionGroupElem, bool special)
 {
 	TransitionGroup group;
-	group.name = parser_.getAttribute(nameAttrName_);
+	group.name = attributeValue(transitionGroupElem, nameAttrName);
 
-	for (const std::string* child = parser_.getFirstChild(transitionTagName_);
-				child;
-				child = parser_.getNextSibling(transitionTagName_)) {
+	for (xml_node<char>* childElem = firstChild(transitionGroupElem,transitionTagName);
+				childElem;
+				childElem = nextSibling(childElem, transitionTagName)) {
 
-		std::string name = parser_.getAttribute(nameAttrName_);
-		Transition::Type type = Transition::getTypeFromName(parser_.getAttribute(typeAttrName_));
+		std::string name = attributeValue(childElem, nameAttrName);
+		Transition::Type type = Transition::getTypeFromName(attributeValue(childElem, typeAttrName));
 
 		std::shared_ptr<Transition> tr(new Transition(name, type, special));
 
-		for (const std::string* transitionChild = parser_.getFirstChild();
-					transitionChild;
-					transitionChild = parser_.getNextSibling()) {
-			if (*transitionChild == pointOrSlopesTagName_) {
-				parseTransitionPointOrSlopes(*tr);
-			} else if (*transitionChild == commentTagName_) {
-				tr->setComment(parser_.getText());
+		for (xml_node<char>* transitionChildElem = firstChild(childElem);
+					transitionChildElem;
+					transitionChildElem = nextSibling(transitionChildElem)) {
+			if (compareElementName(transitionChildElem, pointOrSlopesTagName)) {
+				parseTransitionPointOrSlopes(transitionChildElem, *tr);
+			} else if (compareElementName(transitionChildElem, commentTagName)) {
+				tr->setComment(transitionChildElem->value());
 			}
 		}
 
@@ -341,26 +412,26 @@ XMLConfigFileReader::parseTransitionsGroup(bool special)
 }
 
 void
-XMLConfigFileReader::parseTransitions(bool special)
+XMLConfigFileReader::parseTransitions(rapidxml::xml_node<char>* transitionsElem, bool special)
 {
-	for (const std::string* group = parser_.getFirstChild(transitionGroupTagName_);
-				group;
-				group = parser_.getNextSibling(transitionGroupTagName_)) {
-		parseTransitionsGroup(special);
+	for (xml_node<char>* groupElem = firstChild(transitionsElem, transitionGroupTagName);
+				groupElem;
+				groupElem = nextSibling(groupElem, transitionGroupTagName)) {
+		parseTransitionsGroup(groupElem, special);
 	}
 }
 
 void
-XMLConfigFileReader::parseRuleParameterProfiles(Rule& rule)
+XMLConfigFileReader::parseRuleParameterProfiles(rapidxml::xml_node<char>* parameterProfilesElem, Rule& rule)
 {
-	for (const std::string* paramTrans = parser_.getFirstChild(parameterTransitionTagName_);
-				paramTrans;
-				paramTrans = parser_.getNextSibling(parameterTransitionTagName_)) {
+	for (xml_node<char>* paramTransElem = firstChild(parameterProfilesElem,parameterTransitionTagName);
+				paramTransElem;
+				paramTransElem = nextSibling(paramTransElem, parameterTransitionTagName)) {
 
-		std::string parameterName = parser_.getAttribute(nameAttrName_);
+		std::string parameterName = attributeValue(paramTransElem, nameAttrName);
 		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
 
-		const std::string& transitionName = parser_.getAttribute(transitionAttrName_);
+		const std::string transitionName = attributeValue(paramTransElem, transitionAttrName);
 		std::shared_ptr<Transition> transition = model_.findTransition(transitionName);
 		if (!transition) {
 			THROW_EXCEPTION(UnavailableResourceException, "Transition not found: " << transitionName << '.');
@@ -371,16 +442,16 @@ XMLConfigFileReader::parseRuleParameterProfiles(Rule& rule)
 }
 
 void
-XMLConfigFileReader::parseRuleSpecialProfiles(Rule& rule)
+XMLConfigFileReader::parseRuleSpecialProfiles(rapidxml::xml_node<char>* specialProfilesElem, Rule& rule)
 {
-	for (const std::string* paramTrans = parser_.getFirstChild(parameterTransitionTagName_);
-				paramTrans;
-				paramTrans = parser_.getNextSibling(parameterTransitionTagName_)) {
+	for (xml_node<char>* paramTransElem = firstChild(specialProfilesElem, parameterTransitionTagName);
+				paramTransElem;
+				paramTransElem = nextSibling(paramTransElem, parameterTransitionTagName)) {
 
-		std::string parameterName = parser_.getAttribute(nameAttrName_);
+		std::string parameterName = attributeValue(paramTransElem, nameAttrName);
 		unsigned int parameterIndex = model_.findParameterIndex(parameterName);
 
-		const std::string& transitionName = parser_.getAttribute(transitionAttrName_);
+		const std::string transitionName = attributeValue(paramTransElem, transitionAttrName);
 		std::shared_ptr<Transition> transition = model_.findSpecialTransition(transitionName);
 		if (!transition) {
 			THROW_EXCEPTION(UnavailableResourceException, "Special transition not found: " << transitionName << '.');
@@ -391,63 +462,64 @@ XMLConfigFileReader::parseRuleSpecialProfiles(Rule& rule)
 }
 
 void
-XMLConfigFileReader::parseRuleExpressionSymbols(Rule& rule)
+XMLConfigFileReader::parseRuleExpressionSymbols(rapidxml::xml_node<char>* expressionSymbolsElem, Rule& rule)
 {
-	for (const std::string* symbEqu = parser_.getFirstChild(symbolEquationTagName_);
-				symbEqu;
-				symbEqu = parser_.getNextSibling(symbolEquationTagName_)) {
-		const std::string& name = parser_.getAttribute(nameAttrName_);
-		const std::string& equationName = parser_.getAttribute(equationAttrName_);
+	for (xml_node<char>* symbEquElem = firstChild(expressionSymbolsElem, symbolEquationTagName);
+				symbEquElem;
+				symbEquElem = nextSibling(symbEquElem, symbolEquationTagName)) {
+
+		const std::string name = attributeValue(symbEquElem, nameAttrName);
+		const std::string equationName = attributeValue(symbEquElem, equationAttrName);
 
 		std::shared_ptr<Equation> equation = model_.findEquation(equationName);
 		if (!equation) {
 			THROW_EXCEPTION(UnavailableResourceException, "Equation not found: " << equationName << '.');
 		}
 
-		if (name == rdSymbolName_) {
+		if (name == rdSymbolName) {
 			rule.exprSymbolEquations().ruleDuration = equation;
-		} else if (name == beatSymbolName_) {
+		} else if (name == beatSymbolName) {
 			rule.exprSymbolEquations().beat = equation;
-		} else if (name == mark1SymbolName_) {
+		} else if (name == mark1SymbolName) {
 			rule.exprSymbolEquations().mark1 = equation;
-		} else if (name == mark2SymbolName_) {
+		} else if (name == mark2SymbolName) {
 			rule.exprSymbolEquations().mark2 = equation;
-		} else if (name == mark3SymbolName_) {
+		} else if (name == mark3SymbolName) {
 			rule.exprSymbolEquations().mark3 = equation;
 		}
 	}
 }
 
 void
-XMLConfigFileReader::parseRuleBooleanExpressions(Rule& rule)
+XMLConfigFileReader::parseRuleBooleanExpressions(rapidxml::xml_node<char>* booleanExpressionsElem, Rule& rule)
 {
 	std::vector<std::string> exprList;
-	for (const std::string* boolExpr = parser_.getFirstChild(booleanExpressionTagName_);
-				boolExpr;
-				boolExpr = parser_.getNextSibling(booleanExpressionTagName_)) {
-		exprList.push_back(parser_.getText());
+	for (xml_node<char>* boolExprElem = firstChild(booleanExpressionsElem, booleanExpressionTagName);
+				boolExprElem;
+				boolExprElem = nextSibling(boolExprElem, booleanExpressionTagName)) {
+		exprList.push_back(boolExprElem->value());
 	}
 	rule.setBooleanExpressionList(exprList, model_);
 }
 
 void
-XMLConfigFileReader::parseRule()
+XMLConfigFileReader::parseRule(rapidxml::xml_node<char>* ruleElem)
 {
 	std::unique_ptr<Rule> rule(new Rule(model_.parameterList().size()));
 
-	for (const std::string* child = parser_.getFirstChild();
-				child;
-				child = parser_.getNextSibling()) {
-		if (*child == booleanExpressionsTagName_) {
-			parseRuleBooleanExpressions(*rule);
-		} else if (*child == parameterProfilesTagName_) {
-			parseRuleParameterProfiles(*rule);
-		} else if (*child == specialProfilesTagName_) {
-			parseRuleSpecialProfiles(*rule);
-		} else if (*child == expressionSymbolsTagName_) {
-			parseRuleExpressionSymbols(*rule);
-		} else if (*child == commentTagName_) {
-			rule->setComment(parser_.getText());
+	for (xml_node<char>* childElem = firstChild(ruleElem);
+				childElem;
+				childElem = nextSibling(childElem)) {
+		if (compareElementName(childElem, booleanExpressionsTagName)) {
+			parseRuleBooleanExpressions(childElem, *rule);
+		} else if (compareElementName(childElem, parameterProfilesTagName)) {
+			parseRuleParameterProfiles(childElem, *rule);
+		} else if (compareElementName(childElem, specialProfilesTagName)) {
+			parseRuleSpecialProfiles(childElem, *rule);
+		} else if (compareElementName(childElem, expressionSymbolsTagName)) {
+			parseRuleExpressionSymbols(childElem, *rule);
+		} else if (compareElementName(childElem, commentTagName)) {
+			rule->setComment(childElem->value());
 		}
 	}
 
@@ -455,12 +527,12 @@ XMLConfigFileReader::parseRule()
 }
 
 void
-XMLConfigFileReader::parseRules()
+XMLConfigFileReader::parseRules(rapidxml::xml_node<char>* rulesElem)
 {
-	for (const std::string* rule = parser_.getFirstChild(ruleTagName_);
-				rule;
-				rule = parser_.getNextSibling(ruleTagName_)) {
-		parseRule();
+	for (xml_node<char>* ruleElem = firstChild(rulesElem, ruleTagName);
+				ruleElem;
+				ruleElem = nextSibling(ruleElem, ruleTagName)) {
+		parseRule(ruleElem);
 	}
 }
 
@@ -471,79 +543,8 @@ XMLConfigFileReader::parseRules()
  */
 XMLConfigFileReader::XMLConfigFileReader(Model& model, const std::string& filePath)
 		: model_(model)
-
-		, booleanExpressionTagName_  ("boolean-expression")
-		, booleanExpressionsTagName_ ("boolean-expressions")
-		, categoriesTagName_         ("categories")
-		, categoryTagName_           ("category")
-		, categoryRefTagName_        ("category-ref")
-		, commentTagName_            ("comment")
-		, equationTagName_           ("equation")
-		, equationGroupTagName_      ("equation-group")
-		, equationsTagName_          ("equations")
-		, expressionSymbolsTagName_  ("expression-symbols")
-		, parameterTagName_          ("parameter")
-		, parameterProfilesTagName_  ("parameter-profiles")
-		, parametersTagName_         ("parameters")
-		, parameterTargetsTagName_   ("parameter-targets")
-		, parameterTransitionTagName_("parameter-transition")
-		, pointOrSlopesTagName_      ("point-or-slopes")
-		, pointTagName_              ("point")
-		, pointsTagName_             ("points")
-		, postureCategoriesTagName_  ("posture-categories")
-		, posturesTagName_           ("postures")
-		, postureTagName_            ("posture")
-		, ruleTagName_               ("rule")
-		, rulesTagName_              ("rules")
-		, slopeTagName_              ("slope")
-		, slopeRatioTagName_         ("slope-ratio")
-		, slopesTagName_             ("slopes")
-		, specialProfilesTagName_    ("special-profiles")
-		, specialTransitionsTagName_ ("special-transitions")
-		, symbolEquationTagName_     ("symbol-equation")
-		, symbolsTagName_            ("symbols")
-		, symbolTagName_             ("symbol")
-		, symbolTargetsTagName_      ("symbol-targets")
-		, targetTagName_             ("target")
-		, transitionTagName_         ("transition")
-		, transitionGroupTagName_    ("transition-group")
-		, transitionsTagName_        ("transitions")
-
-		, defaultAttrName_       ("default")
-		, displayTimeAttrName_   ("display-time")
-		, equationAttrName_      ("equation")
-		, formulaAttrName_       ("formula")
-		, freeTimeAttrName_      ("free-time")
-		, isPhantomAttrName_     ("is-phantom")
-		, maximumAttrName_       ("maximum")
-		, minimumAttrName_       ("minimum")
-		, nameAttrName_          ("name")
-		, p12AttrName_           ("p12")
-		, p23AttrName_           ("p23")
-		, p34AttrName_           ("p34")
-		, slopeAttrName_         ("slope")
-		, symbolAttrName_        ("symbol")
-		, timeExpressionAttrName_("time-expression")
-		, typeAttrName_          ("type")
-		, transitionAttrName_    ("transition")
-		, valueAttrName_         ("value")
-
-		, beatSymbolName_      ("beat")
-		, durationSymbolName_  ("duration")
-		, mark1SymbolName_     ("mark1")
-		, mark2SymbolName_     ("mark2")
-		, mark3SymbolName_     ("mark3")
-		, qssaSymbolName_      ("qssa")
-		, qssbSymbolName_      ("qssb")
-		, rdSymbolName_        ("rd")
-		, transitionSymbolName_("transition")
-
-		, parser_(filePath)
+		, filePath_(filePath)
 {
-	const std::string* root = parser_.getFirstChild();
-	if (root == 0) {
-		THROW_EXCEPTION(TRMControlModelException, "Root element not found.");
-	}
 }
 
 /*******************************************************************************
@@ -553,59 +554,73 @@ XMLConfigFileReader::~XMLConfigFileReader()
 {
 }
 
-/*******************************************************************************
- * Precondition: the model is empty.
- */
 void
 XMLConfigFileReader::loadModel()
 {
+	std::string source = readXMLFile(filePath_);
+	xml_document<char> doc;
+	doc.parse<parse_no_data_nodes | parse_validate_closing_tags>(&source[0]);
+
+	xml_node<char>* root = doc.first_node();
+	if (root == 0) {
+		THROW_EXCEPTION(XMLException, "Root element not found.");
+	}
+
 	LOG_DEBUG("categories");
-	if (parser_.getFirstChild(categoriesTagName_) == 0) {
+	xml_node<char>* categoriesElem = firstChild(root, categoriesTagName);
+	if (categoriesElem == 0) {
 		THROW_EXCEPTION(TRMControlModelException, "Categories element not found.");
 	}
-	parseCategories();
+	parseCategories(categoriesElem);
 
 	LOG_DEBUG("parameters");
-	if (parser_.getNextSibling(parametersTagName_) == 0) {
+	xml_node<char>* parametersElem = firstChild(root, parametersTagName);
+	if (parametersElem == 0) {
 		THROW_EXCEPTION(TRMControlModelException, "Parameters element not found.");
 	}
-	parseParameters();
+	parseParameters(parametersElem);
 
 	LOG_DEBUG("symbols");
-	if (parser_.getNextSibling(symbolsTagName_) == 0) {
+	xml_node<char>* symbolsElem = firstChild(root, symbolsTagName);
+	if (symbolsElem == 0) {
 		THROW_EXCEPTION(TRMControlModelException, "Categories element not found.");
 	}
-	parseSymbols();
+	parseSymbols(symbolsElem);
 
 	LOG_DEBUG("postures");
-	if (parser_.getNextSibling(posturesTagName_) == 0) {
+	xml_node<char>* posturesElem = firstChild(root, posturesTagName);
+	if (posturesElem == 0) {
 		THROW_EXCEPTION(TRMControlModelException, "Postures element not found.");
 	}
-	parsePostures();
+	parsePostures(posturesElem);
 
 	LOG_DEBUG("equations");
-	if (parser_.getNextSibling(equationsTagName_) == 0) {
+	xml_node<char>* equationsElem = firstChild(root, equationsTagName);
+	if (equationsElem == 0) {
 		THROW_EXCEPTION(TRMControlModelException, "Equations element not found.");
 	}
-	parseEquations();
+	parseEquations(equationsElem);
 
 	LOG_DEBUG("transitions");
-	if (parser_.getNextSibling(transitionsTagName_) == 0) {
+	xml_node<char>* transitionsElem = firstChild(root, transitionsTagName);
+	if (transitionsElem == 0) {
 		THROW_EXCEPTION(TRMControlModelException, "Transitions element not found.");
 	}
-	parseTransitions(false);
+	parseTransitions(transitionsElem, false);
 
 	LOG_DEBUG("special-transitions");
-	if (parser_.getNextSibling(specialTransitionsTagName_) == 0) {
+	xml_node<char>* specialTransitionsElem = firstChild(root, specialTransitionsTagName);
+	if (specialTransitionsElem == 0) {
 		THROW_EXCEPTION(TRMControlModelException, "Special-transitions element not found.");
 	}
-	parseTransitions(true);
+	parseTransitions(specialTransitionsElem, true);
 
 	LOG_DEBUG("rules");
-	if (parser_.getNextSibling(rulesTagName_) == 0) {
+	xml_node<char>* rulesElem = firstChild(root, rulesTagName);
+	if (rulesElem == 0) {
 		THROW_EXCEPTION(TRMControlModelException, "Rules element not found.");
 	}
-	parseRules();
+	parseRules(rulesElem);
 }
 
 } /* namespace TRMControlModel */

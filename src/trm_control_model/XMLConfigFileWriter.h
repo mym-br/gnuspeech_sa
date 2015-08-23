@@ -1,7 +1,5 @@
 /***************************************************************************
- *  Copyright 2014 Marcelo Y. Matuda                                       *
- *  Copyright 1991, 1992, 1993, 1994, 1995, 1996, 2001, 2002               *
- *    David R. Hill, Leonard Manzara, Craig Schock                         *
+ *  Copyright 2014, 2015 Marcelo Y. Matuda                                 *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -16,19 +14,18 @@
  *  You should have received a copy of the GNU General Public License      *
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ***************************************************************************/
-// 2014-12
-// This file was created by Marcelo Y. Matuda, and code/information
-// from Gnuspeech was added to it later.
 
 #ifndef TRM_CONTROL_MODEL_XML_CONFIG_FILE_WRITER_H_
 #define TRM_CONTROL_MODEL_XML_CONFIG_FILE_WRITER_H_
 
-#include <fstream>
 #include <string>
 
 
 
 namespace GS {
+
+class StreamXMLWriter;
+
 namespace TRMControlModel {
 
 class Model;
@@ -46,10 +43,9 @@ private:
 	XMLConfigFileWriter(const XMLConfigFileWriter&) = delete;
 	XMLConfigFileWriter& operator=(const XMLConfigFileWriter&) = delete;
 
-	void writeElements();
+	void writeElements(StreamXMLWriter& xml);
 
 	const Model& model_;
-	std::ofstream out_;
 	std::string filePath_;
 };
 
