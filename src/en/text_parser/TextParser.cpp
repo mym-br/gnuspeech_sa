@@ -255,6 +255,9 @@ print_stream(std::stringstream& stream, long stream_length)
 		case SILENCE_MODE_END:
 			printf("<silence mode end>");
 			break;
+		case '\0':
+			printf("\\0");
+			break;
 		default:
 			printf("%c", c);
 			break;
