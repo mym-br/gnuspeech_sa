@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  ***************************************************************************
  *  Copyright 1991, 1992, 1993, 1994, 1995, 1996, 2001, 2002               *
@@ -18,7 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ***************************************************************************
 -->
-<root version='1'>
+<root version="1">
   <categories>
     <category name="phone">
       <comment>This is the static phone category.  It cannot be changed or removed</comment>
@@ -39,11 +39,11 @@
     <category name="whistlehack">
       <comment>Added so we can easily do the rewrite rule:
 
-s* >> [f* | v* | th* | dh*] 
+s* >> [f* | v* | th* | dh*]
 
 				transforms to:
 
-s* >> qt* >> [f* | v* | th* | dh*] 
+s* >> qt* >> [f* | v* | th* | dh*]
 
 Now works as:
 
@@ -2445,7 +2445,6 @@ s* >> qt* >> whistlehack</comment>
       </symbol-targets>
     </posture>
     <posture symbol="oh'">
-      <comment></comment>
       <posture-categories>
         <category-ref name="oh'"/>
         <category-ref name="phone"/>
@@ -2576,7 +2575,6 @@ s* >> qt* >> whistlehack</comment>
       </symbol-targets>
     </posture>
     <posture symbol="ov'">
-      <comment></comment>
       <posture-categories>
         <category-ref name="ov'"/>
         <category-ref name="phone"/>
@@ -3847,7 +3845,6 @@ s* >> qt* >> whistlehack</comment>
       </symbol-targets>
     </posture>
     <posture symbol="uh'">
-      <comment></comment>
       <posture-categories>
         <category-ref name="uh'"/>
         <category-ref name="phone"/>
