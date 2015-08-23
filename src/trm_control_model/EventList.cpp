@@ -691,6 +691,9 @@ EventList::generateEventList()
 		}
 		unsigned int ruleIndex = 0;
 		const Rule* tempRule = model_.findFirstMatchingRule(tempPostureList, ruleIndex);
+		if (tempRule == nullptr) {
+			THROW_EXCEPTION(UnavailableResourceException, "Could not find a matching rule.");
+		}
 
 		ruleData_[currentRule_].number = ruleIndex + 1U;
 
