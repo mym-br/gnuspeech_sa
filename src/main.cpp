@@ -38,8 +38,15 @@ void
 showUsage(const char* programName)
 {
 	std::cout << "\nGnuspeechSA " << PROGRAM_VERSION << "\n\n";
-	std::cout << "Usage: " << programName << " [--version] [-v] -c config_dir [-i input_text.txt] -p trm_param_file.txt -o output_file.wav text\n";
-	std::cout << "         -v : verbose\n" << std::endl;
+	std::cout << "Usage:\n\n";
+	std::cout << programName << " --version\n";
+	std::cout << "        Shows the program version.\n\n";
+	std::cout << programName << " [-v] -c config_dir -p trm_param_file.txt -o output_file.wav \"Hello world.\"\n";
+	std::cout << "        Synthesizes text from the command line.\n";
+	std::cout << "        -v : verbose\n\n";
+	std::cout << programName << " [-v] -c config_dir -i input_text.txt -p trm_param_file.txt -o output_file.wav\n";
+	std::cout << "        Synthesizes text from a file.\n";
+	std::cout << "        -v : verbose\n" << std::endl;
 }
 
 int
