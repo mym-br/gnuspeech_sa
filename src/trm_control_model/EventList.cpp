@@ -1030,7 +1030,7 @@ EventList::generateOutput(std::ostream& trmParamStream)
 
 		table[0] += static_cast<float>(pitchMean_);
 
-		trmParamStream << std::fixed << std::setprecision(3);
+		//trmParamStream << std::fixed << std::setprecision(3);
 		trmParamStream << table[0];
 		for (int k = 1; k < 7; ++k) {
 			trmParamStream << ' ' << table[k];
