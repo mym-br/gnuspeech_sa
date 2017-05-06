@@ -1026,7 +1026,7 @@ EventList::generateOutput(std::ostream& trmParamStream)
 		}
 		if (!microFlag_) table[0] = 0.0;
 		if (driftFlag_)  table[0] += static_cast<float>(driftGenerator_.drift());
-		if (macroFlag_)  table[0] += static_cast<long>(currentValues[32]);
+		if (macroFlag_)  table[0] += static_cast<float>(currentValues[32]);
 
 		table[0] += static_cast<float>(pitchMean_);
 
