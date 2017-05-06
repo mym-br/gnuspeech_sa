@@ -18,7 +18,7 @@
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
 
-#define PROGRAM_VERSION "0.1.5"
+#define PROGRAM_VERSION "0.1.6"
 #define TRM_CONTROL_MODEL_CONFIG_FILE "/monet.xml"
 
 #endif /* GLOBAL_H_ */
