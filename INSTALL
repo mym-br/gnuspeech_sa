@@ -15,8 +15,8 @@
     - Execute in a terminal (running bash):
 
       pkg_dir=$PWD
-      mkdir ../GnuspeechSA-build
-      cd ../GnuspeechSA-build
+      mkdir ../gnuspeech_sa-build
+      cd ../gnuspeech_sa-build
       cmake -D CMAKE_BUILD_TYPE=Release $pkg_dir
       make
 
@@ -24,8 +24,8 @@
     - Execute in a terminal (running bash):
 
       pkg_dir=$PWD
-      mkdir ../GnuspeechSA-build
-      cd ../GnuspeechSA-build
+      mkdir ../gnuspeech_sa-build
+      cd ../gnuspeech_sa-build
       CXX=clang++ cmake -D CMAKE_BUILD_TYPE=Release $pkg_dir
       make
 
