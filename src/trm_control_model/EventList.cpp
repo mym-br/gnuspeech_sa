@@ -32,6 +32,7 @@
 #define TETRAPHONE 4
 
 #define INTONATION_CONFIG_FILE_NAME "/intonation"
+#define EPS (1.0e-6)
 
 
 
@@ -801,7 +802,8 @@ EventList::applyIntonation()
 		//	printf("%f ", intonParms[j]);
 		//printf("\n");
 
-		pretonicDelta = (intonParms_[1]) / (endTime - startTime);
+		const double deltaTime = endTime - startTime;
+		pretonicDelta = deltaTime < EPS ? 0.0 : intonParms_[1] / deltaTime;
 		//printf("Pretonic Delta = %f time = %f\n", pretonicDelta, (endTime - startTime));
 
 		/* Set up intonation boundary variables */
