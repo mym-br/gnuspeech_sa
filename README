@@ -49,8 +49,7 @@ COPYING file for more details.
 Usage of gnuspeech_sa
 ---------------------
 
-gnuspeech_sa converts the input text to control parameters which will be sent to
-the tube model. The tube model then synthesizes the speech.
+gnuspeech_sa converts the input text to speech.
 
 ./gnuspeech_sa [-v] -c config_dir -p trm_param_file.txt -o output_file.wav \
 		"Hello world."
@@ -70,7 +69,7 @@ the tube model. The tube model then synthesizes the speech.
 
 	config_dir is the directory that stores the configuration data,
 		e.g. data/en.
-	input_text.txt contains the input text in english.
+	input_text.txt contains the input text.
 	trm_param_file.txt will be generated, containing the tube model
 		parameters.
 	output_file.wav will be generated, containing the synthesized speech.
@@ -94,13 +93,8 @@ gnuspeech_sa_trm executes only the tube model.
 Contents of data/en
 -------------------
 
-It is recommended that users modify a copy of this directory, not the original.
-
 monet.xml
 	Contains the articulatory database.
-
-	It can be modified with a plain text editor, but the use of an editor
-	like GS:Editor is recommended.
 
 intonation
 	Controls the intonation.
@@ -127,8 +121,9 @@ trm_control_model.config
 	Interesting parameters are:
 
 		voice_name
-			A value of EXAMPLE will load the voice file named
-			voice_EXAMPLE.config.
+			Defines the voice used in the synthesis.
+			It selects which of the voice_*.config files will be
+			loaded.
 		tempo
 			Values greater than 1 will speed up the speech.
 		pitch_offset
@@ -183,8 +178,6 @@ voice_small_child.config
 vowelTransitions
 	Controls vowel transitions.
 
-	Normal users should not modify this file.
-
 vowelTransitions_2
 	Alternative version of vowelTransitions.
-	It is not used.
+	It is not being used.
