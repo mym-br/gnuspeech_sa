@@ -186,12 +186,12 @@ WavetableGlottalSource::getSample(double frequency)  /*  PLAIN OSCILLATOR  */
 	incrementTablePosition(frequency);
 
 	/*  FIND SURROUNDING INTEGER TABLE POSITIONS  */
-	lowerPosition = (int) currentPosition;
+	lowerPosition = (int) currentPosition_;
 	upperPosition = mod0(lowerPosition + 1);
 
 	/*  RETURN INTERPOLATED TABLE VALUE  */
 	return wavetable_[lowerPosition] +
-		((currentPosition - lowerPosition) *
+		((currentPosition_ - lowerPosition) *
 		(wavetable_[upperPosition] - wavetable_[lowerPosition]));
 }
 #endif
