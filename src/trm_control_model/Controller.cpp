@@ -66,45 +66,6 @@ Controller::loadConfiguration(const char* configDirPath)
 	trmConfig_.load(trmConfigFilePath.str(), voiceFilePath.str());
 }
 
-/*******************************************************************************
- * This function synthesizes speech from data contained in the event list.
- */
-void
-Controller::synthesizeFromEventList(const char* trmParamFile, const char* outputFile)
-{
-	std::fstream trmParamStream(trmParamFile, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
-	if (!trmParamStream) {
-		THROW_EXCEPTION(IOException, "Could not open the file " << trmParamFile << '.');
-	}
-
-	initUtterance(trmParamStream);
-
-	eventList_.generateOutput(trmParamStream);
-
-	trmParamStream.seekg(0);
-
-	TRM::Tube trm;
-	trm.synthesizeToFile(trmParamStream, outputFile);
-}
-
-void
-Controller::synthesizeFromEventList(const char* trmParamFile, std::vector<float>& buffer)
-{
-	std::fstream trmParamStream(trmParamFile, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
-	if (!trmParamStream) {
-		THROW_EXCEPTION(IOException, "Could not open the file " << trmParamFile << '.');
-	}
-
-	initUtterance(trmParamStream);
-
-	eventList_.generateOutput(trmParamStream);
-
-	trmParamStream.seekg(0);
-
-	TRM::Tube trm;
-	trm.synthesizeToBuffer(trmParamStream, buffer);
-}
-
 void
 Controller::initUtterance(std::ostream& trmParamStream)
 {

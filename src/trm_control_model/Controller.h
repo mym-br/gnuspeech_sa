@@ -44,15 +44,10 @@ public:
 	~Controller();
 
 	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, const char* outputFile);
-	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, std::vector<float>& buffer);
-	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, std::iostream& trmParamStream);
-	void synthesizeFromEventList(const char* trmParamFile, const char* outputFile);
-	void synthesizeFromEventList(const char* trmParamFile, std::vector<float>& buffer);
 
 	Model& model() { return model_; }
 	EventList& eventList() { return eventList_; }
 	Configuration& trmControlModelConfiguration() { return trmControlModelConfig_; }
-	TRM::Configuration& trmConfiguration() { return trmConfig_; }
 private:
 	enum {
 		MAX_VOICES = 5
@@ -70,6 +65,7 @@ private:
 	int validPosture(const char* token);
 	void setIntonation(int intonation);
 
+	template<typename T> void synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, std::iostream& trmParamStream);
 	template<typename T> void synthesizePhoneticStringChunk(T& phoneticStringParser, const char* phoneticStringChunk, std::ostream& trmParamStream);
 
 	Model& model_;
@@ -93,21 +89,6 @@ Controller::synthesizePhoneticString(T& phoneticStringParser, const char* phonet
 
 	TRM::Tube trm;
 	trm.synthesizeToFile(trmParamStream, outputFile);
-}
-
-template<typename T>
-void
-Controller::synthesizePhoneticString(T& phoneticStringParser, const char* phoneticString, const char* trmParamFile, std::vector<float>& buffer)
-{
-	std::fstream trmParamStream(trmParamFile, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
-	if (!trmParamStream) {
-		THROW_EXCEPTION(IOException, "Could not open the file " << trmParamFile << '.');
-	}
-
-	synthesizePhoneticString(phoneticStringParser, phoneticString, trmParamStream);
-
-	TRM::Tube trm;
-	trm.synthesizeToBuffer(trmParamStream, buffer);
 }
 
 template<typename T>

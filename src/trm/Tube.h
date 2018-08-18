@@ -27,7 +27,6 @@
 #include <vector>
 
 #include "BandpassFilter.h"
-#include "MovingAverageFilter.h"
 #include "NoiseFilter.h"
 #include "NoiseSource.h"
 #include "RadiationFilter.h"
@@ -66,48 +65,11 @@ public:
 		N6 = 5,
 		TOTAL_NASAL_SECTIONS = 6
 	};
-	enum ParameterIndex {
-		PARAM_GLOT_PITCH = 0,
-		PARAM_GLOT_VOL   = 1,
-		PARAM_ASP_VOL    = 2,
-		PARAM_FRIC_VOL   = 3,
-		PARAM_FRIC_POS   = 4,
-		PARAM_FRIC_CF    = 5,
-		PARAM_FRIC_BW    = 6,
-		PARAM_R1         = 7,
-		PARAM_R2         = 8,
-		PARAM_R3         = 9,
-		PARAM_R4         = 10,
-		PARAM_R5         = 11,
-		PARAM_R6         = 12,
-		PARAM_R7         = 13,
-		PARAM_R8         = 14,
-		PARAM_VELUM      = 15
-	};
 
 	Tube();
 	~Tube();
 
 	void synthesizeToFile(std::istream& inputStream, const char* outputFile);
-	void synthesizeToBuffer(std::istream& inputStream, std::vector<float>& outputBuffer);
-
-	template<typename T> void loadConfigurationForInteractiveExecution(const T& config);
-	void initializeSynthesizer();
-	void initializeInputFilters(double period);
-	void loadSingleInput(const VocalTractModelParameterValue pv);
-	void synthesizeForInputSequence();
-	void synthesizeForSingleInput(int numIterations);
-
-	std::vector<float>& outputData() { return outputData_; }
-	std::size_t outputDataPos() const { return outputDataPos_; }
-	void setOutputDataPos(std::size_t pos) { outputDataPos_ = pos; }
-	void resetOutputData() {
-		outputData_.clear();
-		outputDataPos_ = 0;
-	}
-	double maximumOutputSampleValue() const { return srConv_->maximumSampleValue(); }
-	float outputRate() const { return outputRate_; }
-	unsigned int numChannels() const { return channels_; }
 private:
 	enum {
 		VELUM = N1
@@ -197,63 +159,11 @@ private:
 		double velumDelta;
 	};
 
-	struct InputFilters {
-		MovingAverageFilter<double> glotPitchFilter;
-		MovingAverageFilter<double> glotVolFilter;
-		MovingAverageFilter<double> aspVolFilter;
-		MovingAverageFilter<double> fricVolFilter;
-		MovingAverageFilter<double> fricPosFilter;
-		MovingAverageFilter<double> fricCFFilter;
-		MovingAverageFilter<double> fricBWFilter;
-		MovingAverageFilter<double> radius0Filter;
-		MovingAverageFilter<double> radius1Filter;
-		MovingAverageFilter<double> radius2Filter;
-		MovingAverageFilter<double> radius3Filter;
-		MovingAverageFilter<double> radius4Filter;
-		MovingAverageFilter<double> radius5Filter;
-		MovingAverageFilter<double> radius6Filter;
-		MovingAverageFilter<double> radius7Filter;
-		MovingAverageFilter<double> velumFilter;
-		InputFilters(double sampleRate, double period)
-			: glotPitchFilter(sampleRate, period)
-			, glotVolFilter(sampleRate, period)
-			, aspVolFilter(sampleRate, period)
-			, fricVolFilter(sampleRate, period)
-			, fricPosFilter(sampleRate, period)
-			, fricCFFilter(sampleRate, period)
-			, fricBWFilter(sampleRate, period)
-			, radius0Filter(sampleRate, period)
-			, radius1Filter(sampleRate, period)
-			, radius2Filter(sampleRate, period)
-			, radius3Filter(sampleRate, period)
-			, radius4Filter(sampleRate, period)
-			, radius5Filter(sampleRate, period)
-			, radius6Filter(sampleRate, period)
-			, radius7Filter(sampleRate, period)
-			, velumFilter(sampleRate, period) {}
-		void reset() {
-			glotPitchFilter.reset();
-			glotVolFilter.reset();
-			aspVolFilter.reset();
-			fricVolFilter.reset();
-			fricPosFilter.reset();
-			fricCFFilter.reset();
-			fricBWFilter.reset();
-			radius0Filter.reset();
-			radius1Filter.reset();
-			radius2Filter.reset();
-			radius3Filter.reset();
-			radius4Filter.reset();
-			radius5Filter.reset();
-			radius6Filter.reset();
-			radius7Filter.reset();
-			velumFilter.reset();
-		}
-	};
-
 	Tube(const Tube&) = delete;
 	Tube& operator=(const Tube&) = delete;
 
+	void initializeSynthesizer();
+	void synthesizeForInputSequence();
 	void reset();
 	void calculateTubeCoefficients();
 	void initializeNasalCavity();
@@ -264,7 +174,6 @@ private:
 	void setFricationTaps();
 	double vocalTract(double input, double frication);
 	void writeOutputToFile(const char* outputFile);
-	void writeOutputToBuffer(std::vector<float>& outputBuffer);
 	void synthesize();
 	float calculateMonoScale();
 	void calculateStereoScale(float& leftScale, float& rightScale);
@@ -329,7 +238,6 @@ private:
 
 	std::vector<std::unique_ptr<InputData>> inputData_;
 	CurrentData currentData_;
-	InputData singleInput_;
 	std::size_t outputDataPos_;
 	std::vector<float> outputData_;
 	std::unique_ptr<SampleRateConverter> srConv_;
@@ -342,44 +250,7 @@ private:
 	std::unique_ptr<BandpassFilter> bandpassFilter_;
 	std::unique_ptr<NoiseFilter> noiseFilter_;
 	std::unique_ptr<NoiseSource> noiseSource_;
-	std::unique_ptr<InputFilters> inputFilters_;
 };
-
-
-
-template<typename T>
-void
-Tube::loadConfigurationForInteractiveExecution(const T& config)
-{
-	outputRate_   = config.outputRate;
-	controlRate_  = config.controlRate;
-	volume_       = 0.0;
-	channels_     = 1;
-	balance_      = 0.0;
-	waveform_     = 0;
-	tp_           = config.tp;
-	tnMin_        = config.tn;
-	tnMax_        = config.tn;
-	breathiness_  = config.breathiness;
-	length_       = config.length;
-	temperature_  = config.temperature;
-	lossFactor_   = config.lossFactor;
-	apertureRadius_ = config.apertureRadius;
-	mouthCoef_    = config.mouthCoef;
-	noseCoef_     = config.noseCoef;
-
-	noseRadius_[0] = 0.0;
-	noseRadius_[1] = config.staticParamList[0];
-	noseRadius_[2] = config.staticParamList[1];
-	noseRadius_[3] = config.staticParamList[2];
-	noseRadius_[4] = config.staticParamList[3];
-	noseRadius_[5] = config.staticParamList[4];
-
-	throatCutoff_ = config.throatCutoff;
-	throatVol_    = config.throatVol;
-	modulation_   = config.modulation;
-	mixOffset_    = config.mixOffset;
-}
 
 } /* namespace TRM */
 } /* namespace GS */

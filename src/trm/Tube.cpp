@@ -59,7 +59,6 @@
 /*  PITCH VARIABLES  */
 #define PITCH_BASE                220.0
 #define PITCH_OFFSET              3           /*  MIDDLE C = 0  */
-//#define LOG_FACTOR                3.32193
 
 /*  RANGE OF ALL VOLUME CONTROLS  */
 #define VOL_MAX                   60
@@ -75,9 +74,6 @@
 /*  BI-DIRECTIONAL TRANSMISSION LINE POINTERS  */
 #define TOP                       0
 #define BOTTOM                    1
-
-//#define OUTPUT_SRATE_LOW          22050.0
-//#define OUTPUT_SRATE_HIGH         44100.0
 
 
 
@@ -137,7 +133,6 @@ Tube::reset()
 	prevGlotAmplitude_ = -1.0;
 	inputData_.resize(0);
 	memset(&currentData_, 0, sizeof(CurrentData));
-	memset(&singleInput_, 0, sizeof(InputData));
 	outputDataPos_ = 0;
 	outputData_.resize(0);
 
@@ -151,7 +146,6 @@ Tube::reset()
 	if (bandpassFilter_) bandpassFilter_->reset();
 	if (noiseFilter_) noiseFilter_->reset();
 	if (noiseSource_) noiseSource_->reset();
-	if (inputFilters_) inputFilters_->reset();
 }
 
 void
@@ -169,18 +163,6 @@ Tube::synthesizeToFile(std::istream& inputStream, const char* outputFile)
 #endif
 	synthesizeForInputSequence();
 	writeOutputToFile(outputFile);
-}
-
-void
-Tube::synthesizeToBuffer(std::istream& inputStream, std::vector<float>& outputBuffer)
-{
-	if (!outputData_.empty()) {
-		reset();
-	}
-	parseInputStream(inputStream);
-	initializeSynthesizer();
-	synthesizeForInputSequence();
-	writeOutputToBuffer(outputBuffer);
 }
 
 /******************************************************************************
@@ -567,12 +549,6 @@ Tube::initializeSynthesizer()
 	noiseSource_.reset(new NoiseSource());
 }
 
-void
-Tube::initializeInputFilters(double period)
-{
-	inputFilters_.reset(new InputFilters(sampleRate_, period));
-}
-
 /******************************************************************************
 *
 *  function:  synthesize
@@ -595,36 +571,6 @@ Tube::synthesizeForInputSequence()
 			/*  DO SAMPLE RATE INTERPOLATION OF CONTROL PARAMETERS  */
 			sampleRateInterpolation();
 		}
-	}
-}
-
-void
-Tube::synthesizeForSingleInput(int numIterations)
-{
-	if (!inputFilters_) {
-		THROW_EXCEPTION(InvalidStateException, "Input filters have not been initialized.");
-	}
-
-	for (int i = 0; i < numIterations; ++i) {
-
-		currentData_.glotPitch = inputFilters_->glotPitchFilter.filter(singleInput_.glotPitch);
-		currentData_.glotVol   = inputFilters_->glotVolFilter.filter(  singleInput_.glotVol);
-		currentData_.aspVol    = inputFilters_->aspVolFilter.filter(   singleInput_.aspVol);
-		currentData_.fricVol   = inputFilters_->fricVolFilter.filter(  singleInput_.fricVol);
-		currentData_.fricPos   = inputFilters_->fricPosFilter.filter(  singleInput_.fricPos);
-		currentData_.fricCF    = inputFilters_->fricCFFilter.filter(   singleInput_.fricCF);
-		currentData_.fricBW    = inputFilters_->fricBWFilter.filter(   singleInput_.fricBW);
-		currentData_.radius[0] = inputFilters_->radius0Filter.filter(  singleInput_.radius[0]);
-		currentData_.radius[1] = inputFilters_->radius1Filter.filter(  singleInput_.radius[1]);
-		currentData_.radius[2] = inputFilters_->radius2Filter.filter(  singleInput_.radius[2]);
-		currentData_.radius[3] = inputFilters_->radius3Filter.filter(  singleInput_.radius[3]);
-		currentData_.radius[4] = inputFilters_->radius4Filter.filter(  singleInput_.radius[4]);
-		currentData_.radius[5] = inputFilters_->radius5Filter.filter(  singleInput_.radius[5]);
-		currentData_.radius[6] = inputFilters_->radius6Filter.filter(  singleInput_.radius[6]);
-		currentData_.radius[7] = inputFilters_->radius7Filter.filter(  singleInput_.radius[7]);
-		currentData_.velum     = inputFilters_->velumFilter.filter(    singleInput_.velum);
-
-		synthesize();
 	}
 }
 
@@ -1040,33 +986,6 @@ Tube::writeOutputToFile(const char* outputFile)
 	}
 }
 
-void
-Tube::writeOutputToBuffer(std::vector<float>& outputBuffer)
-{
-	/*  BE SURE TO FLUSH SRC BUFFER  */
-	srConv_->flushBuffer();
-
-	LOG_DEBUG("\nNumber of samples: " << srConv_->numberSamples() <<
-			"\nMaximum sample value: " << srConv_->maximumSampleValue());
-
-	outputBuffer.resize(srConv_->numberSamples() * channels_);
-
-	if (channels_ == 1) {
-		float scale = calculateMonoScale();
-		for (unsigned int i = 0, end = srConv_->numberSamples(); i < end; ++i) {
-			outputBuffer[i] = outputData_[i] * scale;
-		}
-	} else {
-		float leftScale, rightScale;
-		calculateStereoScale(leftScale, rightScale);
-		for (unsigned int i = 0, end = srConv_->numberSamples(); i < end; ++i) {
-			unsigned int baseIndex = i * 2;
-			outputBuffer[baseIndex    ] = outputData_[i] * leftScale;
-			outputBuffer[baseIndex + 1] = outputData_[i] * rightScale;
-		}
-	}
-}
-
 float
 Tube::calculateMonoScale()
 {
@@ -1126,63 +1045,6 @@ double
 Tube::frequency(double pitch)
 {
 	return PITCH_BASE * pow(2.0, (pitch + PITCH_OFFSET) / 12.0);
-}
-
-void
-Tube::loadSingleInput(const VocalTractModelParameterValue pv)
-{
-	switch (pv.index) {
-	case PARAM_GLOT_PITCH:
-		singleInput_.glotPitch = pv.value;
-		break;
-	case PARAM_GLOT_VOL:
-		singleInput_.glotVol   = pv.value;
-		break;
-	case PARAM_ASP_VOL:
-		singleInput_.aspVol    = pv.value;
-		break;
-	case PARAM_FRIC_VOL:
-		singleInput_.fricVol   = pv.value;
-		break;
-	case PARAM_FRIC_POS:
-		singleInput_.fricPos   = pv.value;
-		break;
-	case PARAM_FRIC_CF:
-		singleInput_.fricCF    = pv.value;
-		break;
-	case PARAM_FRIC_BW:
-		singleInput_.fricBW    = pv.value;
-		break;
-	case PARAM_R1:
-		singleInput_.radius[0] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
-		break;
-	case PARAM_R2:
-		singleInput_.radius[1] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
-		break;
-	case PARAM_R3:
-		singleInput_.radius[2] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
-		break;
-	case PARAM_R4:
-		singleInput_.radius[3] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
-		break;
-	case PARAM_R5:
-		singleInput_.radius[4] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
-		break;
-	case PARAM_R6:
-		singleInput_.radius[5] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
-		break;
-	case PARAM_R7:
-		singleInput_.radius[6] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
-		break;
-	case PARAM_R8:
-		singleInput_.radius[7] = std::max(pv.value, GS_TRM_TUBE_MIN_RADIUS);
-		break;
-	case PARAM_VELUM:
-		singleInput_.velum     = pv.value;
-		break;
-	default:
-		THROW_EXCEPTION(TRMException, "Invalid parameter index: " << pv.index << '.');
-	}
 }
 
 } /* namespace TRM */
