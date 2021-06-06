@@ -5,28 +5,28 @@
 
   - A C++ compiler with C++11 support.
     The following compilers have been tested:
-    - GCC 5.5        (GNU/Linux x86_64).
-    - LLVM/Clang 3.8 (GNU/Linux x86_64).
+    - GCC 8.3      (Linux+GNU x86_64).
+    - LLVM/Clang 7 (Linux+GNU x86_64).
 
 - Build:
 
-  - GNU/Linux - GCC:
+  - Linux+GNU - GCC:
     - Execute in a terminal:
 
       mkdir build
       cd build
       cmake -D CMAKE_BUILD_TYPE=Release ..
-      make
+      cmake --build .
 
-  - GNU/Linux - LLVM/Clang:
+  - Linux+GNU - LLVM/Clang:
     - Execute in a terminal:
 
       mkdir build
       cd build
       CXX=clang++ cmake -D CMAKE_BUILD_TYPE=Release ..
-      make
+      cmake --build .
 
-- Test (GNU/Linux):
+- Test (Linux+GNU):
 
   - Execute in a terminal, in the directory "build":
 
