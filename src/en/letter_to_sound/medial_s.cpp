@@ -46,7 +46,7 @@ namespace En {
 void
 medial_s(char *in, char **eow)
 {
-    register char      *end = *eow;
+    char *end = *eow;
 
     while (in < end - 1) {
 	if ((member(*in | 040, "aeiouy")) && (in[1] == 's')

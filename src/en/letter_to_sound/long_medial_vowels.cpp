@@ -46,8 +46,8 @@ namespace En {
 int
 long_medial_vowels(char *in, char **eow)
 {
-    register char      *end = *eow;
-    register char      *position;
+    char *end = *eow;
+    char *position;
 
     /*  McIlroy 4.4 - a  */
     for (position = in; position < end - 3; position++) {

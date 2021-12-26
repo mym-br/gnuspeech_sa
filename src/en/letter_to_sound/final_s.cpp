@@ -47,8 +47,8 @@ namespace En {
 char
 final_s(char * /* in */, char **eow)
 {
-    register char      *end = *eow;
-    char                retval = 0;
+    char *end = *eow;
+    char retval = 0;
 
     /*  STRIP TRAILING S's  */
     if ((*(end - 1) == '\'') && (*(end - 2) == 's')) {

@@ -46,9 +46,9 @@ namespace En {
 void
 medial_silent_e(char *in, char **eow)
 {
-    char               *end = *eow;
-    register char      *position;
-    register int        index;
+    char *end = *eow;
+    char *position;
+    int index;
 
     for (position = in + 2; position < end - 5; position++) {
 	if (!member(position[0], "bcdfgmnprst"))

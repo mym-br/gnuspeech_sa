@@ -180,9 +180,8 @@ namespace En {
 int
 word_to_patphone(char *word)
 {
-    char                *end_of_word;
-    register char       replace_s = 0;
-
+    char *end_of_word;
+    char replace_s = 0;
 
     /*  FIND END OF WORD  */
     end_of_word = word + 1;

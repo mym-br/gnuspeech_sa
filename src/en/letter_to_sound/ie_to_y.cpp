@@ -44,7 +44,7 @@ namespace En {
 int
 ie_to_y(char * /* in */, char **end)
 {
-    register char      *t = *end;
+    char *t = *end;
 
     if ((*(t - 2) == 'i') && (*(t - 1) == 'e')) {
 	*(t - 2) = 'y';

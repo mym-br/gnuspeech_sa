@@ -44,7 +44,7 @@ namespace En {
 void
 insert_mark(char **end, char *at)
 {
-    register char      *temp = *end;
+    char *temp = *end;
 
     at++;
 
