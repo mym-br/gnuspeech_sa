@@ -1,12 +1,12 @@
 
 - Requirements:
 
-  - CMake.
+  - CMake and related tools (e.g. GNU Make or Ninja).
 
   - A C++ compiler with C++17 support.
     The following compilers have been tested:
-    - GCC 8.3      (Linux+GNU x86_64).
-    - LLVM/Clang 7 (Linux+GNU x86_64).
+    - GCC 10.2      (Linux+GNU x86_64).
+    - LLVM/Clang 11 (Linux+GNU x86_64).
 
 - Build:
 
