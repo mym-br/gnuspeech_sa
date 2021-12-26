@@ -44,6 +44,7 @@ public:
 	const char* version();
 private:
 	enum {
+		WORD_TYPE_BUF_SIZE = 32,
 		MAXLEN = 1024
 	};
 
@@ -55,7 +56,7 @@ private:
 
 	Dictionary dict_;
 	std::array<char, MAXLEN> buffer_;
-	std::array<char, 32> wordTypeBuffer_;
+	std::array<char, WORD_TYPE_BUF_SIZE> wordTypeBuffer_;
 };
 
 } /* namespace En */

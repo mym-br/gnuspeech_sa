@@ -156,7 +156,7 @@ DictionarySearch::augmentedSearch(const char* orthography)
 				strcat(&buffer_[0], list_ptr->pronunciation);
 
 				/*  AND PUT BACK THE WORD TYPE  */
-				strcat(&buffer_[0], &wordTypeBuffer_[0]);
+				strncat(&buffer_[0], &wordTypeBuffer_[0], WORD_TYPE_BUF_SIZE);
 
 				/*  RETURN WORD WITH SUFFIX AND ORIGINAL WORD TYPE  */
 				return &buffer_[0];
