@@ -29,7 +29,7 @@ See the file src/rapidxml/license.txt for details.
 Status
 ------
 
-**pre-alpha**
+**maintenance**
 
 Only english is supported.
 
