@@ -2546,12 +2546,15 @@ TextParser::final_conversion(std::stringstream& stream1, long stream1_length,
 				switch(last_written_state) {
 				case STATE_BEGIN:
 					stream2 << CHUNK_BOUNDARY << ' ';
+					[[fallthrough]];
 				case STATE_FINAL_PUNC:
 					stream2 << TONE_GROUP_BOUNDARY << ' ';
 					prior_tonic = TTS_FALSE;
+					[[fallthrough]];
 				case STATE_MEDIAL_PUNC:
 					stream2 << TG_UNDEFINED << ' ';
 					tg_marker_pos = static_cast<long>(stream2.tellp()) - 3;
+					[[fallthrough]];
 				case STATE_SILENCE:
 					stream2 << UTTERANCE_BOUNDARY << ' ';
 				}
@@ -2618,6 +2621,7 @@ TextParser::final_conversion(std::stringstream& stream1, long stream1_length,
 					} else if (next_state == STATE_END) {
 						stream2 << UTTERANCE_BOUNDARY << ' ';
 					}
+					[[fallthrough]];
 				case STATE_SILENCE:
 					stream2 << TONE_GROUP_BOUNDARY << ' ';
 					prior_tonic = TTS_FALSE;
@@ -2699,8 +2703,9 @@ TextParser::final_conversion(std::stringstream& stream1, long stream1_length,
 		stream2 << CHUNK_BOUNDARY;
 		break;
 
-	case STATE_WORD:  /*  FALL THROUGH DESIRED  */
+	case STATE_WORD:
 		stream2 << UTTERANCE_BOUNDARY << ' ';
+		[[fallthrough]];
 	case STATE_SILENCE:
 		stream2 << TONE_GROUP_BOUNDARY << ' ' << CHUNK_BOUNDARY;
 		prior_tonic = TTS_FALSE;

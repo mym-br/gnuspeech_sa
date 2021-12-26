@@ -3,7 +3,7 @@
 
   - CMake.
 
-  - A C++ compiler with C++11 support.
+  - A C++ compiler with C++17 support.
     The following compilers have been tested:
     - GCC 8.3      (Linux+GNU x86_64).
     - LLVM/Clang 7 (Linux+GNU x86_64).

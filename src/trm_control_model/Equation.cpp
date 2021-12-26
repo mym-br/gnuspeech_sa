@@ -64,8 +64,8 @@ private:
 		SYMBOL_TYPE_STRING
 	};
 
-	void throwException(const char* errorDescription) const;
-	template<typename T> void throwException(const char* errorDescription, const T& complement) const;
+	[[noreturn]] void throwException(const char* errorDescription) const;
+	template<typename T> [[noreturn]] void throwException(const char* errorDescription, const T& complement) const;
 	bool finished() const {
 		return pos_ >= s_.size();
 	}

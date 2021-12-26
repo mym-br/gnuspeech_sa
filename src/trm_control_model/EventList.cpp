@@ -522,12 +522,14 @@ EventList::applyRule(const Rule& rule, const std::vector<const Posture*>& postur
 			tempEvent = insertEvent(-1, ruleSymbols[3], 0.0);
 			if (tempEvent) tempEvent->flag = 1;
 		}
+		[[fallthrough]];
 	case 3:
 		if (postureList.size() >= 3) {
 			postureData_[postureIndex + 2].onset = (double) zeroRef_ + ruleSymbols[1];
 			tempEvent = insertEvent(-1, ruleSymbols[2], 0.0);
 			if (tempEvent) tempEvent->flag = 1;
 		}
+		[[fallthrough]];
 	case 2:
 		postureData_[postureIndex + 1].onset = (double) zeroRef_ + ruleSymbols[1];
 		tempEvent = insertEvent(-1, 0.0, 0.0);
