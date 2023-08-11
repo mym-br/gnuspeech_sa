@@ -1,6 +1,5 @@
 
-GnuspeechSA (Stand-Alone)
-=========================
+# GnuspeechSA (Stand-Alone)
 
 GnuspeechSA is a command-line articulatory synthesizer that converts text
 to speech.
@@ -14,27 +13,55 @@ downloaded in 2014-08-02. The source code was obtained from the directories:
     nextstep/trunk/ObjectiveC/Monet.realtime
     nextstep/trunk/src/SpeechObject/postMonet/server.monet
 
-This software is part of Gnuspeech.
+This software is written in multi-platform C++.
 
-[Gnuspeech]: http://www.gnu.org/software/gnuspeech/
+[Gnuspeech]: https://www.gnu.org/software/gnuspeech/
 
-External code
--------------
+## Gnuspeech
 
-This software includes code from [RapidXml][], provided by Marcin Kalicinski.
-See the file src/rapidxml/license.txt for details.
+Gnuspeech is an articulatory speech synthesizer. The project implemented the
+first articulatory text-to-speech (TTS) software (as far as I know).
+It was developed in the 90s, around 30 years ago (in 2023).
+Gnuspeech was previously a closed source commercial software, available only
+for NeXT computers. After the demise of NeXT, the software was donated to
+the [GNU][] project. It uses a simple vocal tract model, because the NeXT was a
+very slow computer. The CPUs of the 90s operated at a frequency of tens of MHz
+(not a typo), around 100x slower than the technology in 2023. The relative low
+complexity of the model makes it not too difficult to understand, and it allows
+low latency synthesis on modern personal computers.
 
-[RapidXml]: http://rapidxml.sourceforge.net/
+[GNU]: https://www.gnu.org
 
-Status
-------
+The original TTS system had two implementations of the vocal tract model
+(tube model), one that executed on a 56k DSP, written in assembly, and another
+that executed on the CPU, written in C. The DSP tube model generates better
+speech, with more balanced fricatives/plosives. This repository uses the C
+tube model.
+
+## Synthesis examples
+
+The sounds below were synthesized from the text of
+[The Chaos (short version)](the_chaos.txt) by Gerard Nolst Trenité.
+
+### Original code (for NeXT) using the DSP vocal tract model
+
+- [English - Male](sound/trillium_tts-the_chaos.mp3)
+
+### GnuspeechSA 0.1.8
+
+- [English - Male       ](sound/gnuspeech_sa-0.1.8-english_male-the_chaos.mp3)
+- [English - Female     ](sound/gnuspeech_sa-0.1.8-english_female-the_chaos.mp3)
+- [English - Large child](sound/gnuspeech_sa-0.1.8-english_large_child-the_chaos.mp3)
+- [English - Small child](sound/gnuspeech_sa-0.1.8-english_small_child-the_chaos.mp3)
+- [English - Baby       ](sound/gnuspeech_sa-0.1.8-english_baby-the_chaos.mp3)
+
+## Status
 
 **maintenance**
 
 Only english is supported.
 
-License
--------
+## License
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -46,8 +73,14 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 COPYING file for more details.
 
-Usage of `gnuspeech_sa`
------------------------
+## External code
+
+This software includes code from [RapidXml][], provided by Marcin Kalicinski.
+See the file src/rapidxml/license.txt for details.
+
+[RapidXml]: https://rapidxml.sourceforge.net/
+
+## Usage of `gnuspeech_sa`
 
 `gnuspeech_sa` converts the input text to speech.
 
@@ -74,8 +107,7 @@ Usage of `gnuspeech_sa`
             parameters.
         output_file.wav will be generated, containing the synthesized speech.
 
-Usage of `gnuspeech_sa_trm`
----------------------------
+## Usage of `gnuspeech_sa_trm`
 
 `gnuspeech_sa_trm` executes only the tube model.
 
@@ -86,8 +118,7 @@ Usage of `gnuspeech_sa_trm`
             tube model parameters.
         output_file.wav will be generated, containing the synthesized speech.
 
-Contents of data/en
--------------------
+## Contents of data/en
 
 ### `monet.xml`
 
