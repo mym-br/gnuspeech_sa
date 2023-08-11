@@ -31,7 +31,7 @@
 #define TRIPHONE 3
 #define TETRAPHONE 4
 
-#define INTONATION_CONFIG_FILE_NAME "/intonation"
+#define INTONATION_CONFIG_FILE_NAME "/intonation.txt"
 #define EPS (1.0e-6)
 
 

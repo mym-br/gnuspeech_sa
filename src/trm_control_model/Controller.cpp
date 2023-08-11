@@ -26,8 +26,8 @@
 #include "Exception.h"
 #include "Tube.h"
 
-#define TRM_CONTROL_MODEL_CONFIG_FILE_NAME "/trm_control_model.config"
-#define TRM_CONFIG_FILE_NAME "/trm.config"
+#define TRM_CONTROL_MODEL_CONFIG_FILE_NAME "/trm_control_model.txt"
+#define TRM_CONFIG_FILE_NAME "/trm.txt"
 #define VOICE_FILE_PREFIX "/voice_"
 
 
@@ -61,7 +61,7 @@ Controller::loadConfiguration(const char* configDirPath)
 	trmConfigFilePath << configDirPath << TRM_CONFIG_FILE_NAME;
 
 	std::ostringstream voiceFilePath;
-	voiceFilePath << configDirPath << VOICE_FILE_PREFIX << trmControlModelConfig_.voiceName << ".config";
+	voiceFilePath << configDirPath << VOICE_FILE_PREFIX << trmControlModelConfig_.voiceName << ".txt";
 
 	trmConfig_.load(trmConfigFilePath.str(), voiceFilePath.str());
 }

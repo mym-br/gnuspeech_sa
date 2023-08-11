@@ -39,4 +39,4 @@ tonic_movement = 4.0
 # "none": dictionary disabled
 dictionary_1_file = none
 dictionary_2_file = none
-dictionary_3_file = MainDictionary
+dictionary_3_file = MainDictionary.txt

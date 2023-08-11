@@ -29,7 +29,7 @@
 
 
 
-#define VOWEL_TRANSITIONS_CONFIG_FILE_NAME "/vowelTransitions"
+#define VOWEL_TRANSITIONS_CONFIG_FILE_NAME "/vowelTransitions.txt"
 
 
 

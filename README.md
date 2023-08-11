@@ -71,7 +71,7 @@ the Free Software Foundation, either version 3 of the License, or
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-COPYING file for more details.
+COPYING.txt file for more details.
 
 ## External code
 
@@ -124,19 +124,19 @@ See the file src/rapidxml/license.txt for details.
 
 Contains the articulatory database.
 
-### `intonation`
+### `intonation.txt`
 
 Controls the intonation.
 
-If `random_intonation = 0` in `trm_control_model.config`, only the first
+If `random_intonation = 0` in `trm_control_model.txt`, only the first
 line in each tone group will be used. If `random_intonation = 1`, the
 line will be randomly selected.
 
-### `MainDictionary`
+### `MainDictionary.txt`
 
 Contains the main dictionary, which relates words to postures.
 
-### `trm.config`
+### `trm.txt`
 
 Contains the parameters for the tube model.
 
@@ -147,7 +147,7 @@ Interesting parameters are:
         loss_factor
             Defines the acoustic loss inside the vocal tract.
 
-### `trm_control_model.config`
+### `trm_control_model.txt`
 
 Contains the parameters for the tube model controller.
 
@@ -155,7 +155,7 @@ Interesting parameters are:
 
         voice_name
             Defines the voice used in the synthesis.
-            It selects which of the voice_*.config files will be
+            It selects which of the voice_*.txt files will be
             loaded.
         tempo
             Values greater than 1 will speed up the speech.
@@ -183,15 +183,15 @@ The following parameters are not being used at the moment:
 - tonic_range
 - tonic_movement
 
-### `voice_baby.config`
+### `voice_baby.txt`
 
-### `voice_female.config`
+### `voice_female.txt`
 
-### `voice_large_child.config`
+### `voice_large_child.txt`
 
-### `voice_male.config`
+### `voice_male.txt`
 
-### `voice_small_child.config`
+### `voice_small_child.txt`
 
 Contain the voice parameters.
 
@@ -215,11 +215,11 @@ Interesting parameters are:
 
         breathiness
 
-### `vowelTransitions`
+### `vowelTransitions.txt`
 
 Controls vowel transitions.
 
-### `vowelTransitions_2`
+### `vowelTransitions_2.txt`
 
 Alternative version of `vowelTransitions`.
 
