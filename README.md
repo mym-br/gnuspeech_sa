@@ -221,6 +221,6 @@ Controls vowel transitions.
 
 ### `vowelTransitions_2.txt`
 
-Alternative version of `vowelTransitions`.
+Alternative version of `vowelTransitions.txt`.
 
 It is not being used.
