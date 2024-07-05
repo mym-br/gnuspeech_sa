@@ -43,7 +43,7 @@ tube model.
 The sounds below were synthesized from the text of
 [The Chaos (short version)](the_chaos.txt) by Gerard Nolst Trenité.
 
-### Original code (for NeXT) using the DSP vocal tract model
+### Original code (for NeXT - not in this repository) using the DSP vocal tract model
 
 - [English - Male](sound/trillium_tts-the_chaos.mp3)
 
