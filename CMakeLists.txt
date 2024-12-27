@@ -1,5 +1,6 @@
+cmake_minimum_required(VERSION 3.10)
+
 project(GnuspeechSA)
-cmake_minimum_required(VERSION 2.8)
 
 if(UNIX)
     if(APPLE)
