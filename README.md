@@ -21,14 +21,13 @@ This software is written in multi-platform C++.
 
 Gnuspeech is an articulatory speech synthesizer. The project implemented the
 first articulatory text-to-speech (TTS) software (as far as I know).
-It was developed in the 90s, around 30 years ago (in 2023).
+It was developed in the 90s, around 30 years ago (in 2024).
 The synthesizer was previously a closed source commercial software, available
 only for NeXT computers. After the demise of NeXT, the software was donated to
-the [GNU][] project. It uses a simple vocal tract model, because the NeXT was a
-very slow computer. The CPUs of the 90s operated at a frequency of tens of MHz
-(not a typo), around 100x slower than the technology in 2023. The relative low
-complexity of the model allows low latency synthesis on modern personal
-computers.
+the [GNU][] project. It has a simple vocal tract model, because the NeXT was a
+very slow computer (the CPUs of the 90s operated at a clock frequency of tens
+of MHz). The relative low complexity of the model allows low latency synthesis
+on modern personal computers.
 
 [GNU]: https://www.gnu.org
 
